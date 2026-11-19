@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: skill-module
 Scope: The Pad question bootstrap and refresh ask, how its answer is acted on, and how several repos share one workspace
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   When a repo has no .pad.toml, bootstrap and refresh ask once whether to link it to a Pad workspace, suggesting the folder name and listing the existing
   workspaces (repos may share one); the answer is carried out through skill-pad and a "no" is recorded so the question is not asked again.

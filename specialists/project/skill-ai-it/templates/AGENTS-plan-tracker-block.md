@@ -4,7 +4,7 @@ Category: template
 Status: current
 Authority: canonical
 Scope: The working rules a project pastes into its AGENTS.md when it keeps a plan tracker (docs/trackers/plan-tracker.md)
-Last reviewed: 2026-10-22
+Last reviewed: 2026-11-19
 Summary: >-
   Paste-in rules for keeping a plan tracker current and navigable; from smc-resiliency and unified-network-controller (operator, 2026-10-21 and
   2026-10-22). Reference: references/target-map-and-timeline.md, "The plan tracker page".

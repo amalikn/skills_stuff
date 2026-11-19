@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Context compaction recovery; moved verbatim from SKILL.md so SKILL.md stays within budget.
 ---

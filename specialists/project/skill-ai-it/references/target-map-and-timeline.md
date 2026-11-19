@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: canonical
 Scope: The two tracker generators this skill ships (target_map.py, plan_timeline.py), the plan tracker page they feed (plan_tracker.py) and how a project adopts them
-Last reviewed: 2026-10-22
+Last reviewed: 2026-11-19
 Summary: >-
   How a project keeps its goals, targets and per-criterion status in target-map.yaml and its dated plan in plan-timeline.yaml, renders both
-  into trackers with drift checks, and wires them into its justfile, govcheck and commit gate. Promoted from unified-network-controller 2026-10-21.
+  into trackers with drift checks, feeds the plan tracker page, keeps its heading links true (anchor_links.py), and wires them into its justfile,
+  govcheck and commit gate. Promoted from unified-network-controller 2026-10-21.
 ---
 
 # skill-ai-it reference: target map and plan timeline
@@ -39,6 +40,8 @@ is the cheap read. Since the promotion:
   fifteen words; the account of what was done goes in the change log and the plan, never in `summary`, which the embedded table shows on every render.
 - **`embed: [{path, heading}]`** renders the summary table (state, where it stands, blocker, next action, each id linking to its tracker section) into another page between `<!-- BEGIN GENERATED:
   target-map ... -->` and `<!-- END GENERATED: target-map -->`; text outside the markers is never touched.
+- **`mention` and `reviewed`.** A CHANGELOG entry newer than a target's `reviewed` stamp that names its `mention` stops the render until the target is
+  re-read and `reviewed` set ([Learned 2026-11-16](#learned)).
 
 ## Plan timeline
 

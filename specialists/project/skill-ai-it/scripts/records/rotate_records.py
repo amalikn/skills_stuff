@@ -661,6 +661,43 @@ def archive_text(moved: list[Unit], title: str, live: str, stamp_now: str, now: 
     return "\n".join(arc).rstrip("\n") + "\n"
 
 
+def tracker_path(value: str, live: str) -> str:
+    """The open-items tracker named by a header value, or "" when the value is not a relative markdown path inside the project.
+
+    Prose such as "this file, Open items" once became a file named `this` (skill-coder, 2026-11-07).
+
+    Args:
+        value: the `Open items tracker:` header value.
+        live: the record's name, for the message.
+
+    Returns:
+        The project-relative tracker path, or "" for no separate tracker.
+    """
+    rel = value.split(" ")[0].strip("`")
+    if rel and (not rel.endswith(".md") or os.path.isabs(rel) or ".." in pathlib.PurePosixPath(rel).parts):
+        print(f"{live}: Open items tracker value {rel!r} is not a markdown path inside the project; open items stay in place")
+        return ""
+    return rel
+
+
+def free_archive_name(root: pathlib.Path, base: str) -> str:
+    """An archive path that does not exist yet: `<base>.md`, else `<base>-2.md`, `-3`, ...
+
+    Two rotations in one minute once wrote the same name and the second erased the first (skill-drawio, skill-nautobot, 2026-11-19).
+
+    Args:
+        root: the project root.
+        base: the project-relative path without `.md`.
+
+    Returns:
+        The project-relative archive path.
+    """
+    rel, n = f"{base}.md", 2
+    while (root / rel).exists():
+        rel, n = f"{base}-{n}.md", n + 1
+    return rel
+
+
 def write_archive(root: pathlib.Path, archive_rel: str, text: str, moved: list[Unit], live: str) -> None:
     """Write the archive and regenerate docs/history/readme.md (history_layout: a summary line per file, hand-written descriptions kept).
 
@@ -752,7 +789,7 @@ def main(argv: list[str] | None = None) -> int:
     now = dt.datetime.now()
     stamp_now = now.strftime("%Y%m%d_%H%M")
     arc_dir = hl.archive_dir(root, path.stem.lower())
-    archive_rel = f"{arc_dir}/{path.stem.lower()}-{stamp_now}.md"
+    archive_rel = free_archive_name(root, f"{arc_dir}/{path.stem.lower()}-{stamp_now}")
     title = path.stem.title() if path.stem.isupper() else path.stem
     new_keys = {} if head.get("title") else {
         "Title": path.stem.title() if path.stem.isupper() else path.stem,
@@ -774,11 +811,7 @@ def main(argv: list[str] | None = None) -> int:
         return text.count("\n"), len(text.encode())
 
     section_keep = {k.strip(): int(v) for k, _, v in (p.partition("=") for p in head.get("keep", "").split(",")) if v.strip().isdigit()}
-    tracker_rel = head.get("open items tracker", "").split(" ")[0].strip("`")
-    # The value must be a relative markdown path; prose ("this file, Open items") once became a file named `this` (skill-coder, 2026-11-07).
-    if tracker_rel and (not tracker_rel.endswith(".md") or os.path.isabs(tracker_rel) or ".." in pathlib.PurePosixPath(tracker_rel).parts):
-        print(f"{live}: Open items tracker value {tracker_rel!r} is not a markdown path inside the project; open items stay in place")
-        tracker_rel = ""
+    tracker_rel = tracker_path(head.get("open items tracker", ""), live)
     after = choose(rec, kind, now, keep_days, min_keep, pinned, cited_stamps(root), (budget_lines, budget_bytes), preview,
                    section_keep=section_keep, open_days=7 if tracker_rel else None)
     units = [u for _, items in rec.blocks for u in items if isinstance(u, Unit)]

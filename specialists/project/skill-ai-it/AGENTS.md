@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: skill-ai-it package maintenance
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: Rules for maintaining the skill-ai-it package.
 ---
 

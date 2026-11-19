@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Finishing: parent update, conventions, quality check, audit format; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -51,7 +51,8 @@ After creating/updating files in the target folder:
 - Never duplicate AGENTS.md content in CLAUDE.md
 - SCRATCHPAD.md is populated from live memory systems, not written from scratch — always query before writing
 - CHANGELOG.md is the durable project/governance history ledger; append to it on meaningful bootstrap, navigation, refresh, audit, or promote runs
-- Mark SCRATCHPAD.md synthesized content `KEEP`; warn user before clearing any `KEEP` content
+- Do not mark SCRATCHPAD.md synthesized content `KEEP`: it rotates by default and `KEEP` is for the few items that must stay until promoted
+  ([files-records.md](files-records.md)); warn user before clearing any `KEEP` content
 - `AI_NAVIGATION.md` is the human-readable AI context router, not a knowledge dump
 - `context-map.yaml` is the machine-readable task-to-context routing map
 - `AGENTS.md` remains the bootstrap instruction file and must point agents to `AI_NAVIGATION.md`
@@ -119,7 +120,7 @@ After creating/updating files in the target folder:
 - [ ] Existing `.archcore/` documents were not directly edited unless explicitly authorized
 - [ ] Drift/conflict findings were reported instead of silently resolved
 - [ ] SCRATCHPAD.md was populated from memory systems (not blank) — or "no prior memory" note added if all sources empty
-- [ ] SCRATCHPAD.md synthesized content is marked `KEEP`
+- [ ] SCRATCHPAD.md synthesized content is not marked `KEEP`; only items that must stay until promoted carry it
 
 ## Audit Output Format
 

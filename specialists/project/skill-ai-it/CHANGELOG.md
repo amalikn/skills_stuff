@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1605
+Last rotated: 20261119_1639
 ---
 
 # Changelog — skill-ai-it
@@ -17,6 +17,7 @@ Last rotated: 20261119_1605
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261119_1638 — Periodic review; 90-day window; rotation no longer overwrites a same-minute archive](#20261119_1638--periodic-review-90-day-window-rotation-no-longer-overwrites-a-same-minute-archive)
 - [20261119_1551 — rotation_verify.py: did this rotation move every removed line](#20261119_1551--rotation_verifypy-did-this-rotation-move-every-removed-line)
 - [20261112_1700 — new-skill: Learned entry on prompt templates under the formatter](#20261112_1700--new-skill-learned-entry-on-prompt-templates-under-the-formatter)
 - [20261112_1656 — new-skill: Deferred and extensions section, stamped template dates, brief front matter](#20261112_1656--new-skill-deferred-and-extensions-section-stamped-template-dates-brief-front-matter)
@@ -26,7 +27,6 @@ Last rotated: 20261119_1605
 - [20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey](#20261111_1213--history_migrate-check-gate-dirty-reference-refusal-survey)
 - [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
 - [20261111_1125 — docs/history by kind, generated index with summaries, migration](#20261111_1125--docshistory-by-kind-generated-index-with-summaries-migration)
-- [20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs](#20261105_2139--promote-quoted-front-matter-last-reviewed-decisions_to_adrs)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
@@ -89,6 +89,13 @@ Last rotated: 20261119_1605
   gets it
 - references/governed-file-roles.md: a rule moved out of AGENTS.md leaves a one-line summary; tighter budgets go in the file's `Budget:` header (2026-11-05, ansible-wifi). ROADMAP idea: line-range
   moves in move_sections.py.
+
+## 20261119_1638 — Periodic review; 90-day window; rotation no longer overwrites a same-minute archive
+
+- Periodic review (operator, 2026-11-19): all 55 due docs re-read in full and dated 2026-11-19; body rules aligned with Learned entries (Unreleased never rotates, kebab-case recipes, KEEP contradiction), Contents and front matter added, ROADMAP items closed. Review window now 90 days (`--window-days 90`).
+- `scripts/records/rotate_records.py`: a second rotation in the same minute wrote the same archive name and erased the first (skill-drawio and skill-nautobot lost entries, restored from git); `free_archive_name` adds `-2`, `-3`. Tracker-path check moved into `tracker_path`. Test `test_a_second_rotation_in_the_same_minute_keeps_the_first_archive`; `repoint_paths.py` DATED accepts the suffix.
+- `scripts/adoption/adopt_governed_files.py`: the role_check line copied from the freshness line drops `--window-days` (role_check has no such option). Test `test_role_check_line_drops_the_freshness_window`.
+- `templates/AGENTS-governance-checks-block.md`: `<RUNNER CHECK COMMAND>` placeholder (never substituted) now `just check`.
 
 ## 20261119_1551 — rotation_verify.py: did this rotation move every removed line
 
@@ -175,11 +182,6 @@ have. [references/files-history.md](references/files-history.md).
   the archive index rows too (a row could keep a root-relative link that never resolved). Older tests read archives recursively. 234 tests pass.
 - Migrated: this pack's own docs/history (58 files) and smc-resiliency's (151 files, the canary).
 - Open: 24 doc-freshness reviews came due before this change (AGENTS.md, patterns/navigation/*, the open-items tracker and others); not bumped without a re-read.
-
-## 20261105_2139 — promote: quoted front matter, Last reviewed, decisions_to_adrs
-
-references/generation-policy.md, promote step: quote front-matter values (an unquoted colon fails `archcore status`), give each proposed document `Last reviewed` (tracked-only freshness check), render
-decision ADRs with skill-knowledge-curator `decisions_to_adrs.py`, and clear the candidates file from every reference in the same pass. Found in the Continuum promotion, 2026-11-05.
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 

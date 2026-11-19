@@ -3,7 +3,8 @@ Title: History
 Category: folder-index
 Status: current
 Authority: generated index
-Last reviewed: 2026-11-11
+Scope: Index of a project's rotated records under docs/history
+Last reviewed: 2026-11-19
 Summary: Rotated records, one folder per kind; the file list is generated with a summary line per file.
 ---
 

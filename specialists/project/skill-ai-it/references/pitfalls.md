@@ -3,15 +3,20 @@ Title: skill-ai-it reference: pitfalls observed in practice
 Category: reference
 Status: current
 Authority: local-supplement
-Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-10-14
+Scope: On-need reference of pitfalls met applying skill-ai-it, first moved verbatim from SKILL.md
+Last reviewed: 2026-11-19
 Summary: >-
-  Pitfalls observed in practice; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
+  Pitfalls observed applying skill-ai-it (path checks, managed blocks, the markdown hook, context-map re-serialisation, promote, freshness, govern,
+  budget, move_sections, check recipes), with dated Learned entries; first moved verbatim from SKILL.md to keep it within budget.
 ---
 
 # skill-ai-it reference: pitfalls observed in practice
 
 Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget for files loaded whole.
+
+## Contents
+
+- [Pitfalls observed in practice](#pitfalls-observed-in-practice)
 
 ## Pitfalls observed in practice
 
@@ -74,7 +79,7 @@ documents to the same folder within the hour.
 `authority_order` entry, replace the routing-list entries with `.archcore/index.guide.md`, drop the repomix include, and remove the promoted folders
 (`.archcore/adr`, `.archcore/rules`) from `CONDITIONAL_PATHS`. Keep `promotion_rules.archcore.candidates_report`: it names where the next refresh writes.
 
-**`nav_upgrade_dry_run` exits 2 when changes are pending (2026-10-20, smc-resiliency).** `upgrade_navigation_control_layer.py` exits 0 when
+**`nav-upgrade-dry-run` exits 2 when changes are pending (2026-10-20, smc-resiliency).** `upgrade_navigation_control_layer.py` exits 0 when
 nothing would change, 2 when it would change files and 3 when a change needs manual review; `just` reports exit 2 as "recipe failed". Read the
 "Changed files" line, not the exit code: on 2026-10-20 it was the template recipes' rename to kebab-case, which `govern` then applied.
 `govern` also stops on any uncommitted governed file, so a refresh after a working session starts with a commit (ask; never `GOVERN_ALLOW_DIRTY` unasked).

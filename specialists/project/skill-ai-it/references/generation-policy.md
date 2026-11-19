@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Generation policy and optional tools; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -65,7 +65,8 @@ Apply these rules to every markdown file created or updated by this skill. Autho
 
 - Time-bound files: `<slug>-YYYYMMDD_hhmm.md` (e.g. `design-notes-20260522_1400.md`).
 - Stable entrypoints (`README.md`, `AGENTS.md`, `CLAUDE.md`, `SCRATCHPAD.md`, `.agents/*.md`) keep their exact names — do not rename them.
-- Metadata timestamp fields (`Last reviewed`, `Last updated`, etc.) use `YYYYMMDD_hhmm` format.
+- Metadata timestamp fields (`Last reviewed`, `Last updated`, etc.) use `YYYY-MM-DD`, or `YYYYMMDD_hhmm` where the time matters (governance
+  `categories/naming-and-file-summary-guide.md`).
 
 #### Table of contents
 

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The `new-skill` mode: how a new skill pack is seeded, scaffolded, built and checked so every pack shares one shape
-Last reviewed: 2026-11-12
+Last reviewed: 2026-11-19
 Summary: >-
   The new-skill capability: the seed template and what a good seed holds, the scaffold and what it writes versus what bootstrap and the agent write, the pack contract check, the install and registry steps, and
   the lessons built in from skill-nautobot, skill-vagrant, skill-coder and the two architect packs.
@@ -75,7 +75,7 @@ only what the pack needs to cite.
 
 ## What a good seed holds
 
-`templates/skill-seed.md` has nineteen sections; the ones that decide quality:
+`templates/skill-seed.md` has twenty sections; the ones that decide quality:
 
 - **What was learned** is the core. A lesson that is not a row is lost: write what turned out true, how it is known, and what it becomes (a rule, a reference section, a script, a template, a
   scenario). Include the mistakes and the rework, not only the result.
@@ -96,7 +96,7 @@ Parameters are a plain `key: value` block, so the scaffold needs no YAML parser.
 | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | The scaffold (this mode) | `SKILL.md`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `references/` (index, write-back, one stub per routed task), `sources.yaml`, `compatibility.yaml`,     |
 |                          |   `tests/` (scenarios, eval procedure, contract test), `.gitignore`, and with `scripts: yes` the Python pin, `ruff.toml` and `requirements.txt`; `operator/readme.md`     |
-|                          |   with `operator_context: yes`; a copy of the seed in `docs/`                                                                                                             |
+|                          |   with `operator_context: yes`                                                                                                                                            |
 | skill-ai-it bootstrap    | `justfile` (pinned runtimes, `check`, `test`, `docs`, `stale`, rotation), `scripts/check_governance.py`, `AI_NAVIGATION.md`, `context-map.yaml`, managed blocks,          |
 |                          |   `scripts/README.md`, `code-map.toml`                                                                                                                                    |
 | The agent, from the seed | Every `TODO(build)`: reference content, scripts and their tests and catalogue rows, `sources.yaml` rows with evidence, `compatibility.yaml` environments, verbatim        |

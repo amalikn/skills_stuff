@@ -4,9 +4,10 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
-  Always-created files: README, AGENTS, CLAUDE; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
+  Always-created files: README, AGENTS, CLAUDE, and how an AGENTS.md chain across folders reaches Claude Code versus Codex; moved verbatim from SKILL.md
+  so SKILL.md stays an orchestration file within budget.
 ---
 
 # skill-ai-it reference: Always-created files: README, AGENTS, CLAUDE
@@ -108,7 +109,7 @@ Summary: <One-line summary of what this policy governs.>
 
 <Insert the navigation managed block here verbatim from `templates/AGENTS-navigation-block.md` (never from a copy: copies drift).>
 
-<Insert the governance-checks managed block here verbatim from `templates/AGENTS-governance-checks-block.md`, with `<RUNNER CHECK COMMAND>` replaced by this project's actual command (e.g. `just check`).>
+<Insert the governance-checks managed block here verbatim from `templates/AGENTS-governance-checks-block.md`, its check command (`just check`) changed if this project runs its checks another way.>
 
 ## Canonical governance linkage
 

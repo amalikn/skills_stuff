@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Script and task inventory; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -117,14 +117,17 @@ ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it
 
 `check_interpreter_pinning` in `templates/check_governance.py` fails on both (since 2026-10-07), as it does on a bare interpreter name in a recipe.
 
-#### File and command naming — snake_case
+#### File and command naming — snake_case files, kebab-case commands
 
-Governance `categories/coding-guide.md` (operator, 2026-10-07): **snake_case** for every code file this skill generates or finds (`.py`, `.sh` and the rest) and every command name a project defines
-(`just` recipes, CLI symlinks). A Python file must be importable (PEP 8; a hyphen is the minus operator), the Google Shell Style Guide asks the same of shell, and one rule beats a per-language split.
-kebab-case only where something outside the code fixes it: skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names. `check_file_naming` in `templates/check_governance.py` fails
-on a kebab-case code file under `scripts/`; a project adopting the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched, updating every reference in the same change. This
-package's own optional template is `templates/context_preflight.sh` (renamed from the kebab form). The template's own recipes follow it since 2026-10-07 (`nav-upgrade`, `nav-validate`, `lint-md` and
-the rest); `nav-upgrade` renames the old kebab forms in a project's justfile on its next run.
+Governance `categories/coding-guide.md` (operator, 2026-10-07; command names revised 2026-10-19): **snake_case** for every code file this skill generates or
+finds (`.py`, `.sh` and the rest), **kebab-case** for every command name a project defines (`just` recipes, CLI symlinks), as GNU long options and Git
+subcommands already are. A Python file must be importable (PEP 8; a hyphen is the minus operator), and the Google Shell Style Guide asks the same of shell.
+kebab-case also stays where something outside the code fixes it: skill names, document slugs (`<slug>-YYYYMMDD_hhmm.md`), repo and folder names.
+`check_file_naming` in `templates/check_governance.py` fails on a kebab-case code file under `scripts/` (command names are not checked); a project adopting
+the rule lists its existing ones in `KEBAB_LEGACY` and renames each when next touched, updating every reference in the same change. This package's own
+optional template is `templates/context_preflight.sh` (renamed from the kebab form). The template's recipes are kebab-case again since 2026-10-19
+(`nav-upgrade`, `nav-validate`, `lint-md` and the rest; they were snake_case from 2026-10-07); `nav-upgrade` renames the old snake_case recipes in a
+project's justfile on its next run.
 
 #### Function documentation
 

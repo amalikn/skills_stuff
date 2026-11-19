@@ -5,7 +5,7 @@ Status: draft
 Authority: >-
   Design brief for a new skill pack, written by the operator with an agent; the pack is built from it with `new-skill scaffold` and the agent fills the references, scripts and evidence it lists
 Scope: What the skill is for, what it is not, what it learned from real work, and every file the pack will hold
-Last reviewed: 2026-11-12
+Last reviewed: 2026-11-19
 Summary: >-
   Seed for <skill-name>: purpose, boundaries, source material, lessons, routing, scripts, rules, evidence, acceptance scenarios and build order, in the form `new-skill` reads.
 ---
@@ -211,7 +211,7 @@ calling project. -->
 <!-- The order the agent builds in and what done means. Keep the default unless the skill needs otherwise. -->
 
 1. `new-skill check-seed` passes (no `TODO(seed)` left, every table filled or its row deleted).
-2. `new-skill scaffold` plan read; then `--apply` writes the skeleton and copies this seed into the pack's `docs/`.
+2. `new-skill scaffold` plan read; then `--apply` writes the skeleton; the seed stays in `pending_skills/` and is never copied into the pack.
 3. Run `skill-ai-it bootstrap` on the new folder (governance files, task runner, checker), then `just bootstrap` and `just check`.
 4. Fill each reference from `What was learned` and `Source material`; every claim gets its `sources.yaml` row.
 5. Write each script in `Scripts plan` with skill-coder: tests first, catalogue row, recipe, `code-map.toml` entry.

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: skill-module
 Scope: Where rotated records live, how their index is built, and how a project moves from the flat layout
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   docs/history holds one subfolder per kind of rotated record (changelog, scratchpad, roadmap, session-records, sync); its readme index is generated with a summary line
   per file; history_migrate.py moves a flat folder and repoints every reference.

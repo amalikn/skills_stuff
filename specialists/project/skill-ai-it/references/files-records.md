@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Always-created files: SCRATCHPAD, CHANGELOG, markdownlint; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -123,7 +123,7 @@ Always create during bootstrap. If it exists, append entries only; do not rewrit
 
 Use CHANGELOG.md as the durable project history and governance-change ledger. It is not a scratchpad and must not contain long terminal logs or unverified speculation.
 Newest entry first, directly under the heading; each entry says what changed, why, and where, in a few lines (detail belongs in the commit or the
-document changed). Older entries rotate to `docs/history/` (`just rotate`, read on need with `just history <term>`); add entries with
+document changed). Older entries rotate to `docs/history/` (`just rotate`, read on need with `just history <term>`; the live `## Unreleased` section never rotates); add entries with
 `just changelog-entry`.
 
 ```markdown

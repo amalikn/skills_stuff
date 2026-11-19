@@ -583,7 +583,8 @@ def add_roles_to_check(text: str) -> str:
     fresh = next((ln for ln in m.group(1).splitlines() if "doc_freshness.py" in ln), None)
     if fresh is None:
         return text
-    line = fresh.replace("doc_freshness.py", "role_check.py")
+    # role_check.py has no review window; a project's `--window-days N` (skill packs: 90) stays on the freshness line only.
+    line = re.sub(r"\s--window-days[ =]\d+", "", fresh.replace("doc_freshness.py", "role_check.py"))
     body = m.group(1) if m.group(1).endswith("\n") else m.group(1) + "\n"
     return text[:m.start(1)] + body + line + "\n" + text[m.end(1):]
 

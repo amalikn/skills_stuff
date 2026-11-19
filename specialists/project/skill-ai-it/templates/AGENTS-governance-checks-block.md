@@ -2,7 +2,7 @@
 
 ## Governance coherence checks
 
-This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and `<RUNNER CHECK COMMAND>` gates on them. It is stdlib-only
+This project's governance claims are executable. [`scripts/check_governance.py`](scripts/check_governance.py) turns them into assertions and `just check` gates on them. It is stdlib-only
 and exits non-zero on any failure.
 
 **Run it before claiming any durable change is complete**, and after any change that adds, moves, renames, or retires a file. It is cheap and it is the only thing standing between this project's

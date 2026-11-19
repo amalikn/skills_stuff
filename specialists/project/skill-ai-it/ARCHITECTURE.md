@@ -4,9 +4,9 @@ Category: architecture
 Status: current
 Authority: canonical
 Scope: How the skill-ai-it package works, its layers and the source-of-truth direction
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
-  Capabilities, package roles, the run flow, the tool stack (Graphify disabled 2026-10-10), the script and task layer, repeat safety, managed
+  Capabilities, package roles, the run flow and modes (govern and new-skill included), the tool stack (Graphify disabled 2026-10-10), the script and task layer, repeat safety, managed
   blocks, upgrade behaviour, compaction recovery, the drift audit and the deterministic upgrade scripts.
 ---
 
@@ -126,6 +126,9 @@ Agent navigation and context loading
 
 Generated outputs do not flow back into source-of-truth unless reviewed and promoted.
 ```
+
+Two modes sit outside the flow above: `govern` (governance only, scripted: `just govern`) and `new-skill` (seed, scaffold and check a new skill pack,
+[references/new-skill.md](references/new-skill.md)). The full mode table is in [SKILL.md](SKILL.md#operating-modes).
 
 ## Tool stack
 
@@ -284,5 +287,5 @@ Pointers only; the record holds the reasoning.
 - **Roles enforced as a ratchet, introduced by adoption** (2026-10-14): `scripts/checks/role_check.py` gates `just check` against a per-project
   baseline that `adopt_governed_files.py` writes at slurp, so no project fails on day one. CHANGELOG `20261014_1002`.
 - **README budget per project, not on the default list** (2026-10-14): adoption adds `Budget: 200 lines, 25 KB` and grandfathers the size.
-- **Records rotate instead of growing** (operator, 2026-10-10): CHANGELOG, SCRATCHPAD and ROADMAP move old entries verbatim to `docs/history/`.
+- **Records rotate instead of growing** (operator, 2026-10-10): CHANGELOG, SCRATCHPAD and ROADMAP move old entries verbatim to `docs/history/<kind>/`.
 - **Graphify disabled** (operator, 2026-10-10): 0 graph queries in 30 days; every call gated by `GRAPHIFY_ENABLED=1` (verified 2026-10-14).

@@ -4,12 +4,29 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Auditing a target project's scripts, task runners and their catalog
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
-  Checklist for managed-block integrity, task-runner discovery, catalog coverage and safety labels of a project's scripts and tasks.
+  Checklist for managed-block integrity, task-runner discovery, catalog coverage and safety labels of a project's scripts and tasks, with read-only
+  validation commands and a verdict table.
 ---
 
 # Script / Task Inventory Audit Checklist
+
+## Contents
+
+- [0. Managed Block Integrity](#0-managed-block-integrity)
+- [1. Discovery](#1-discovery)
+- [2. Catalog Coverage](#2-catalog-coverage)
+- [3. Safety Classification](#3-safety-classification)
+- [4. Inputs and Outputs](#4-inputs-and-outputs)
+- [5. Idempotency](#5-idempotency)
+- [6. Agent Routing](#6-agent-routing)
+- [7. Companion-File Update Rules](#7-companion-file-update-rules)
+- [8. Context-Map Schema Compatibility](#8-context-map-schema-compatibility)
+- [9. Drift Audit Handoff](#9-drift-audit-handoff)
+- [10. Generated-Output Policy](#10-generated-output-policy)
+- [11. Validation Commands](#11-validation-commands)
+- [12. Audit Verdict](#12-audit-verdict)
 
 ## 0. Managed Block Integrity
 
@@ -123,7 +140,7 @@ Both should be run for complete navigation/control-layer validation. Run this ch
 
 - [ ] `.ai-context/` and `graphify-out/` are treated as generated support only, never canonical source of truth.
 - [ ] Regeneration commands are documented:
-  - `graphify update .` for Graphify
+  - `graphify update .` for Graphify, only when re-enabled (`GRAPHIFY_ENABLED=1`; disabled 2026-10-10)
   - `repomix --config repomix.config.json` for Repomix
 - [ ] Generated outputs are refreshed only when requested or when clearly stale (not auto-promoted).
 - [ ] Governance files (AGENTS.md, AI_NAVIGATION.md, context-map.yaml) are not overwritten by generated output.

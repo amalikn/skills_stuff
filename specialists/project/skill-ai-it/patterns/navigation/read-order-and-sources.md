@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: skill-ai-it
 Scope: Full text behind these sections of every project's compact AI_NAVIGATION.md managed block: Mandatory read order, Source priority, Project context files
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: Moved verbatim from templates/AI_NAVIGATION.md on 2026-10-10 (Graphify steps are obsolete: Graphify was disabled workspace-wide that day).
 ---
 
@@ -24,7 +24,7 @@ Before answering, planning, editing, or creating files in this project, read in 
 
 If available, also consult:
 
-- `graphify-out/GRAPH_REPORT.md`
+- `graphify-out/GRAPH_REPORT.md` (only when Graphify is re-enabled, `GRAPHIFY_ENABLED=1`)
 - `.ai-context/governance-pack.md`
 
 ## Source priority
@@ -67,5 +67,7 @@ When sources conflict, use this priority:
 | `memory-bank/decisionLog.md` | Decision notes before promotion | Medium |
 | `SCRATCHPAD.md` / `scratchpad.md` | Temporary notes | Low |
 | `docs/` | Supporting documentation | Depends on file |
+| `docs/history/` | Rotated CHANGELOG, SCRATCHPAD and ROADMAP entries; read on need (`just history <term>`) | Record |
+| `docs/trackers/` | Open items rotated out of SCRATCHPAD; read on need | Working state |
 | `graphify-out/` | Generated navigation graph | Generated support |
 | `.ai-context/governance-pack.md` | Generated deterministic context pack | Generated support |

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: skill-ai-it
 Scope: Full text behind these sections of every project's compact AI_NAVIGATION.md managed block: Task routing, Script and Task Navigation
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: Moved verbatim from templates/AI_NAVIGATION.md on 2026-10-10 (Graphify steps are obsolete: Graphify was disabled workspace-wide that day).
 ---
 
@@ -60,6 +60,20 @@ Read:
 
 Use code navigation tools where available.
 
+### Documentation updates
+
+Before updating docs, check:
+
+1. `.archcore/`
+2. `README.md`
+3. `CHANGELOG.md`
+4. `ARCHITECTURE.md` / `architecture.md`
+5. `ROADMAP.md` / `roadmap.md`
+6. `memory-bank/`
+7. `docs/`
+
+After updates, ensure related files are not left inconsistent.
+
 ## Script and Task Navigation
 
 For script, task, or automation questions, read in this order:
@@ -79,17 +93,3 @@ Do not run uncataloged scripts blindly. Treat uncataloged scripts as `unknown sa
 If the catalog is stale, propose an update to `scripts/README.md` or the relevant task runner.
 
 If a task is marked `destructive`, `review-required`, or `unknown`, stop and request review before execution.
-
-### Documentation updates
-
-Before updating docs, check:
-
-1. `.archcore/`
-2. `README.md`
-3. `CHANGELOG.md`
-4. `ARCHITECTURE.md` / `architecture.md`
-5. `ROADMAP.md` / `roadmap.md`
-6. `memory-bank/`
-7. `docs/`
-
-After updates, ensure related files are not left inconsistent.

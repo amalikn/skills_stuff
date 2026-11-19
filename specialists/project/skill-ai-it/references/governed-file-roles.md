@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: The root governance files skill-ai-it creates or audits in any project, and this package's own
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
   How agent context is loaded in tiers (small always-read files, detail on need, history on demand), one role per root file (README, AGENTS,
   CLAUDE, AI_NAVIGATION, ARCHITECTURE, CONVENTIONS, SETUP, ROADMAP, CHANGELOG, SCRATCHPAD), what enforces each, the placement test and the role check.
@@ -41,7 +41,7 @@ Every root file sits in one tier. A tier decides how often an agent pays for the
 | 4. On demand              | `docs/history/`,                   | Only when a live file cites it or the        | None                               | `just history <term>`,                          |
 |                           |   `docs/archive/`, trackers        |   agent searches                             |                                    |   `just history-show <stamp>`                   |
 
-Three rules make the tiers work:
+Four rules make the tiers work:
 
 - **Summarise up, link down.** A tier 1 or 2 file states the conclusion and links the detail; it never copies it. Nothing is deleted to save tokens: rotation, trim and `move_sections.py` move text
   verbatim and leave a pointer, so the agent can always reach it.

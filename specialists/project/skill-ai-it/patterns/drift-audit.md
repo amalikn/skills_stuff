@@ -4,12 +4,30 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Manual audit of a target project's AI navigation and control layer
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
-  Checklist for whether agents can find and use the right project context: file presence, managed blocks, authority, companions, generated-output policy.
+  Checklist for whether agents can find and use the right project context: file presence, managed blocks, authority, companions, generated-output policy, file roles.
 ---
 
 # Drift Audit Pattern — AI Navigation/Control Layer
+
+## Contents
+
+- [1. Governance File Presence](#1-governance-file-presence)
+- [2. Managed Block Integrity](#2-managed-block-integrity)
+- [3. Version Consistency](#3-version-consistency)
+- [4. Navigation Map Completeness](#4-navigation-map-completeness)
+- [5. Authority Consistency](#5-authority-consistency)
+- [6. Companion Update Verification](#6-companion-update-verification)
+- [7. Generated-Output Policy Enforcement](#7-generated-output-policy-enforcement)
+- [8. Archcore Promotion Gate Verification](#8-archcore-promotion-gate-verification)
+- [9. Context Compaction Recovery](#9-context-compaction-recovery)
+- [10. Script and Task Consistency](#10-script-and-task-consistency)
+- [11. Stale Reference Detection](#11-stale-reference-detection)
+- [12. Repeat-Run Safety](#12-repeat-run-safety)
+- [13. Cross-Reference: AI_NAVIGATION.md vs context-map.yaml](#13-cross-reference-ai_navigationmd-vs-context-mapyaml)
+- [14. File Role Compliance](#14-file-role-compliance)
+- [Output Format](#output-format)
 
 Use this pattern when auditing whether AI agents can find and use the correct project context.
 

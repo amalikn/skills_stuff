@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: local-supplement
 Scope: Files skill-ai-it generates into target projects
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: Templates for generated project files; SKILL.md names each and how it is used.
 ---
 
@@ -21,5 +21,7 @@ Summary: Templates for generated project files; SKILL.md names each and how it i
 - [archcore/index.guide.md](archcore/index.guide.md), [archcore/rule.md](archcore/rule.md): `.archcore/index.guide.md` and one rule file, as the `promote`
   mode writes them (patterns/archcore-routing.md); AGENTS.md keeps one line per rule pointing at its file.
 - [justfile](justfile), [scripts-README.md](scripts-README.md): task catalog and script inventory.
+- [skill-intake.md](skill-intake.md), [research-brief.md](research-brief.md), [skill-seed.md](skill-seed.md), [seed-folder/](seed-folder/),
+  [skill-pack/](skill-pack/): the new-skill mode's interview form, research brief, seed, seed-folder indexes and pack skeleton (references/new-skill.md).
 - [check_governance.py](check_governance.py), [govcheck/](govcheck/): the project's governance checker (single file, or package layout).
 - [repomix.config.json](repomix.config.json), [context_preflight.sh](context_preflight.sh), [.markdownlint-cli2.jsonc](.markdownlint-cli2.jsonc): context pack, opt-in preflight, lint config.

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Phases 1 to 3: inventory, understand, infer; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -12,6 +12,12 @@ Summary: >-
 # skill-ai-it reference: Phases 1 to 3: inventory, understand, infer
 
 Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget for files loaded whole.
+
+## Contents
+
+- [Phase 1 — Inventory](#phase-1--inventory)
+- [Phase 2 — Understand](#phase-2--understand)
+- [Phase 3 — Infer](#phase-3--infer)
 
 ## Phase 1 — Inventory
 
@@ -110,5 +116,5 @@ From inventory + content reads, determine:
 |                       |   threshold or canonical value restated in more than one file. Each becomes a check — see `patterns/governance-checks.md` for the artifact-to-check inference table          |
 | Repeat-run risk       | Existing custom sections, `KEEP` blocks, managed blocks, user-authored YAML/JSON, and generated artifacts                                                                    |
 | Runtime requirements  | Interpreters the scripts/recipes actually invoke (`python3`, `node`, `npx`), and whether each is pinned in `.mise.toml`. Derive the working-cache peer path from the source  |
-|                       |   root — see *Runtime isolation*                                                                                                                                             |
+|                       |   root — see [Runtime isolation](script-task-inventory.md#runtime-isolation--recipes-must-not-call-a-bare-interpreter)                                                       |
 | Active development?   | Presence of TODOs, WIP markers, incomplete docs, recent git commits                                                                                                          |

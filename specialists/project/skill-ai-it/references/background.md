@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Background: pattern inspiration and packaging task; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -43,4 +43,4 @@ If this skill is being maintained as a reusable package, extract the embedded fa
 - `patterns/script-task-audit-checklist.md`; `patterns/navigation/` (full routing tables and procedures behind the compact navigation block, one file per topic)
 - `CHANGELOG.md` as the skill-package governance history ledger
 
-After extraction, keep `SKILL.md` focused on orchestration logic and keep detailed reusable content in the template/pattern files.
+After extraction, keep `SKILL.md` focused on orchestration logic and keep detailed reusable content in the template/pattern files. Done (checked 2026-11-19): every file listed exists.

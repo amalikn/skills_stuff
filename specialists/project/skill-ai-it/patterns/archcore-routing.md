@@ -4,9 +4,9 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Using .archcore/ as durable truth in target projects: init, source mapping, promotion candidates
-Last reviewed: 2026-10-19
+Last reviewed: 2026-11-19
 Summary: >-
-  How skill-ai-it initializes Archcore, maps governance sources to Archcore document types and extracts promotion candidates; only promote writes content.
+  How skill-ai-it initializes Archcore, maps governance sources to Archcore document types and extracts promotion candidates; only promote writes content. Names the starting templates.
 ---
 
 # Archcore Routing Pattern

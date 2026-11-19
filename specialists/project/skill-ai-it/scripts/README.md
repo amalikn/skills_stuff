@@ -4,7 +4,7 @@ Category: script-catalog
 Status: current
 Authority: canonical
 Scope: Every script and task in this package: purpose, inputs, outputs, safety label, idempotency
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
   Catalog of the package's scripts and just recipes, the execution policy and the coupled constants (including the managed-block version stamp).
 ---
@@ -13,6 +13,18 @@ Summary: >-
 
 Runnable scripts for maintaining the **navigation control layer** in target projects. These operate on a project passed via `--project-root`; they do not act on this package unless it is passed
 explicitly.
+
+## Contents
+
+- [Execution Policy](#execution-policy)
+- [Preferred Execution Order](#preferred-execution-order)
+- [Maintenance Rules](#maintenance-rules)
+- [Task Inventory](#task-inventory)
+- [Exit Codes](#exit-codes)
+- [Coupled Constants](#coupled-constants)
+- [Safety Labels](#safety-labels)
+- [Related](#related)
+- [Governance recipes (skill-ai-it)](#governance-recipes-skill-ai-it)
 
 <!-- BEGIN MANAGED: skill-ai-it:scripts -->
 <!-- skill-ai-it-version: 2026-10-14-compact-v2 -->
@@ -46,7 +58,7 @@ explicitly.
 
 ## Task Inventory
 
-Scripts live in family folders under `scripts/` (2026-10-27); `check_governance.py` and the two baselines stay at the root, where every governed project keeps its own.
+Scripts live in family folders under `scripts/` (2026-10-27); `check_governance.py`, the baselines and skill-coder's `write-gates.json` stay at the root, where every governed project keeps its own.
 
 ### scripts/ (root)
 
@@ -55,7 +67,7 @@ Scripts live in family folders under `scripts/` (2026-10-27); `check_governance.
 | `code-size-baseline.json` | skill-coder's shrink-only size baseline for this package (8 modules, 17 functions over budget on 2026-10-27); shrink it, never grow it | | | data; machine-written |
 | `write-gates.json` | skill-coder write_gates config: local governed-file writes count, and each exception names its gate; two GAP entries are ROADMAP items | | | data |
 | `doc-freshness-baseline.json`, `role-check-baseline.json` | This package's own baselines for `doc_freshness.py` and `role_check.py` (findings excused when recorded; only new ones fail). Written with `--write-baseline`, never by hand. | | data; machine-written |
-| `check_governance.py` | Asserts this package's own governance claims: path references resolve, every script is cataloged here, every pattern is named in `SKILL.md`, recipes address the pinned interpreter, every third-party import is declared in `requirements.txt`, and the managed-block `VERSION` is identical on all twelve surfaces that state it. | none | Console pass/fail with an assertion count; exit 0/1 | `safe` | Yes | Before calling any durable change to this package complete |
+| `check_governance.py` | Asserts this package's own governance claims: path references resolve, every script is cataloged here, every pattern is named in `SKILL.md`, recipes address the pinned interpreter, every third-party import is declared in `requirements.txt`, and the managed-block `VERSION` is identical on every surface registered for it in `CONSTANT_SURFACES`. | none | Console pass/fail with an assertion count; exit 0/1 | `safe` | Yes | Before calling any durable change to this package complete |
 
 ### scripts/records/
 
@@ -144,6 +156,13 @@ Read-only surveys across projects and transcripts.
 |---|---|---|---|---|---|---|
 | `survey/agent_usage.py` | Counts tool calls in recent Claude Code transcripts that name a file, folder or command, by tool, so a navigation aid is kept or retired on evidence (Graphify: 0 queries in 30 days, 2026-10-10). `--md-reads` counts how large Markdown is read (hand-built outline greps, `just outline`/`just section` calls, whole and ranged Reads, subagent transcripts included) for the md_sections trial. Codex and Hermes sessions not read. | terms, `--days`, `--project`, `--md-reads` | safe; read-only |
 | `survey/skills_registry.py` | Builds or checks a project area's skills.md: scans the area's `AGENTS.md`, `CLAUDE.md`, `AI_NAVIGATION.md` and `SKILL.md` files for `skill-*` names, resolves each to `skills_stuff`, a project-local folder, an installed-only copy, or not found, and lists which projects use it. Names seen only in plain prose and aliases are reported, not listed. | `--project-root`, `--check` (default) / `--print` / `--write`, `--force`, `--also`, `--ignore`, `--keep`, `--title` | Check: drift report, exit 0 in step / 1 drift. Print: generated file on stdout. Write: skills.md (backup skills.md.bak-YYYYMMDD_hhmm with `--force`) | `safe` (check, print); `review-required` (write) | Yes | When a project area needs its skills list created, or to spot skills added or dropped since it was written |
+
+### scripts/install/ and scripts/skills/
+
+Installing skills for a second client, and the new-skill capability ([new-skill](../references/new-skill.md)).
+
+| Script | Purpose | Inputs | Outputs | Safety | Idempotent | When to use |
+|---|---|---|---|---|---|---|
 | `install/mirror_skills.py` | Mirrors one agent's skill install folder into another's as symlinks to each skill's canonical (resolved) folder, so Continue and other clients see the same skills as Claude Code without copies (operator, 2026-11-03). Never replaces a real file or folder; reports it as a collision. | `--source` (default ~/.claude/skills), `--target` (default ~/.continue/skills), `--prune`, `--apply` | Plan lines on stdout; with `--apply`, links created, repointed or pruned in the target; exit 1 on a collision | `safe` (plan); `review-required` (apply) | Yes | After installing or removing a skill, to keep a second client's skill list in step |
 | `skills/new_skill.py` | New-skill capability (operator, 2026-11-12): `seed` writes `templates/skill-seed.md` for a new skill to `pending_skills/<name>/`; `check-seed` lists what a seed lacks; `scaffold` plans, then writes the pack skeleton (SKILL.md, references, sources.yaml, compatibility.yaml, tests, governance stubs) from a complete seed. Never overwrites: identical files are skipped, a different existing file gets a `.proposed` beside it. | subcommand, seed name or file, `--family`, `--out`, `--skills-root`, `--apply` | Plan lines on stdout; with `--apply`, the files written; exit 1 on an incomplete seed or an existing seed | `safe` (plan); `modifies-files` (apply, inside the new pack and `pending_skills/` only; `seed --apply` also creates the seed's `research/` and `parts/` folders with an index each; a `parts/<reference>.md` becomes that reference's body) | Yes | Starting any new skill pack |
 | `skills/skill_seed.py` | Parses a skill seed (parameters, sections, tables, comments removed) and lists every problem that stops a build: unfilled `TODO(seed)`, missing sections, thin tables, vague reference names, blocking questions. Also the `check-seed` step. | seed file | `PROBLEM` lines; exit 1 on any | `safe` | Yes | Before scaffolding; inside `new_skill.py` |
@@ -153,7 +172,8 @@ Read-only surveys across projects and transcripts.
 
 ## Exit Codes
 
-`validate_navigation_control_layer.py` returns `0` PASS, `1` FAIL, `2` WARN (critical checks passed, warnings exist). The others return `0` on success and non-zero on error.
+`validate_navigation_control_layer.py` returns `0` PASS, `1` FAIL, `2` WARN (critical checks passed, warnings exist). `upgrade_navigation_control_layer.py` returns `0` when nothing changes, `2` when files change (or would, with `--dry-run`) and `3` when a change needs
+manual review ([pitfalls](../references/pitfalls.md)). The others return `0` on success and non-zero on error.
 
 ## Coupled Constants
 

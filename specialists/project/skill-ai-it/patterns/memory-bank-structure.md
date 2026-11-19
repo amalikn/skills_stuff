@@ -4,7 +4,7 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Optional memory-bank/ folder in target projects
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
   What each memory-bank/ file holds: current working memory and progress, not permanent architecture truth.
 ---

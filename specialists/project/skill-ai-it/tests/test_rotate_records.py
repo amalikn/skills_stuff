@@ -87,6 +87,23 @@ class RotateTest(unittest.TestCase):
         self.assertEqual(missing, [])
         self.assertLessEqual(live.count("\n"), 220)
 
+    def test_a_second_rotation_in_the_same_minute_keeps_the_first_archive(self):
+        """2026-11-19, skill-drawio and skill-nautobot: two rotations in one minute wrote the same archive name and the second erased the first."""
+        import datetime as dt
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "SCRATCHPAD.md").write_text(scratchpad(120))
+            arc = root / "docs" / "history" / "scratchpad"
+            arc.mkdir(parents=True)
+            now = dt.datetime.now()
+            earlier = [arc / f"scratchpad-{(now + dt.timedelta(minutes=m)).strftime('%Y%m%d_%H%M')}.md" for m in (0, 1)]
+            for path in earlier:
+                path.write_text("SENTINEL from an earlier rotation\n")
+            subprocess.run([sys.executable, str(SCRIPT), "--project-root", str(root), "--apply", "SCRATCHPAD.md"], check=True, capture_output=True)
+            self.assertEqual([p.read_text() for p in earlier], ["SENTINEL from an earlier rotation\n"] * 2)
+            self.assertGreater(len(list(arc.glob("scratchpad-*.md"))), 2)
+
     def test_archive_has_no_blank_line_runs(self):
         """Units that end with blank lines must not leave double blanks or a blank last line in the archive (MD012, 2026-11-18)."""
         lines = ["# Scratchpad", "", "## Current state", ""]

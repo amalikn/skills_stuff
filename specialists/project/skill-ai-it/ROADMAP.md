@@ -8,7 +8,7 @@ Summary: Current phase and open milestones; done items move to docs/history (jus
 Kind: roadmap
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (roadmap-*.md, `just rotate`)
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 ---
 
 # Roadmap — skill-ai-it
@@ -17,7 +17,7 @@ Last reviewed: 2026-10-14
 
 **2026-10-14.** The package governs itself (`just check`, budgets, rotation, freshness, file roles) and every root file has a defined role and
 loading tier ([references/governed-file-roles.md](references/governed-file-roles.md)) that `just roles` and the audit check. Open work is fleet adoption of the checker
-and records tooling, the `promote` mode, and the target-map promotion decision.
+and records tooling, the `promote` mode, and the rest of the target-map standard.
 
 ## Fleet adoption
 
@@ -26,7 +26,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   worktree, with a project standard, maps and a conformance check. Its section 10 lists nine decisions; nothing is built until the operator's go per stage.
 - [ ] **Rotation writes incomplete front matter** (found 2026-11-11 in skill-pad): the open-items tracker, the rotated archive and the
   `docs/history/readme.md` that `rotate_records.py` and `history_layout.py` create lack `Authority` and `Scope`, so a project whose
-  front-matter check requires them fails right after `just rotate --apply` (fixed by hand in skill-pad). Plan stage S1b.
+  front-matter check requires them fails right after `just rotate --apply` (fixed by hand in skill-pad). Plan stage S1b. Archives fixed (5ff053fd); tracker and readme not yet.
 - [ ] **After history_migrate, a per-folder docs index check fails** (found 2026-11-11 in unified-network-controller): a project check that
   wants a `readme.md` in every docs folder flagged all 367 moved files; UNC's `check_docs_indexed` now reads `docs/history/readme.md` for
   `docs/history/<kind>/`. `history_migrate` should warn when the project's check has such a rule; plan stage S3 step 4 (two index modes).
@@ -36,7 +36,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   `just context_pack` with the Repomix template includes both justfile and Justfile on case-insensitive macOS, duplicating one file; select the actual runner.
   `just stale` reports zero findings on an entirely untracked project because file_headers.tracked uses git ls-files without --others; report the empty scope
   or explicitly cover untracked bootstrap files. Confirmed 2026-11-01: `just check` passed before the first commit of an untracked project and failed with 41 freshness findings immediately after it, because immutable sources became visible; the gate should run against `--others` too, or say that it covered nothing. Consumer workaround: explicit mapping, single runner include, and validation in a disposable tracked copy.
-- [ ] **The rotation audit counts sync archives as nowhere** (found 2026-11-13 by Codex, again 2026-11-16, smc-resiliency): `just budget --apply` rotates, then exits
+- [x] **The rotation audit counts sync archives as nowhere** (fixed ec387333) (found 2026-11-13 by Codex, again 2026-11-16, smc-resiliency): `just budget --apply` rotates, then exits
   1 with "SCRATCHPAD.md: 44 line(s) lost"; all 44 are verbatim in `docs/history/sync/sync-archive-20261113_1652.md`. `audit()` in `scripts/records/audit_rotations.py` counts
   scratchpad archives, open-item trackers and "Moved verbatim" references, not `docs/history/sync/`, and the budget's own `just check` step is then skipped. Fix: count verbatim
   sync archives as present, with a positive archived-sync fixture and a negative truly-lost-line fixture. Distinct from the re-wrapped-lines item below (these match exactly).
@@ -108,11 +108,11 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
   lines, over skill-coder's module budget) split into a package: schema, readers, validator, renderer, starter, command line. History of the pilot: A project-root `target-map.yaml`, beside `context-map.yaml`, is the source of truth for
   a project's goals, targets and per-criterion status, and its tracker markdown is generated from it. The context map says where things are; the target map says where the project is going and how far
   it has got. Pilot files: [target-map.yaml](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/target-map.yaml),
-  [scripts/render/target_map.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/render/target_map.py) (generic validator and renderer; `--schema` prints every field's level,
+  `scripts/render/target_map.py` (now [scripts/plans/target_map.py](scripts/plans/target_map.py) here; generic validator and renderer; `--schema` prints every field's level,
   mandatory, recommended, optional or rejected, with its reason), `check_target_map` in
   [scripts/check_governance.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/check_governance.py), the pre-commit hook
   [scripts/githooks/pre-commit](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/scripts/githooks/pre-commit) with the `install-hooks` recipe, and
-  [tests/test_target_map.py](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-controller/tests/test_target_map.py). Staleness guards: a change-log entry naming a target after its
+  `tests/test_target_map.py` (now [here](tests/test_target_map.py)). Staleness guards: a change-log entry naming a target after its
   `reviewed` moment fails, as does a map or `pending` criterion unverified for seven days. **Gate:** promote no earlier than 2026-10-04 and only if the pilot has caught real drift without false
   alarms. **Promotion:** copy the module, the check and the hook into `templates/`, make `bootstrap` offer a starter map (inline mode when a project has no plan document), teach `refresh` and the
   upgrader to carry them, and write a governance standard whose field table is the `--schema` output (check the governance sync map). Open question from the pilot: whether a source should be allowed
@@ -129,7 +129,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Audit and preflight
 
-- [ ] `scripts/records/rotate_records.py`: archives it writes lack `Authority` and `Scope`, which skill-pad's governance requires (front-matter check failed on
+- [x] (fixed 5ff053fd) `scripts/records/rotate_records.py`: archives it writes lack `Authority` and `Scope`, which skill-pad's governance requires (front-matter check failed on
   `docs/history/changelog/changelog-20261118_2149.md`, fixed by hand; reported from continuum 2026-11-18). Write both keys (Authority: record; Scope: <project> <record> entries rotated out on <stamp>).
 
 - [ ] (2026-11-05) `budget_plan.py --apply` audit reports `LOST` SCRATCHPAD lines (85 in local-knowledge ansible-wifi-root-governance, 6 in skill-smc) and exits 1, yet every line of the committed SCRATCHPAD and CHANGELOG is still in the files or `docs/history/` (checked line by line, whitespace-normalised); skill-smc's SCRATCHPAD was not even changed. The audit seems to compare against an older baseline: find what it compares and stop the false fail.
@@ -188,7 +188,7 @@ and records tooling, the `promote` mode, and the target-map promotion decision.
 
 ## Completed
 
-Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
+Done items move to `docs/history/roadmap/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
 
 ## Out of scope
 

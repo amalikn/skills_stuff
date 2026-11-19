@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: index
 Scope: Draft reference bodies kept beside the master seed
-Last reviewed: 2026-11-12
+Last reviewed: 2026-11-19
 Summary: A file here named like a routed reference becomes that reference's body when the scaffold runs; this index tracks each part's state.
 ---
 

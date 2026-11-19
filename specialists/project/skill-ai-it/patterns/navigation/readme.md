@@ -2,8 +2,10 @@
 Title: Navigation reference index
 Category: index
 Status: current
+Authority: skill-ai-it
+Scope: patterns/navigation/ of skill-ai-it, the full text behind every project's compact AI_NAVIGATION.md managed block
 Summary: Index of the full routing tables and procedures behind the compact AI_NAVIGATION.md managed block, one file per topic so an agent opens only the one it needs.
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 ---
 
 # Navigation reference

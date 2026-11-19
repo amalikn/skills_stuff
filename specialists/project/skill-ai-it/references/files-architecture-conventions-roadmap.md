@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
   Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP and (2026-10-14) SETUP; first moved verbatim from SKILL.md so SKILL.md stays an
   orchestration file within budget. Roles: governed-file-roles.md.
@@ -15,6 +15,13 @@ Summary: >-
 Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget for files loaded whole. What each file is for, and what keeps it
 there: [governed-file-roles.md](governed-file-roles.md). These are on-need files: an agent reads them when the task touches design, style or
 setup, so they may be longer than the files loaded whole, but each opens with a front-matter Summary so it can be judged unopened (`just docs`).
+
+## Contents
+
+- [ARCHITECTURE.md](#architecturemd--create-when-code-infrastructure-or-design-decisions-are-present-or-user-requests-architecture-documentation)
+- [CONVENTIONS.md](#conventionsmd--create-when-code-files-present-naming-patterns-exist-or-stylelinting-rules-are-discoverable)
+- [ROADMAP.md](#roadmapmd--create-when-active-development-todos-present-migrationphase-structure-or-incomplete-features-detected)
+- [SETUP.md](#setupmd--create-when-setup-needs-more-than-a-short-readme-quick-start-plus-just-bootstrap-several-prerequisites-pinned-versions-environment-variables-services-to-start)
 
 #### ARCHITECTURE.md — create when: code, infrastructure, or design decisions are present, or user requests architecture documentation
 

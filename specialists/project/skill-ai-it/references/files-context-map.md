@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Conditional file: context-map.yaml; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -23,6 +23,9 @@ Create as the machine-readable context routing map. If it exists, avoid full reg
 top-level section.
 
 Preferred source template: `templates/context-map.yaml`.
+
+The template is the only source. The copy below is older and has drifted from it (no `context-map.yaml` or `ARCHCORE_PROMOTION_CANDIDATES.md`
+entries, no `new_artifact_class` update rule, no `audit_checks` or `promotion_rules`); write from the template, never from this copy (review 2026-11-19).
 
 ```yaml
 version: 1

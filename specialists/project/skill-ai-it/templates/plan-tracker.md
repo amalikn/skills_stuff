@@ -6,7 +6,7 @@ Authority: >-
   index of which document governs each topic and where each stage stands; it points, it does not decide: decisions live in SCRATCHPAD Recent
   decisions (and any decision register the project keeps), designs in the governing documents named here
 Owner: agents keep it current at every slurp and whenever a stage or a governing document changes
-Last reviewed: 2026-10-22
+Last reviewed: 2026-11-19
 Summary: >-
   One page to answer "which file has the current plan, which stage are we at, what comes next": where the project stands, the dated plan, what
   is next with links to where each item starts, the governing document per topic, decisions not yet folded in, and every stage.

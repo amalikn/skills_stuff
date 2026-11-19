@@ -3,7 +3,7 @@ Title: skill-ai-it references index
 Category: index
 Status: current
 Summary: One file per topic, moved verbatim from SKILL.md on 2026-10-10; SKILL.md links each at the step that needs it. Open only the one the task needs.
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 ---
 
 # skill-ai-it references
@@ -11,13 +11,13 @@ Last reviewed: 2026-11-11
 - [background.md](background.md) (46 lines) Background: pattern inspiration and packaging task.
 - [compaction-recovery.md](compaction-recovery.md) (29 lines) Context compaction recovery.
 - [files-ai-navigation.md](files-ai-navigation.md) (31 lines) Conditional file: AI_NAVIGATION.md.
-- [files-architecture-conventions-roadmap.md](files-architecture-conventions-roadmap.md) (188 lines) Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP, SETUP.
-- [files-context-map.md](files-context-map.md) (319 lines) Conditional file: context-map.yaml.
-- [files-readme-agents-claude.md](files-readme-agents-claude.md) (162 lines) Always-created files: README, AGENTS, CLAUDE; AGENTS.md chains for Claude Code vs Codex.
+- [files-architecture-conventions-roadmap.md](files-architecture-conventions-roadmap.md) (195 lines) Conditional files: ARCHITECTURE, CONVENTIONS, ROADMAP, SETUP.
+- [files-context-map.md](files-context-map.md) (322 lines) Conditional file: context-map.yaml.
+- [files-readme-agents-claude.md](files-readme-agents-claude.md) (163 lines) Always-created files: README, AGENTS, CLAUDE; AGENTS.md chains for Claude Code vs Codex.
 - [files-records.md](files-records.md) (199 lines) Always-created files: SCRATCHPAD, CHANGELOG, markdownlint.
-- [files-support.md](files-support.md) (198 lines) Conditional support files.
-- [finishing.md](finishing.md) (153 lines) Finishing: parent update, conventions, quality check, audit format.
-- [generation-policy.md](generation-policy.md) (166 lines) Generation policy and optional tools.
+- [files-support.md](files-support.md) (202 lines) Conditional support files.
+- [finishing.md](finishing.md) (154 lines) Finishing: parent update, conventions, quality check, audit format.
+- [generation-policy.md](generation-policy.md) (167 lines) Generation policy and optional tools.
 - [governed-file-roles.md](governed-file-roles.md) (140 lines) What each governed root file is for, and the role check.
 - [governance-checker.md](governance-checker.md) (73 lines) Governance coherence checker.
 - [managed-blocks.md](managed-blocks.md) (69 lines) Managed block pattern.
@@ -27,7 +27,7 @@ Last reviewed: 2026-11-11
 - [files-history.md](files-history.md) (97 lines) docs/history: a folder per kind, generated index with summaries, migration.
 - [pad-workspace.md](pad-workspace.md) (63 lines) The Pad workspace question at bootstrap and refresh; repos sharing a workspace.
 - [package-layout.md](package-layout.md) (78 lines) Skill package layout.
-- [phases-1-3.md](phases-1-3.md) (114 lines) Phases 1 to 3: inventory, understand, infer.
-- [pitfalls.md](pitfalls.md) (216 lines) Pitfalls observed in practice.
-- [target-map-and-timeline.md](target-map-and-timeline.md) (219 lines) Target map, plan timeline and the plan tracker page: generated trackers, id links, anchor checks, adoption, wiring.
-- [script-task-inventory.md](script-task-inventory.md) (224 lines) Script and task inventory.
+- [phases-1-3.md](phases-1-3.md) (120 lines) Phases 1 to 3: inventory, understand, infer.
+- [pitfalls.md](pitfalls.md) (221 lines) Pitfalls observed in practice.
+- [target-map-and-timeline.md](target-map-and-timeline.md) (222 lines) Target map, plan timeline and the plan tracker page: generated trackers, id links, anchor checks, adoption, wiring.
+- [script-task-inventory.md](script-task-inventory.md) (227 lines) Script and task inventory.

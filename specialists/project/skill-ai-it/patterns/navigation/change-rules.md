@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: skill-ai-it
 Scope: Full text behind these sections of every project's compact AI_NAVIGATION.md managed block: Governance coherence checks, Companion consistency, Drift handling, Update rules
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: Moved verbatim from templates/AI_NAVIGATION.md on 2026-10-10 (Graphify steps are obsolete: Graphify was disabled workspace-wide that day).
 ---
 
@@ -48,7 +48,7 @@ If files disagree:
 | Change type | Update |
 |---|---|
 | New durable decision | Add/propose `.archcore/adr/` |
-| New agent/project rule | Add/propose `.archcore/rules/` |
+| New agent/project rule | Add/propose `.archcore/rules/` (or a rule line in `AGENTS.md`) |
 | New architecture contract | Add/propose `.archcore/specs/` |
 | New operating procedure | Add/propose `.archcore/guides/` |
 | New implementation plan | Add/propose `.archcore/plans/` |
@@ -57,3 +57,4 @@ If files disagree:
 | Temporary note | Add to `SCRATCHPAD.md` only if not durable |
 | Context routing changed | Update `AI_NAVIGATION.md` and `context-map.yaml` |
 | Governance or navigation files changed | Append `CHANGELOG.md` |
+| Records over budget | `just budget --apply` |

@@ -4,10 +4,10 @@ Category: readme
 Status: current
 Authority: canonical
 Scope: Front door for people using or maintaining the skill-ai-it package
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: >-
-  What skill-ai-it does (bootstrap, refresh and audit a project's AI governance and navigation files), how to set it up and run it, how the
-  package is laid out, and where the detail lives.
+  What skill-ai-it does (bootstrap, refresh, govern and audit a project's AI governance and navigation files; seed new skill packs), how to set it up
+  and run it, how the package is laid out, and where the detail lives.
 Budget: 200 lines, 25 KB
 ---
 

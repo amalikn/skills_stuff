@@ -4,7 +4,7 @@ Category: pattern
 Status: current
 Authority: skill-module
 Scope: Deterministic upgrade, validation and diff-check scripts for the navigation layer
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   When to run the upgrade, validate and expected-diff scripts, how to read their exit codes and how to handle .proposed files.
 ---
@@ -79,6 +79,9 @@ file. To resolve:
 1. Review the .proposed file alongside the original.
 2. Merge acceptable changes manually.
 3. Remove the .proposed file when resolved.
+
+The upgrader also writes `<file>.proposed` instead of a file that holds duplicate managed blocks for the same section. A clean `update_rules` merge, by contrast, rewrites the live
+`context-map.yaml` and drops its comments; compare it with `just nav-check-context-map` before committing ([references/pitfalls.md](../references/pitfalls.md)).
 
 ## Relationship to patterns/governance-checks.md
 

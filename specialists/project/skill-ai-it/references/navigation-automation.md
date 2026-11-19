@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Deterministic navigation-control automation; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -27,7 +27,7 @@ TARGET=/path/to/target/project
 ```
 
 Run them with the skill's venv python, `/Volumes/Data/_ai/_skills/skills-working-cache/specialists/project/skill-ai-it/.venv/bin/python`
-(the `py` variable in the justfile), or through the project's `just nav_*` recipes. A bare `python3` stops the upgrader with "PyYAML is required"
+(the `py` variable in the justfile), or through the project's `just nav-*` recipes. A bare `python3` stops the upgrader with "PyYAML is required"
 (smc-resiliency refresh, 2026-10-14); the `python3` below stands for that interpreter.
 
 **Recommended order:**

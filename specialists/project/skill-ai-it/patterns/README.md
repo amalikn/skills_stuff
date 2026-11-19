@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: local-supplement
 Scope: Optional guidance modules of skill-ai-it
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: Optional guidance modules; SKILL.md names each at the step that needs it.
 ---
 

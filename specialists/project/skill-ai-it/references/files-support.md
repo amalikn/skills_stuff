@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: On-need reference moved verbatim from SKILL.md
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Conditional support files; moved verbatim from SKILL.md so SKILL.md stays an orchestration file within budget.
 ---
@@ -12,6 +12,10 @@ Summary: >-
 # skill-ai-it reference: Conditional support files
 
 Moved verbatim from `SKILL.md` on 2026-10-10 to keep that file within its budget for files loaded whole.
+
+The templates named in each section are the source. The embedded copies of `repomix.config.json` and `context_preflight.sh` below are older than their
+templates (which add `ARCHCORE_PROMOTION_CANDIDATES.md` and `Justfile` to the includes, and a context-pack freshness step); write from the template, never
+from these copies (review 2026-11-19).
 
 ## Contents
 

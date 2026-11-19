@@ -21,7 +21,7 @@ SKIP_DIRS = {".git", "node_modules", ".venv", "venv", "__pycache__", ".ai-contex
 SKIP_PARTS = ("docs/history/", "docs/reviews/staleness-audit-", "/.remember/")
 TEXT_SUFFIXES = {".md", ".py", ".sh", ".yaml", ".yml", ".toml", ".json", ".txt", ".j2", ""}
 MAX_BYTES = 2_000_000
-DATED = re.compile(r"-\d{8}_\d{4}\.md$")
+DATED = re.compile(r"-\d{8}_\d{4}(?:-\d+)?\.md$")  # rotate_records adds -2, -3 in a busy minute
 
 
 def load_map(path: Path) -> dict[str, str]:

@@ -6,7 +6,7 @@ Authority: proposal; nothing here is decided until the operator approves it stag
 Scope: >-
   Tooling copied into each project under /Volumes/Data/_ai/_project/project_stuff (govcheck, justfile governance recipes, Pad and commit-gate
   recipes, the apn pre-commit hook, lint configs) and where its central home should be
-Last reviewed: 2026-11-11
+Last reviewed: 2026-11-19
 Summary: >-
   Two read-only surveys (2026-11-11) found the same governance engine, checks and justfile recipes copied into 3 to 14 projects and drifting.
   Recommends one project standard (Core, Modules, Local) with a per-project profile, declared deviations and a conformance check, served from
@@ -18,6 +18,12 @@ Summary: >-
 
 Prepared by: Malik Ahmad. Written 2026-11-11 from a unified-network-controller (UNC) session, after the operator asked which project scripts should be central and whether skill-ai-it or another home
 should hold them. Nothing in this plan has been done; each stage starts only on the operator's go.
+
+Status at review (2026-11-19): still proposed; no stage has started, but three things it plans happened outside it. S1b step 1 in part: rotation archives carry
+`Authority` and `Scope` (5ff053fd); the open-items tracker and the history readme still lack them. S1 step 1 in part: `doc_freshness.py` has tests
+(`tests/test_doc_freshness_*.py`). S6 step 5 and section 2.2 row 14: ASCII diagram tooling now has its own pack, skill-ascii-diagrams (2026-11-17, split from
+skill-drawio), so `scripts/markdown/` here may no longer be the home. Related: skill-pad's `pad_decisions.py` mirrors decisions read-only into Pad (2026-11-18),
+which touches S4b. The surveys and figures below are as of 2026-11-11.
 
 <!-- toc-depth: 3 -->
 ## Contents

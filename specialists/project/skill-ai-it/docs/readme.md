@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: local-supplement
 Scope: docs/ of the skill-ai-it package
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: Plans, reviews, history and trackers of this package; point-in-time records, read on need (lint-ignored).
 ---
 

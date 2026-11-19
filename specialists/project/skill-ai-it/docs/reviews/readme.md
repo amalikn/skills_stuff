@@ -4,7 +4,7 @@ Category: folder-index
 Status: current
 Authority: record
 Scope: docs/reviews/ — staleness audits and other dated reviews of the skill-ai-it package
-Last reviewed: 2026-10-14
+Last reviewed: 2026-11-19
 Summary: Dated reviews of this package; each is a point-in-time record, read on need.
 ---
 

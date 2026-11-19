@@ -4,7 +4,7 @@ Category: template
 Status: current
 Authority: local-supplement
 Scope: The prompt a research agent receives for one research topic of a new skill; the front matter is stripped when a brief is written
-Last reviewed: 2026-11-12
+Last reviewed: 2026-11-19
 Summary: Generic web-research prompt with placeholders for the area, scope, questions and the forbidden words; filled by new-skill research-briefs.
 ---
 

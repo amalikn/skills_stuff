@@ -161,6 +161,13 @@ class AdoptTest(unittest.TestCase):
         self.assertIn("check-links:\n    @{{py}} links.py\n\n", fixed)
         self.assertRegex(fixed, r"check:\n    @\{\{py\}\} doc_freshness.py\n.*role_check.py")
 
+    def test_role_check_line_drops_the_freshness_window(self):
+        """2026-11-19: skill packs pass `--window-days 90` to doc_freshness; role_check.py has no such option, so the copied line must not carry it."""
+        bare = 'py := "python3"\n\ncheck:\n    @{{py}} doc_freshness.py --project-root . --check --window-days 90\n'
+        fixed = adopt.add_roles_to_check(bare)
+        self.assertIn("role_check.py --project-root . --check\n", fixed)
+        self.assertIn("doc_freshness.py --project-root . --check --window-days 90\n", fixed)
+
     def test_header_growth_does_not_fail_the_budget_ratchet(self):
         """cambium-swap, 2026-10-14: fencing an over-budget AGENTS.md added two lines and failed `just check` until adoption re-recorded its size."""
         import json
