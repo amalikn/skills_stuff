@@ -2,12 +2,12 @@
 Title: Feature inventory
 Category: reference
 Status: current
-Authority: local-supplement; both source documents, operator decisions 2026-10-27, enhancements added in the first build
+Authority: local-supplement; the three source documents, operator decisions 2026-10-27 and 2026-11-05, enhancements added in the first build and the pilots
 Scope: Every feature from the three source documents and the enhancements added beyond them, with disposition (built, deferred, rejected) and invariant coverage
-Last reviewed: 2026-11-05
+Last reviewed: 2026-11-19
 Summary: >-
-  What exists now, what was added beyond the documents and why, what is deferred and on what trigger, the v2 staged roadmap (stages 1-7, nothing
-  built), and where each design invariant is enforced.
+  What exists now, what was added beyond the documents and why, what is deferred and on what trigger, the v2 staged roadmap (stages 1-7, held by gate 0),
+  the fixes from the Continuum, MCP and UNC pilots (P, B rows), and where each design invariant is enforced.
 ---
 
 # Feature inventory
@@ -64,7 +64,8 @@ INV-015). The v2 roadmap below narrows two of these (operator, 2026-10-27): a re
 ## v2 staged roadmap
 
 Source: [v2 spec](../docs/knowledge-curator-foss-implementation-spec-v2.md), build order from its section 12; decisions V1-V9 in [catalog](../docs/catalog.md) (operator,
-2026-10-27). v2 tests are cited `V2-T01` to `V2-T18` so they never collide with the handoff's T01-T14. Nothing below is built.
+2026-10-27). v2 tests are cited `V2-T01` to `V2-T18` so they never collide with the handoff's T01-T14. Nothing below is built, except the stage 3 model adapter, which exists since
+2026-11-05 for `kc verify` only (B4, `llm.py`; allowlist and loopback in `.kc/config.yaml` `verify`).
 
 Rules for every stage:
 
@@ -80,7 +81,7 @@ Rules for every stage:
 |       |                          |                                                                                                                                            |   the operator       |
 | 2     | Deterministic            | Optional `subject`/`predicate`/`object` claim fields; v2-to-v1 kind and status mapping; run envelope from `kc intake` (claims,             | V2-T03, V2-T04,      |
 |       |   baseline additions     |   relationships, conflicts, `proposed_updates`, `unresolved`, `audit`); `.kc/` config with `offline_only` and `model_allowlist`            |   V2-T12, V2-T13     |
-| 3     | Semantic reasoning       | Embedding seam behind an optional install (as NLI is); optional model adapter in `kc`, default local Ollama, off unless configured,        | V2-T01, V2-T02,      |
+| 3     | Semantic reasoning       | Embedding seam behind an optional install (as NLI is); optional model adapter in `kc`, default oMLX (local), off unless configured,        | V2-T01, V2-T02,      |
 |       |                          |   refused by `offline_only` or a model not on the allowlist; adapter output passes the same schema and evidence checks; semantic gold set  |   V2-T14, V2-T18     |
 |       |                          |   (design 13.2)                                                                                                                            |                      |
 | 4a    | Code and Mermaid         | Tree-sitter seam: definitions, imports, references with spans, `repo`/`commit`/`path`/method recorded; Mermaid nodes, edges, subgraphs;    | V2-T07, V2-T09       |
@@ -102,7 +103,7 @@ sits under the data, cache and runtime routing; whether any slurp step already i
 ## Fixes from the Continuum pilot
 
 From [evaluation.md](evaluation.md), "Pilot on the Continuum corpus" (2026-10-30). **Built 2026-11-01** (tests `tests/test_continuum_recall.py`, `test_continuum_tooling.py`, each failing first):
-P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P28 and P30-P32 the same day. **Not built:** P5, P6, P7, P17, P22-P24; each needs a test that fails first.
+P1-P4, P8-P10, P12-P16, P19, P20, and P18, P21, P25-P28 and P30-P32 the same day. **Not built:** P5, P6, P7, P17, P22-P24, and P29 (held by gate 0); each needs a test that fails first.
 
 P1 went beyond the row below: same-topic cross-source pairs need only a shared subject word, because fuzzy predicates missed the real wording. P12 also ignores provenance keys when comparing
 scopes, which repairs existing ledgers. P15 dropped `archive` from the default and excludes `archive_dir` by path, and warns on any other excluded folder holding Markdown.

@@ -4,7 +4,7 @@ Category: index
 Status: current
 Authority: local-supplement; the five reports themselves are external and unverified
 Scope: Five web-research reports on tools and models for kc, supplied by the operator, with the points to check before relying on them
-Last reviewed: 2026-11-05
+Last reviewed: 2026-11-19
 Summary: Index of five verbatim external reports, where they disagree, and what to explore next.
 ---
 
@@ -48,7 +48,7 @@ Report 5 raises four points against our own work, to check first:
 
 - **Our samples are not independent.** (Answered 2026-11-05 by `kc roots`: report decisions per cause.) All 15 real kept conflicts share one cause, so the 37.5% interval is too narrow as stated.
   Sample root groups, or report decisions per cause.
-- **Dismissal may be the wrong verb for history.** It routes to documented evolution, kept and queryable, and treats a contradiction inside a superseded report as a real historical finding. `kc
+- **Dismissal may be the wrong verb for history.** (Answered 2026-11-05: history rules now clear as `documented-evolution`; noise stays `dismissed`.) It routes to documented evolution, kept and queryable, and treats a contradiction inside a superseded report as a real historical finding. `kc
   triage` has one outcome, `dismissed`.
 - **The answer key has been reused.** Keep a held-out or prospectively labelled set, which matches the new-corpus decision.
 - **Its step12 quote settled the `mcp-data` cause.** It quotes `/Volumes/Data/_ai/mcp-data` as retired, while our copy reads `/Volumes/Data/_ai/_mcp/mcp-data`. Confirmed in project_stuff history:

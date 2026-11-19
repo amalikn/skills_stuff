@@ -4,7 +4,7 @@ Category: design
 Status: proposed
 Authority: operator-supplied source document, 2026-10-27; verbatim except front matter and Contents
 Scope: Research-backed design for curating project Markdown: claim ledger, conflict adjudication, human decisions and reversible archival
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Design proposal (named project-knowledge-curator) with invariants INV-001 to INV-016, atomic claim model, conflict severity P0-P3, human review cards,
   JSONL decision ledger, pkc CLI, reversible archive transaction and tests T-001 to T-012 against the MCP post-migration audit corpus.
@@ -78,30 +78,6 @@ Summary: >-
 - [14. Safeguards for security and repo hygiene](#14-safeguards-for-security-and-repo-hygiene)
 - [15. Delivery plan, deliberately staged](#15-delivery-plan-deliberately-staged)
   - [Recommended first prototype](#recommended-first-prototype)
-- [16. Example: the actual review experience](#16-example-the-actual-review-experience)
-- [17. Known limitations and deliberate trade-offs](#17-known-limitations-and-deliberate-trade-offs)
-- [18. Source references / verification record](#18-source-references--verification-record)
-- [19. Definition of done](#19-definition-of-done)
-
----
-
-## Contents
-
-- [1. Executive decision](#1-executive-decision)
-- [2. Research baseline: use existing parts, fill the missing gap](#2-research-baseline-use-existing-parts-fill-the-missing-gap)
-- [3. Goals, non-goals and safety invariants](#3-goals-non-goals-and-safety-invariants)
-- [4. Proposed directory structure](#4-proposed-directory-structure)
-- [5. Source and evidence contract](#5-source-and-evidence-contract)
-- [6. Atomic claim model: minimise semantic loss](#6-atomic-claim-model-minimise-semantic-loss)
-- [7. Conflict detection and adjudication: mandatory core](#7-conflict-detection-and-adjudication-mandatory-core)
-- [8. End-to-end pipeline and transaction states](#8-end-to-end-pipeline-and-transaction-states)
-- [9. Proposed CLI contract (to implement; these commands do not yet exist)](#9-proposed-cli-contract-to-implement-these-commands-do-not-yet-exist)
-- [10. Skill contract (`SKILL.md` outline)](#10-skill-contract-skillmd-outline)
-- [11. Incremental processing and performance](#11-incremental-processing-and-performance)
-- [12. Real acceptance-test corpus: uploaded MCP post-migration audit](#12-real-acceptance-test-corpus-uploaded-mcp-post-migration-audit)
-- [13. Evaluations and release gates](#13-evaluations-and-release-gates)
-- [14. Safeguards for security and repo hygiene](#14-safeguards-for-security-and-repo-hygiene)
-- [15. Delivery plan, deliberately staged](#15-delivery-plan-deliberately-staged)
 - [16. Example: the actual review experience](#16-example-the-actual-review-experience)
 - [17. Known limitations and deliberate trade-offs](#17-known-limitations-and-deliberate-trade-offs)
 - [18. Source references / verification record](#18-source-references--verification-record)

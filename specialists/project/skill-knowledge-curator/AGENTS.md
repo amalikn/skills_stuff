@@ -4,7 +4,7 @@ Category: agent-governance-guide
 Status: current
 Authority: local-supplement
 Scope: Agents changing the skill-knowledge-curator pack (alias skill-kc)
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: Layout, working rules and done checks for the Knowledge Curator pack; code follows skill-coder.
 ---
 
@@ -17,7 +17,7 @@ Knowledge Curator pack. Entry point for users of the skill: [SKILL.md](SKILL.md)
 | Path                      | Role                                                                                                                                                                    |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `SKILL.md`, `references/` | The skill and its consolidated rules (canonical)                                                                                                                        |
-| `docs/`                   | Operator-supplied source documents, kept as supplied apart from front matter, Contents and one redrawn diagram; [docs/catalog.md](docs/catalog.md) records decisions and settled conflicts |
+| `docs/`                   | Operator-supplied source documents, kept as supplied apart from front matter, Contents and one redrawn diagram, plus `research/` reports and session records; [docs/catalog.md](docs/catalog.md) records decisions and settled conflicts |
 | `schemas/`                | JSON Schemas for agent input; `settings.py` vocabularies must match (tests/test_contract_seams.py)                                                                      |
 | `scripts/`                | `knowledge_curator.py` front end, `knowledge_curator_lib/` package; catalogue in [scripts/readme.md](scripts/readme.md)                                                 |
 | `tests/`                  | unittest suite and `fixtures/pilot` (synthetic, invented facts)                                                                                                         |
@@ -41,5 +41,5 @@ Venv: `/Volumes/Data/_ai/_skills/skills-working-cache/skill-knowledge-curator/.v
 
 `just check` (ruff, tests, skill-coder helpers, doc freshness, file roles) passes; [references/evaluation.md](references/evaluation.md) status updated; changelog line added.
 
-- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries live in `docs/history/`, read only on need (`just history <term>`,
+- Governed files: triage with `just docs <folder>` (one header line per file); run `just stale`; old CHANGELOG and SCRATCHPAD entries move to `docs/history/` when rotated, read only on need (`just history <term>`,
   `just history-show <stamp>`). Large Markdown: `just outline <file>`, then `just section <file> "<title>"` or a ranged Read.

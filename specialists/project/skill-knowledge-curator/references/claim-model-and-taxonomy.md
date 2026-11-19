@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; schemas/claim-input.schema.json is the enforced form; design doc sections 5-6, handoff section 6 (taxonomy, record schema)
 Scope: Atomic claims, their fields and three independent classifications, scope, claim IDs, evidence spans, section coverage and the shared taxonomy
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   One proposition per claim with subject, predicate, object and scope; topic (category), kind and epistemic status, and disposition are separate axes;
   evidence spans are verified against source bytes; every parsed section is accounted for. Settles source conflicts C3 and C11.
@@ -30,8 +30,8 @@ One claim is one proposition: a subject, a predicate, an object, qualifiers (sco
 Bad: "SMC uses 24.04, has A/B partitions, and always uses WireGuard." Better: three claims, each with its own kind and evidence.
 
 The agent writes claims as JSON records (`"record": "claim"`) that must pass [schemas/claim-input.schema.json](../schemas/claim-input.schema.json). Required: `subject`, `predicate`, `object`, `claim_text`, `kind`, `epistemic_status`,
-`primary_category`, `topic_key`, `disposition`, `evidence`. Optional: `subcategories`, `labels`, `scope`, `valid_time`, `recorded_time`, `confidence`, `inference`, `decision_id`, `claim_id` (only to
-revise an existing claim).
+`primary_category`, `topic_key`, `disposition`, `evidence`. Optional: `subcategories`, `labels`, `scope`, `valid_time`, `recorded_time`, `confidence`, `inference`, `decision_id`, `successor`, `historical_basis` (both
+for history, see Intake rules below), `claim_id` (only to revise an existing claim).
 
 ## Three axes, never one status field
 
@@ -101,6 +101,9 @@ Inventory splits each Markdown file into top-level blocks (paragraph, list, tabl
 | `pending`                       | Nobody yet; `kc worksheet` serves these in bounded batches                                                           |
 
 Code blocks and tables can hold facts and are never skipped automatically. Coverage proves accounting, not that every fact was extracted (INV-014); semantic recall is measured in [evaluation.md](evaluation.md).
+
+Status lines carry status and authority claims that this automatic `context` hides; `scripts/status_claims.py` (`just status-claims`, UNC pilot P37) turns them into claims
+when a project needs them.
 
 ## Taxonomy
 

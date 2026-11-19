@@ -3,25 +3,26 @@ Title: skill-knowledge-curator Catalog
 Category: catalog
 Status: current
 Authority: local-supplement; operator decisions 2026-10-27 (naming, C1, C2, C4-C6, promotion, folder, slurp timing); conflict analysis of the source documents
-Scope: Source documents under docs/ for skill-knowledge-curator, the operator decisions, how each v1 conflict was settled, and the open v2 conflicts
-Last reviewed: 2026-11-05
+Scope: Source documents under docs/ for skill-knowledge-curator, the operator decisions, how each v1 conflict was settled, and how each v2 conflict was settled
+Last reviewed: 2026-11-19
 Summary: >-
-  Index of the three operator-supplied design documents for skill-knowledge-curator (alias skill-kc), the operator decisions, where each of the
-  twelve v1 conflicts is settled in references/, and the open conflicts between the v2 spec and the built v1.
+  Index of the three operator-supplied design documents and the external research reports for skill-knowledge-curator (alias skill-kc), the operator decisions
+  (2026-10-27, 2026-11-05), where each of the twelve v1 conflicts is settled in references/, and how the nine conflicts between the v2 spec and the built v1 were settled.
 ---
 
 # skill-knowledge-curator catalog
 
 Knowledge Curator (alias skill-kc): evidence-linked classification, deduplication and conflict review of project Markdown knowledge. Status: v1 kernel built and tested on a synthetic fixture
-2026-10-27; see [../SKILL.md](../SKILL.md) (Orient first) and [../references/evaluation.md](../references/evaluation.md).
+2026-10-27; current status in [../SKILL.md](../SKILL.md) (Orient first) and [../references/evaluation.md](../references/evaluation.md).
 
 ## Contents
 
 - [Decisions (operator, 2026-10-27)](#decisions-operator-2026-10-27)
+- [Decisions (operator, 2026-11-05)](#decisions-operator-2026-11-05)
 - [Source documents](#source-documents)
 - [Skill pack](#skill-pack)
 - [Conflicts between the documents](#conflicts-between-the-documents)
-- [v2 specification against the built v1 (open)](#v2-specification-against-the-built-v1-open)
+- [v2 specification against the built v1](#v2-specification-against-the-built-v1)
 - [Gaps in v1 (not conflicts)](#gaps-in-v1-not-conflicts)
 
 ---
@@ -70,7 +71,8 @@ control pairs before every model run; a shared claim is a hint, never a group jo
 | [knowledge-curator-foss-implementation-spec-v2.md](knowledge-curator-foss-implementation-spec-v2.md) | design v2    | Slurp Step 4c, FOSS tool matrix, code and diagram parsing, federated cross-project links, claim schema, run envelope, tests    |
 |                                                      |              |   T01-T18 (own numbering), stages 1-7                                                                                          |
 
-Also `docs/research/`: five external research reports, verbatim and unverified, indexed in [docs/research/readme.md](research/readme.md).
+Also `docs/research/`: five external research reports, verbatim and unverified, indexed in [docs/research/readme.md](research/readme.md). And two session records, built
+from the transcripts: [session-record-20261101_2307.md](session-record-20261101_2307.md) and [session-record-20261105_2050.md](session-record-20261105_2050.md).
 
 ## Skill pack
 
@@ -79,8 +81,8 @@ Also `docs/research/`: five external research reports, verbatim and unverified, 
 | [../SKILL.md](../SKILL.md) | Activation, workflow, tools, standing rules, write-back                                                                                               |
 | [../references/](../references/) | workflow, claim-model-and-taxonomy, conflicts-and-review, authority-and-promotion, archive-safety, invocation-contract, evaluation, feature-inventory |
 | [../scripts/readme.md](../scripts/readme.md) | `kc` commands, library modules, exit codes, runtime                                                                                                   |
-| [../schemas/](../schemas/) | Agent input schemas (claim, section status, relation, intake payload)                                                                                 |
-| [../tests/](../tests/) | 42 tests; `fixtures/pilot` with `pilot-claims.json` and `pilot-relations.json`                                                                        |
+| [../schemas/](../schemas/) | Agent input schemas (claim, section status, relation, intake payload, alias, verify verdict, gold conflict)                                            |
+| [../tests/](../tests/) | unittest suite; `fixtures/pilot` with `pilot-claims.json` and `pilot-relations.json`                                                                  |
 
 ## Conflicts between the documents
 
@@ -166,7 +168,8 @@ Answers (operator, 2026-10-27, round 2):
 - V9 output: `kc intake` also writes the v2 run envelope beside the per-item outcomes. Per-project `.kc/` config gains an offline-only flag (no cloud model,
   no embedding download) and a model allowlist naming which models may read the project.
 
-All nine v2 rows settled; none built yet. Build order follows v2 section 12 after the real-corpus pilot.
+All nine v2 rows settled; none built yet, except that the V5 optional model adapter exists since 2026-11-05 for `kc verify` only (research B4, `llm.py`). Build
+order follows v2 section 12 after the real-corpus pilot.
 
 ## Gaps in v1 (not conflicts)
 

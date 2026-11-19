@@ -4,10 +4,11 @@ Category: reference
 Status: current
 Authority: local-supplement; design doc section 7 (adjudication core); handoff authority-and-conflicts contract; schemas/relation-input.schema.json
 Scope: Candidate generation, pair classification, what may be decided automatically, severity, review cards, decision actions and records, answering with unresolved knowledge
-Last reviewed: 2026-11-05
+Last reviewed: 2026-11-19
 Summary: >-
   Candidates come from FTS5 blocking plus RapidFuzz and deterministic signals; the agent classifies each pair; only duplicates and evidenced supersessions
-  are automatic; every true or uncertain conflict becomes a review card the operator answers with one of five actions, recorded append-only.
+  are automatic; every true or uncertain conflict becomes a review card the operator answers with one of five actions, recorded append-only. Triage,
+  root-cause groups and the refuting verifier only propose; many conflicts go to the operator as a tick-box decision sheet or as questions in chat.
 ---
 
 # Conflicts and review
@@ -106,7 +107,8 @@ The design's "use earlier statement" is `USE_OTHER`, because earlier and later a
 Many conflicts at once: put them to the operator as one tick-box sheet, not rounds of four questions (operator, Continuum 2026-11-05: "write all the questions in a markdown file ... options as
 checkboxes ... an option for other as well"). `scripts/decision_sheet.py` builds it from the saved queue: one box per action, each carrying its claim id, plus Other and Notes. When the operator asks
 for recommendations, mark one option `(Recommended)` per question with a one-line reason; it is advice, the operator still decides, and nothing is recorded until a box is ticked and `kc decide` runs.
-Never regenerate a sheet the operator has started filling in: check for ticks first, then edit in place.
+Never regenerate a sheet the operator has started filling in: check for ticks first, then edit in place. When the operator asks for questions in chat instead, ask
+them there and tick each answer into the sheet (Disputed 2026-11-18 below).
 
 > **Disputed 2026-11-18** · question delivery · USER_STATED · Source: Continuum session 2026-11-18 ("Ask me questions, I'm not going through the sheet") · Conflicts: the 2026-11-05
 > preference above · Falsifier: an operator who asks for the sheet back.

@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; operator decision 2026-10-27 (plan only in v1); design doc section 8 Phase F, INV-001, INV-010, INV-012
 Scope: When a source may be archived, what kc archive-plan checks and rehearses, and what a future archive run must add before it may move anything
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   v1 never moves, copies into the project or deletes a source. archive-plan lists sources fully absorbed by promoted pages, reports anything still
   linking to them, and rehearses copy and restore with hash checks in a temporary folder.

@@ -12,6 +12,10 @@ Budget: 200 lines, 25 KB
 
 # Changelog
 
+## 2026-11-19 — Periodic review; 90-day review window
+
+- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, stale status statements and body rules aligned with their Learned entries and the code. Review window now 90 days (`--window-days 90` in the justfile).
+
 ## 2026-11-18
 
 - `scripts/sheet_decisions.py` (`just sheet-decisions`) and `scripts/mark_resolved.py` (`just mark-resolved`), promoted from Continuum's decision pass; tests `tests/test_sheet_decisions.py`,
@@ -20,6 +24,7 @@ Budget: 200 lines, 25 KB
 
 ## Contents
 
+- [2026-11-19 — Periodic review; 90-day review window](#2026-11-19--periodic-review-90-day-review-window)
 - [2026-11-05 — kc roots, kc verify on a local model, documented-evolution](#2026-11-05--kc-roots-kc-verify-on-a-local-model-documented-evolution)
 - [2026-11-02 — external research reports, mcp-data cause confirmed](#2026-11-02--external-research-reports-mcp-data-cause-confirmed)
 - [2026-11-01 — Continuum fixes, gate 0 attempts, triage](#2026-11-01--continuum-fixes-gate-0-attempts-triage)

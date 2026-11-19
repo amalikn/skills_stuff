@@ -4,7 +4,7 @@ Category: catalog
 Status: current
 Authority: local-supplement; measured 2026-10-27
 Scope: The kc front end and the knowledge_curator_lib modules: inputs, outputs, safety labels, exit codes and runtime
-Last reviewed: 2026-11-05
+Last reviewed: 2026-11-19
 Summary: >-
   One front end (knowledge_curator.py, alias kc) over a layered library; read-only unless --apply; ledger.py is the only writer; seams isolate
   markdown-it-py, jsonschema, RapidFuzz, PyYAML and the optional sentence-transformers.
@@ -17,6 +17,7 @@ Summary: >-
 - [Front end](#front-end)
 - [Library modules](#library-modules)
 - [Exit codes and runtime](#exit-codes-and-runtime)
+- [Governance recipes (skill-ai-it)](#governance-recipes-skill-ai-it)
 
 ## Front end
 
@@ -33,11 +34,12 @@ Summary: >-
 | `claims`       | `--file` (.json/.jsonl), `--coverage`                | `.kc/claims.jsonl`                                              | whole batch refused on any error; warnings never refuse    |
 | `candidates`   | `--limit N`                                          | -                                                               | read-only; in-memory FTS5                                  |
 | `decision-points` | -                                                 | -                                                               | read-only; each group has a `group_id`                     |
+| `topics`       | `--by-file`                                          | -                                                               | read-only; claims by topic, one path per byte group (`byte_copies`) |
 | `group-review` | group, `--reason`                                    | `.kc/relations.jsonl`                                           | records a group as classified; a new claim reopens itself  |
 | `aliases`      | `--file` (schemas/alias-input.schema.json)           | `.kc/aliases.jsonl`                                             | comparison only; claims never change; `revoked` undoes one |
 | `recall`       | `--labels` (schemas/gold-conflict.schema.json)       | -                                                               | read-only; scores labelled conflicts against review        |
 | `status-map`   | -                                                    | -                                                               | read-only; each status cites its line                      |
-| `triage`       | `--undo RUN`                                         | `.kc/conflicts.jsonl`                                           | dismisses noise with rule and run; P0 never clears         |
+| `triage`       | `--undo RUN`                                         | `.kc/conflicts.jsonl`                                           | clears noise as `dismissed`, history as `documented-evolution`, with rule and run; P0 never clears |
 | `roots`        | `--limit N`                                          | -                                                               | read-only; groups conflicts by shared identifier, one `kc decide` line per member |
 | `verify`       | `--export`, `--file`, `--model`, `--confirm RUN`, `--score`, `--limit`, `--batch-size` | `.kc/conflicts.jsonl` (verify notes; `--confirm` clears), `.kc/verify/batch-NN.json` | proposals only; quotes checked; `--model` loopback and allowlisted, two control pairs first |
 | `sample`       | `--size`, `--seed`, `--status`, `--exclude`, `--score` | `.kc/reports/sample-<seed>.json`                              | blind cards; Wilson interval                               |
@@ -130,7 +132,7 @@ from this session: every script here is reusable across projects by design; no o
 
 ## Governance recipes (skill-ai-it)
 
-- `just check`: the project's governance checks, then document freshness and file roles. Read-only; `safe`.
+- `just check`: lint, tests and skill-coder's helpers, then document freshness and file roles. Read-only; `safe`.
 - `just govern`: governance up to the current skill-ai-it standard (adoption, record budgets with `just check`, role findings); content fixes are `/skill-ai-it refresh`. `modifies-files`.
 - `just roles`: root governance files outside their roles (front matter, README quick start, ROADMAP shape, duplicated sections). Read-only; `safe`.
 - `just stale`: stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only; `safe`.

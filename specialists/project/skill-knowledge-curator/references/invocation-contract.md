@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; handoff sections 4 and 6 (invocation-contract); schemas/intake-payload.schema.json; operator decision 2026-10-27 to wire slurp after the pilot
 Scope: Direct invocation, the optional skill-slurp-chat Step 4b call, payload and response, trigger rules and failure handling
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Direct use runs the workflow on a project; slurp's optional Step 4b sends its already-collected items and gets one outcome per item for its Step 6b audit.
   The slurp wiring is documented now and installed only after the pilot passes. Settles source conflict C10.
@@ -26,7 +26,9 @@ read-only until `--apply`; source documents and governing files are never edited
 
 ## From skill-slurp-chat (Step 4b, after the pilot)
 
-Status: **not wired.** The operator chose to wire it after the standalone pilot passes (2026-10-27). The intended contract:
+Status: **not wired.** The operator chose to wire it after the standalone pilot passes (2026-10-27); gate 0 failed on 2026-11-01 ([evaluation.md](evaluation.md)), so
+it stays unwired. When wired it is off by default: it runs only in a project with `.kc/`, a skip is reported, never silent, and slurp's coverage table gains a
+curator-status column (catalog V6, [docs/catalog.md](../docs/catalog.md)). The intended contract:
 
 ```text
   skill-slurp-chat                              skill-knowledge-curator

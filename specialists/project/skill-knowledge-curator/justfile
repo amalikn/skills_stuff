@@ -140,12 +140,12 @@ pilot-inventory: _require-venv
 # Closing check: lint, tests, skill-coder's helpers (read-only).
 check: lint test coder-checks
     @echo "skill-knowledge-curator check passed"
-    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --check
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --window-days 90 --check
     @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
 # Session preflight: list stale docs by rule (review due, superseded outside archive/, a Depends on file changed). Read-only.
 stale: _require-venv
-    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root .
+    @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --window-days 90
 
 # Root governance files outside their roles (skill-ai-it references/governed-file-roles.md). Read-only.
 roles: _require-venv
@@ -170,7 +170,7 @@ govern: _require-venv
     {{py}} "{{ai_it}}/scripts/adoption/adopt_governed_files.py" --project-root "$root" --apply || exit 1
     {{py}} "{{ai_it}}/scripts/adoption/adopt_code_map.py" --project-root "$root" --apply || exit 1
     log="$(mktemp)"; trap 'rm -f "$log"' EXIT; {{py}} "{{ai_it}}/scripts/records/budget_plan.py" --project-root "$root" --apply | tee "$log"; rc=${PIPESTATUS[0]}
-    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
+    {{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root "$root" --window-days 90 --prune-baseline; {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root" --prune-baseline
     {{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root "$root"
     echo "govern: $(basename "$root") $([ $rc -eq 0 ] && echo OK || echo "NEEDS ATTENTION: $(grep -Eo 'UNFINISHED: .*|project check: FAILED|audit: (LOST|SPLIT)[^,]*' "$log" | head -1)") in $(( $(date +%s) - start ))s; content fixes: /skill-ai-it refresh"
     exit $rc

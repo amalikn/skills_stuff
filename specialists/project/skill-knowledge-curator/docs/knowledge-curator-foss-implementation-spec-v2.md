@@ -6,10 +6,10 @@ Authority: operator-supplied source document, 2026-10-27 (further research after
 Scope: >-
   Proposed v2 of skill-knowledge-curator: slurp Step 4c contract, FOSS tool matrix, code and diagram extraction, federated cross-project
   linking, claim record schema, output envelope, tests T01-T18 and execution stages
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   Second-round design for the curator, written before the v1 kernel was seen; extends scope to code, Mermaid, draw.io and ASCII diagrams and
-  cross-project relationships, and conflicts with several settled v1 decisions (see catalog.md, v2 section).
+  cross-project relationships, and conflicted with several v1 decisions, all nine settled 2026-10-27 (see catalog.md, v2 section).
 ---
 
 # Knowledge Curator v2 — FOSS Implementation Specification

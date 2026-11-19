@@ -4,7 +4,7 @@ Category: readme
 Status: current
 Authority: canonical
 Scope: Root README.md of skill-knowledge-curator
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: "Front door for people: what the pack is, quick start, folder index and where the detail lives."
 Review by: 2026-11-26
 Budget: 200 lines, 25 KB
@@ -13,7 +13,8 @@ Budget: 200 lines, 25 KB
 # skill-knowledge-curator
 
 Knowledge Curator (alias skill-kc) turns a project's Markdown into evidence-linked claims, finds duplicates and conflicts, asks the operator targeted questions, renders derived knowledge pages,
-promotes a page to authoritative behind gates, and plans (never performs) archiving of absorbed sources. Status: v1 kernel, tested on a synthetic fixture (2026-10-27).
+promotes a page to authoritative behind gates, and plans (never performs) archiving of absorbed sources. Status: v1 kernel; current status and pilot results in [SKILL.md](SKILL.md) (Orient first) and
+[references/evaluation.md](references/evaluation.md).
 
 ## Quick start
 
@@ -33,5 +34,5 @@ just kc worksheet /path/to/project              # pending sections for the agent
 | [scripts/](scripts/)        | `knowledge_curator.py` (kc) and `knowledge_curator_lib/`; catalogue in [scripts/readme.md](scripts/readme.md)   |
 | [schemas/](schemas/)        | JSON Schemas for agent input                                                                                    |
 | [tests/](tests/)            | unittest suite and the synthetic `fixtures/pilot`                                                               |
-| [docs/](docs/)              | The two source documents and [docs/catalog.md](docs/catalog.md) (decisions, settled conflicts)                  |
+| [docs/](docs/)              | The three source documents, research reports and [docs/catalog.md](docs/catalog.md) (decisions, settled conflicts) |
 | [SCRATCHPAD.md](SCRATCHPAD.md), [changelog.md](changelog.md) | Working state and change record                                                                                 |

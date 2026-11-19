@@ -2,13 +2,13 @@
 Title: Evaluation
 Category: reference
 Status: current
-Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12-13 (T-001 to T-012, semantic targets, metamorphic tests), merged; results measured 2026-10-27
-Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilot plan on the MCP audit corpus
-Last reviewed: 2026-11-05
+Authority: local-supplement; handoff section 8 (T01-T14), design doc sections 12-13 (T-001 to T-012, semantic targets, metamorphic tests), merged; results measured 2026-10-27 to 2026-11-05
+Scope: The merged acceptance catalog, which test covers each item and its status, the semantic evaluation still owed, and the pilots (MCP audit corpus, Continuum, unified-network-controller) with gate 0
+Last reviewed: 2026-11-19
 Summary: >-
-  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture (120 tests);
+  One catalog with handoff IDs as primary and design IDs mapped beside them; deterministic items pass on the synthetic pilot fixture;
   gate 0 failed three attempts on the MCP pilot, precision 37.5%, recall 51.1% after triage (2026-11-01); kc roots puts 23 of 24 real conflicts in one cause group,
-  kc verify on a local model is safe but clears little (2026-11-05); semantic recall is not measured. Settles source conflict C9.
+  kc verify on a local model is safe but clears little (2026-11-05); the unified-network-controller pilot reaches 60.8% recall (in progress); semantic recall is not measured. Settles source conflict C9.
 ---
 
 # Evaluation
@@ -71,7 +71,7 @@ threshold, at least 90% precision for conflict prompts, and 100% evidence validi
 
 ## Pilot on the MCP post-migration audit
 
-Optional since 2026-11-01: gate 0 now rests on Continuum (see below). Cases A-F were not run. Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A
+Optional since 2026-11-01: gate 0 was redefined on Continuum, then scored on MCP labels (see below). Cases A-F were run later in [Pilot on the MCP audit corpus (2026-11-01)](#pilot-on-the-mcp-audit-corpus-2026-11-01). Corpus: `/Volumes/Data/_ai/_project/project_stuff/mcp-post-migration-audit` (24 Markdown files). A
 read-only inventory on 2026-10-27 found 213 sections and five byte-identical pairs between `final-audit-pack/` and the step reports (design case F, found automatically). Next, read-only with ledgers
 in a scratch copy first:
 
@@ -184,7 +184,7 @@ addition to `kc candidates`.
 
 Gate 0 is redefined (operator, 2026-11-01): Continuum counts as the real-corpus pilot for extraction and conflicts, the gate needs the recall fixes and the deciding probe on a scratch copy, and MCP
 cases A-F become optional. **Result: passed, then reopened by the operator (2026-11-01) after the MCP audit pilot below showed the probe assumed a shared topic; then failed three attempts against the
-marks (final: precision 37.5% against 70%, recall 51.1% against 80%).** This opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
+marks (final: precision 37.5% against 70%, recall 51.1% against 80%).** A pass opens the v2 stages and slurp Step 4b for scheduling; it is not the release gate below, and one probe is not a recall rate.
 
 Rerun on a scratch copy of the Continuum ledger (3,496 claims; live ledger read only):
 

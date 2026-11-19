@@ -4,10 +4,10 @@ Category: reference
 Status: current
 Authority: local-supplement; scripts/knowledge_curator.py is the implementation; design doc sections 8-9 and handoff section 7, merged
 Scope: The end-to-end curation loop with its commands, the agent's part and the kernel's part, project files, exit codes and runtime
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
-  Inventory, extract (agent, from worksheet batches), relate (agent, from candidates), review and decide (operator), render, promote, plan archive; each
-  kernel step is read-only until --apply and refuses what it cannot verify. Settles source conflicts C4, C6 and C8.
+  Inventory, extract (agent, from worksheet batches), consolidate and relate (agent, from topics and candidates), triage, root-cause and verifier proposals,
+  review and decide (operator), render, promote, plan archive; each kernel step is read-only until --apply and refuses what it cannot verify. Settles source conflicts C4, C6 and C8.
 ---
 
 # Workflow
@@ -16,6 +16,7 @@ Summary: >-
 
 - [Who does what](#who-does-what)
 - [The loop](#the-loop)
+- [Parallel extraction, consolidation and relate](#parallel-extraction-consolidation-and-relate)
 - [External verification (not yet in the kernel)](#external-verification-not-yet-in-the-kernel)
 - [Project files](#project-files)
 - [Exit codes](#exit-codes)
@@ -61,6 +62,9 @@ Run from the skill folder (`just kc <command> <project> ...` or `python scripts/
 | 4b   | `aliases --file aliases.json`                        | consolidation agent writes,        | `.kc/aliases.jsonl`: run after parallel extraction, from `vocabulary`; comparison only            |
 |      |                                                      |   kernel checks                    |                                                                                                   |
 | any  | `recall --labels gold.json`                          | kernel                             | nothing: labelled conflicts against what reaches review                                           |
+
+Review aids not in the table: `topics [--by-file]`, `status-map`, `triage`, `roots`, `verify` and `sample`; see [conflicts-and-review.md](conflicts-and-review.md) (Triage, Root
+causes, Refuting verifier).
 
 Incremental runs: inventory appends records only for new, changed, renamed or removed files; unchanged blocks keep their section IDs and coverage; candidates skips classified pairs; a decision is
 never asked twice. A changed source reopens checks through `validate` and the evidence gate, not silently.

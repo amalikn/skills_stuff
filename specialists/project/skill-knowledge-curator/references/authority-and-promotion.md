@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement; operator decisions 2026-10-27 (derived first, promotion by topic page, gates); handoff sections 3 and 6; design doc sections 3.3 and 4.1
 Scope: Who owns which knowledge, what a derived page is, and the gated route from derived view to authoritative page to archived sources
-Last reviewed: 2026-10-27
+Last reviewed: 2026-11-19
 Summary: >-
   knowledge/ starts as a derived view that never outranks its sources; one category page at a time can be promoted to authoritative through four gates,
   after which an archive plan for the absorbed sources can be produced. Settles source conflicts C1 and C2.
