@@ -300,6 +300,17 @@ Recent decisions or `SMC/docs/history/`.
     - Evidence: `SMC/target-map.yaml`; `SMC/docs/trackers/plan-tracker.md`; `SMC-SKILL/references/01_overview.md` (section 2)
     - Applies: [Evidence labels and layers](../../../skill-systems-architect/references/architecture-method.md#evidence-labels-and-layers)
 
+40. The warehouse field image is the bench base (20261119_1756): a site Pi ships as Ubuntu 22.04.1 with ansible-wifi run once (images for rct, rct-iridium, wh
+    and nbn_wh). As shipped, untagged eth0 has no address; the site networks are VLAN 500 `bridge_500` and VLAN 501 `bridge_501` with a DHCP server on each,
+    plus VLAN 521 and 522; SSH, 80 and 4949 reach a `MANAGEMENT` chain that accepts `bridge_500` and one company range only; Teleport joins with a static
+    token under the hostname. The bench copy (`malik-rct02`, Teleport env stage) gets eth0 on DHCP, the bench LAN in `MANAGEMENT`, and site DHCP, mail and
+    unattended apt off, through `just lab field-prep`. Root's SSH key and password are one fleet-wide (B19-06, open, the operator's to fix).
+    - Why: field-identical testing and the in-place 22.04 to 24.04 migration need the box as shipped, not a rebuild; the shared root secrets bound every
+      access design for the fleet until they are per box.
+    - Evidence: `SMC/lab/field_images.toml`; `SMC/SCRATCHPAD.md` (20261119_1756); `SMC/docs/trackers/bug-tracker.md` (B19-06); skill-smc
+      `references/07_hardware-overlay.md` (the warehouse field image)
+    - Applies: [Supply and configuration chain](../../../skill-systems-architect/references/provisioning-and-lifecycle.md#supply-and-configuration-chain)
+
 ## Withheld evidence paths
 
 - The flash-wear executive summary under `APN/smc-file-writing-analysis/docs/audits/` carries a site or node code in its file name; it is cited by folder only (item 5).

@@ -11,6 +11,11 @@ Kind: log
 
 # Changelog
 
+## 20261119_1855 — APN: the warehouse field image as the bench base, its network as shipped (v2.3.4 -> v2.3.5)
+
+- `operator/apn/site-boxes-and-platforms.md` item 40: the shipped site Pi (untagged eth0 unaddressed, VLAN 500/501 bridges, MANAGEMENT chain, Teleport by
+  hostname), the bench overlay (20261119_1756) and B19-06.
+
 ## 20261119_1539 — Local container networks reach host loopback (v2.3.3 -> v2.3.4)
 
 - `references/security-and-segmentation.md`: Learned entry from continuum-app (b6dbded): on OrbStack a container's own bridge network reaches every 127.0.0.1-published Mac service through host.docker.internal; probe before trusting it as isolation.

@@ -48,6 +48,18 @@ Summary: >-
 | EOL review           | Quarterly and before budgets                                                                               | Design rule                                          |
 | Retirement           | Observe zero traffic for an agreed period first. Erasure needs the task's explicit authorization           | Design rule                                          |
 
+> **Learned 2026-11-19** · cloned site-box fleet, Ubuntu 22.04 on Pi and x86 · VERIFIED_PRIMARY (read-only probe over the access proxy: one root key
+> fingerprint on 11 of 11 boxes and in the shipped image; one digest of root's password-hash field on the 5 boxes read for it) · Source: smc-resiliency
+> B19-06; skill-smc `scripts/probes/smc_root_key_probe.sh` · Falsifier: two clones from one image printing different fingerprints or digests.
+> - **"Bake keys into the image", seen at fleet scale:** root's private SSH key and password were the same on every box read, both CPU platforms, and no
+>   later configuration-management run changed them. Prove it with fingerprints and a digest of the hash field, never by printing the secret; closure is
+>   different values per box.
+> - **An access-proxy agent names itself at first start:** with a static join token and no explicit node name, it enrols under the hostname; a clone not
+>   renamed before that start stays enrolled under the image's name (one such node was found). Rename in the image copy, offline, before first boot.
+> - **Shipped images drift in the field:** boxes leave the warehouse at one package set and reach another through field updates (systemd and kernel
+>   differed between the image and the deployed hubs). A lab copy of the shipped image plus a short, listed overlay is closer to the field than a fresh
+>   build matched by hand, and the drift becomes a measured delta. The overlay pattern: skill-coder `references/design-patterns.md` P-78.
+
 ## Lifecycle states
 
 | State                 | Exit check                                           |
