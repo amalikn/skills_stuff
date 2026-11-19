@@ -30,7 +30,9 @@ work complete, and the skill-coder rule for code changes.
 - Scope: intended network source of truth: inventory, IPAM, relationships, lifecycle, Jobs/apps and integration APIs. Not the primary skill for OpenWISP telemetry, graphs or alerts — that is
   [skill-openwisp](../skill-openwisp/SKILL.md) (OpenWISP registration, metrics, workers, health and graphs). Choose the primary pack by the object being changed.
 - Evidence discipline: every reusable claim lives in [sources.yaml](sources.yaml) with an evidence rung, source type, reference and scenario; environment facts live in
-  [compatibility.yaml](compatibility.yaml). An observed install is not behavioural proof. Version of record for this pack: Nautobot 3.2.3 (observed install; see `compatibility.yaml`).
+  [compatibility.yaml](compatibility.yaml). An observed install is not behavioural proof. Version of record for this pack: Nautobot 3.2.9 with SSoT 4.7.0 and Device Lifecycle Management 4.2.0
+  (deployed per the 2026-11-10 and 2026-11-18 Learned entries; releases VERIFIED_PRIMARY on GitHub 2026-11-19; see `compatibility.yaml`). Reference docs and the cookbook were verified on 3.2.3 unless
+  an entry says otherwise.
 - `documents/` holds version-matched official doc snapshots. Adding or replacing one requires a row with its sha256 in [documents/readme.md](documents/readme.md).
 - `scripts/` holds tested, stdlib-only helpers only. A new helper needs tests in `tests/test_helpers.py` and an entry in [scripts/README.md](scripts/README.md) in the same pass.
 - Capability search order (USER_STATED 2026-10-01): existing Nautobot capability → installed/provider apps and NTC tooling → their supported extension points → other FOSS →

@@ -66,3 +66,19 @@ environments:
     evidence_locator: "Docs build shipped inside the installed 3.2.3 package, matched to archive.docs.nautobot.com v3.2.3; 27 local snapshots in documents/; cookbook sections cite installed source lines"
     validation_layer: official_documented
     result: pass
+  - id: nautobot-core-3-2-9
+    product: Nautobot core
+    product_version: 3.2.9
+    components: [core]
+    observed_at: "2026-11-18"
+    evidence_locator: "Deployed: references/upgrade-and-troubleshooting.md Learned 2026-11-10 (3.2.3 to 3.2.9 on two stacks, UNC commit f3b6570e) and references/data-model.md Learned 2026-11-18 (nbshell on a 3.2.9 deployment, UNC commit 409ea52e). Release VERIFIED_PRIMARY https://github.com/nautobot/nautobot/releases/tag/v3.2.9 (published 2026-11-09), retrieved 2026-11-19"
+    validation_layer: observed_install
+    result: pass
+  - id: nautobot-apps-2026-11-10
+    product: Nautobot applications
+    product_version: "SSoT 4.7.0; Device Lifecycle Management 4.2.0"
+    components: [SSoT, Device Lifecycle Management]
+    observed_at: "2026-11-10"
+    evidence_locator: "Deployed: references/upgrade-and-troubleshooting.md Learned 2026-11-10 (apps kept working unchanged on 3.2.9, UNC commit f3b6570e). Releases VERIFIED_PRIMARY https://github.com/nautobot/nautobot-app-ssot/releases/tag/v4.7.0 (published 2026-09-24) and https://github.com/nautobot/nautobot-app-device-lifecycle-mgmt/releases/tag/v4.2.0 (published 2026-05-15), retrieved 2026-11-19"
+    validation_layer: observed_install
+    result: pass

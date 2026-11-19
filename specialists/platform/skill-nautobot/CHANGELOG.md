@@ -11,6 +11,10 @@ Last rotated: 20261119_1628
 
 # Changelog
 
+## 2026-11-19 — Version of record 3.2.9 with SSoT 4.7.0 and DLM 4.2.0
+
+AGENTS.md version of record moves from 3.2.3 to 3.2.9 with SSoT 4.7.0 and Device Lifecycle Management 4.2.0, deployed per the Learned entries of 2026-11-10 and 2026-11-18; releases VERIFIED_PRIMARY on GitHub (nautobot v3.2.9, nautobot-app-ssot v4.7.0, nautobot-app-device-lifecycle-mgmt v4.2.0), retrieved 2026-11-19. compatibility.yaml gains nautobot-core-3-2-9 and nautobot-apps-2026-11-10. Reference docs stay verified on 3.2.3 unless an entry says otherwise.
+
 ## 2026-11-19 — Periodic review; 90-day review window
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; body rules aligned with their Learned entries, Summaries and Scopes updated, dated "not installed" statements scoped to the image they describe. Review window now 90 days (`--window-days 90` in the justfile).
