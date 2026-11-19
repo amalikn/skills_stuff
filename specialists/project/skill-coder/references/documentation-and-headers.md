@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: File purpose headers, runnable-script headers (summary, run, safety), docstrings or doc comments with Args, Returns and Raises, comments that explain why, inline suppression and long documents
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Every file states its purpose in its native header, and a runnable script's header also says how to run it and what it
   touches; every module, class and function documents its parameters, what it returns and when it raises; comments explain

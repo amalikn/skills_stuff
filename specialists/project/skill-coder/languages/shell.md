@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Bash and POSIX sh scripts, task-runner recipe bodies and wrapper scripts
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Bash for executables with set -euo pipefail, ShellCheck and shfmt on every script, quote every expansion, function comment blocks
   with Globals, Arguments, Outputs and Returns, and rewrite in a structured language past about 100 lines; Learned entries

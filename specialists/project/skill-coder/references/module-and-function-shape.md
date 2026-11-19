@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Size budgets, single responsibility, grouping modules into packages, naming, typed records and the shrink-only ratchet for existing oversize code
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Modules under 400 lines and functions under 60 by default, older oversize code held by a shrink-only ratchet, one
   responsibility per module, families of three or more modules grouped into a package, names in the domain's words,

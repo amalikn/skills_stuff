@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Code that changes anything outside its own process - files, databases, devices, remote systems
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Read by default, plan then --apply, write gates the code enforces, credentials never in code, one writer per record,
   idempotent writes, record only after the target confirms, fail closed, and canary before batch; Learned entries on process

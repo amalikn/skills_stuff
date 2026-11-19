@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Files produced by a generator from a hand-edited source - rendered docs, diagrams, catalogs, code, lock files
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Data first: a hand-edited source, a generator, and a generated file with a banner that is never edited by hand; a drift
   check fails when the generated file differs from a fresh render; edit the source, then render once. A second format is a generated view, a

@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Commits, change logs, versions, review and the definition of done for any code change
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Small commits gated on the check's own exit code (never through a pipe or a semicolon), pathspec commits in a clone shared
   by concurrent sessions, tests and the check both run before a commit, a change-log entry per change, SemVer for released

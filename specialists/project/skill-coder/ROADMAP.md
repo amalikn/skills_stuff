@@ -9,6 +9,7 @@ Kind: roadmap
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (roadmap-*.md, `just rotate`)
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 ---
 
 # Roadmap — skill-coder

@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Pinned interpreters and CLI tools, virtual environments outside the repo, the task-runner catalog and script safety labels, local CI runs
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Interpreters pinned (mise) and addressed by path, never the bare one on PATH; the venv lives in a working-cache peer
   outside the repo; runtime state in a runtime peer; every runnable task is a catalogued recipe with a safety label; the closing check runs
@@ -110,8 +111,8 @@ sys.modules["pad_tracker"] = pt  # dataclasses look the module up by name while 
 _spec.loader.exec_module(pt)
 ```
 
-> **Learned 2026-11-10** · CLI progress output · VERIFIED_PRIMARY · Source: skill-pad scripts/pad_rewrite.py (skills_stuff a28cf80) · Falsifier:
-> a run piped to `| tail -n 1` that shows its error line last without flushing. A script that prints progress to stdout and errors to stderr must flush each progress line (`print(..., flush=True)`):
+> **Learned 2026-11-10** · CLI progress output · VERIFIED_PRIMARY · Source: skill-pad scripts/pad_rewrite.py (skills_stuff a28cf80)
+> · Falsifier: a run piped to `| tail -n 1` that shows its error line last without flushing. A script that prints progress to stdout and errors to stderr must flush each progress line (`print(..., flush=True)`):
 > piped, stdout is block buffered and stderr is not, so the error appears before the line it belongs to, and `2>&1 | tail -1` shows a progress line instead of the error. Twice this read as a "silent
 > stop"; the cause was an `update_conflict` printed out of order.
 

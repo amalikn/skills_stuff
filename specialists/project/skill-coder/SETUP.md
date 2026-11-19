@@ -5,6 +5,7 @@ Status: current
 Authority: canonical
 Scope: Installing and running skill-coder, both as a pack under development and its helpers against a project
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   A working setup needs mise, just and Python 3.11 or later; the helpers are stdlib-only and run with the target project's own interpreter, and the pack's
   venv in the skills working cache is only for its own recipes and fallback runs.

@@ -575,3 +575,24 @@ claims:
     source_type: user_policy
     evidence: "Operator rule against inline suppression (auto-memory feedback_no_noqa); checker asked for 2026-10-20 after a noqa slipped into a new test."
     reference: references/documentation-and-headers.md
+  - id: C-C83
+    statement: "The test pyramid: many more fast low-level unit tests than broad high-level tests."
+    kind: generic_invariant
+    evidence_status: VERIFIED_SECONDARY
+    source_type: official_documentation
+    evidence: "https://martinfowler.com/bliki/TestPyramid.html retrieved 2026-10-19 (a practitioner's article, hence secondary); copy documents/research-sources-20261019/fowler-test-pyramid.txt"
+    reference: references/testing.md
+  - id: C-C84
+    statement: "Conventional Commits v1.0.0: typed commit messages such as feat: and fix:, with a BREAKING CHANGE footer for incompatible changes."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://www.conventionalcommits.org/en/v1.0.0/ retrieved 2026-10-19; copy documents/research-sources-20261019/conventional-commits.txt"
+    reference: references/version-control-and-review.md
+  - id: C-C85
+    statement: "pip hash-checking mode is enabled with --require-hashes; every requirement, dependencies included, must then be pinned and hashed, and an unhashed one is an error."
+    kind: generic_invariant
+    evidence_status: VERIFIED_PRIMARY
+    source_type: official_documentation
+    evidence: "https://pip.pypa.io/en/stable/topics/secure-installs/ retrieved 2026-10-19; copy documents/research-sources-20261019/pip-hash-checking.txt"
+    reference: references/dependencies.md

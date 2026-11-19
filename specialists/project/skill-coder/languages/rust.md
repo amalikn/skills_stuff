@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Rust crates, libraries and binaries
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Rust API Guidelines; rustfmt via cargo fmt and Clippy; doc comments with Errors, Panics and Safety sections and examples;
   Result for recoverable errors and the question-mark operator; meaningful error types; cargo test including doc tests;
@@ -70,7 +71,7 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 > reqwest = { version = "0.13.5", default-features = false, features = ["json", "rustls"] }  # "rustls" brings the provider jsonschema's defaults assumed
 > ```
 
-> **Learned 2026-11-19 (recurred)** · Feature unification inside one workspace · VERIFIED_PRIMARY (test run) · Source: continuum-app `apps/agent/Cargo.toml` (b25dbf8) · Falsifier: a workspace build
+> **Learned 2026-11-19** · Feature unification inside one workspace (recurred) · VERIFIED_PRIMARY (test run) · Source: continuum-app `apps/agent/Cargo.toml` (b25dbf8) · Falsifier: a workspace build
 > where one member's `rustls-no-provider` leaves another member's clients working without installing a provider. The same panic came back the same day from a different direction: a new workspace
 > member (the agent) chose `reqwest/rustls-no-provider` and installed ring itself; in `cargo test --workspace` that feature unified into the coordinator's reqwest, whose clients then panicked in unit
 > tests. Rule: in a workspace, never choose `rustls-no-provider` in one member unless every member that builds a reqwest client installs a provider; use `rustls` (provider included). Before adding a

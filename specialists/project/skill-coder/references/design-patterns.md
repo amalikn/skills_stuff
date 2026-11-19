@@ -1421,9 +1421,9 @@ if found < loc.get("min", 1):
 
 ### P-66 A localhost redirect for a link scheme a web app strips
 
-> **Learned 2026-11-11** · any web UI that sanitises link schemes (DOMPurify, a Markdown renderer) · VERIFIED_PRIMARY (skill-pad
+> **Learned 2026-11-11** · any web UI that sanitises link schemes (DOMPurify, a Markdown renderer) · VERIFIED_PRIMARY · Source: skill-pad
 > `scripts/pad_link_opener.py` and `pad_tracker.py` @ c931f50: Pad v0.19.2 keeps only http(s), mailto, ftp and tel, web/src/lib/utils/markdown.ts:224; a click in a Pad item opened the file in VS Code,
-> operator 2026-11-11) · Falsifier: a browser that refuses to follow a 302 to a custom scheme. `reusable_candidate` (one project).
+> operator 2026-11-11 · Falsifier: a browser that refuses to follow a 302 to a custom scheme. `reusable_candidate` (one project).
 
 Problem: A tool's web UI must link to something only a custom scheme opens (vscode://file, an app deep link), and the UI strips that scheme; relative repo links mean nothing on its pages either.
 Patching the tool means a fork rebuilt on every upgrade. Solution: A tiny service on 127.0.0.1 answers `http://127.0.0.1:<port>/open/<absolute path>?f=<fragment>` with a 302 to the custom URL. The
@@ -1450,8 +1450,8 @@ def target(request_path, roots):                     # pure: tested without a so
 
 ### P-67 Move files and repoint every reference by resolving links, not by matching names
 
-> **Learned 2026-11-11** · any repo moving dated files into subfolders · VERIFIED_PRIMARY (skill-ai-it `scripts/records/history_migrate.py` @ 22047db: 151 files
-> in smc-resiliency and 58 in skill-ai-it moved, 4 reference files repointed, one pre-existing broken link reported, tests in a throwaway git repo) · Falsifier: a link that resolved before the move
+> **Learned 2026-11-11** · any repo moving dated files into subfolders · VERIFIED_PRIMARY · Source: skill-ai-it `scripts/records/history_migrate.py` @ 22047db: 151 files
+> in smc-resiliency and 58 in skill-ai-it moved, 4 reference files repointed, one pre-existing broken link reported, tests in a throwaway git repo · Falsifier: a link that resolved before the move
 > and not after, with the verification passing. `reusable_candidate` (one tool, two projects).
 
 Problem: Files are moved into subfolders (by kind, by year) in a repo where many files link to them, the moved files link to each other and outward with relative paths, and other projects in the same
@@ -1767,7 +1767,7 @@ fi
 
 ### P-68 Baseline beside forecast in a generated report
 
-> **Learned 2026-11-06** (promoted 2026-11-11 from enterprise-strategy's parked candidates) · any report rendered from a fixed plan · reusable_candidate ·
+> **Learned 2026-11-06** · any report rendered from a fixed plan · CANDIDATE (reusable_candidate; promoted 2026-11-11 from enterprise-strategy's parked candidates) ·
 > Source: apn enterprise-strategy/scripts/weekly_update_xlsx.py `add_stages_sheet` @ 7347fc4e · Falsifier: a reader who takes the copied plan date as current after a slip, with the forecast shown
 > beside it.
 
@@ -1789,7 +1789,7 @@ for row in stages[1:]:
 
 ### P-69 A seed, a plan-first scaffold and a guard on the shared output
 
-> **Learned 2026-11-12** · any generator that builds a shared package from a written design · reusable_candidate ·
+> **Learned 2026-11-12** · any generator that builds a shared package from a written design · CANDIDATE (reusable_candidate) ·
 > Source: skill-ai-it `scripts/skills/skill_scaffold.py` `find_leaks`, `classify` and `skill_intake.py` `cmd_research_briefs` @ d3132c2 · Falsifier: a generated shared package that still carries a
 > name its guard listed.
 
@@ -1826,7 +1826,7 @@ def classify(pack, files):
 
 ### P-74 Add what the generator cannot write after it saves, and prove it in the consuming application
 
-> **Learned 2026-11-18** · any document generator that lacks a feature the format supports (slide motion, fields, comments) · reusable_candidate ·
+> **Learned 2026-11-18** · any document generator that lacks a feature the format supports (slide motion, fields, comments) · CANDIDATE (reusable_candidate) ·
 > Source: apn enterprise-strategy `scripts/deck/deck_motion.js`, `scripts/deck/build_markdown_deck.js` (`tag`, `named`; first written in smc-resiliency, moved to the hub 18 Nov 2026); apn enterprise-strategy `scripts/pptx_motion_check.py` (uncommitted at
 > writing; committed in the 18 Nov close) · Falsifier: PowerPoint repairing the file, or reporting fewer effects than the file's `p:bldP` list.
 
@@ -1852,7 +1852,7 @@ if (motion) xml = xml.replace("</p:sld>", motion + "</p:sld>");
 
 ### P-75 Learn a person's hand edits: diff against the last build, sort by rule, make habits defaults
 
-> **Learned 2026-11-18** · any generated artifact a person edits by hand before use (decks, reports, letters) · reusable_candidate ·
+> **Learned 2026-11-18** · any generated artifact a person edits by hand before use (decks, reports, letters) · CANDIDATE (reusable_candidate) ·
 > Source: apn enterprise-strategy `scripts/deck_edits.py` (`compare`, `classify`, `base_for`), `scripts/deck/operator_style.js` (`cardBody`), `.agents/deck-style.md` @ de28b9a2 ·
 > Falsifier: an edit the person makes twice that `deck-edits` reports as "no rule yet" after a rule for it was written.
 

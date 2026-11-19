@@ -5,6 +5,7 @@ Status: current
 Authority: local-supplement
 Scope: Ansible playbooks, roles, inventories and Jinja2 templates
 Last reviewed: 2026-11-19
+Review by: 2027-05-19
 Summary: >-
   Trace every reference (templates included) and classify tag versus variable before a change, because a renamed tag fails
   silently; check and diff mode as the dry run; idempotence proven by a second run; FQCN; no_log and Vault for secrets;
