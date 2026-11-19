@@ -7,8 +7,10 @@ Scope: >-
   Writing a Nautobot 3.2 app: NautobotAppConfig, the nautobot.apps import namespace, base models and migrations, filtersets, forms, tables, REST serializers and
   viewsets, UI viewsets and the UI component framework, URL registration, navigation, template extensions, custom validators, signals, Jobs in apps, settings,
   testing and packaging
-Last reviewed: 2026-10-05
-Summary: Twelve verified recipes and a minimal working app skeleton for Nautobot 3.2.3 app development, each with a gotcha and a source line.
+Last reviewed: 2026-11-19
+Summary: >-
+  Twelve verified recipes and a minimal working app skeleton for Nautobot 3.2.3 app development, each with a gotcha and a source line; Learned entries add UI seams
+  (menu and home-panel hiding, tabs, banners, field relabels, htmx CSRF, theme CSS), bulk observation models, packaging lists and moved Job records.
 ---
 
 # Nautobot app development
@@ -181,8 +183,7 @@ class WidgetTable(BaseTable):
 
 A bulk edit form (`TagsBulkEditFormMixin, NautobotBulkEditForm`, a hidden `pk` field and `Meta.nullable_fields`) set as `bulk_update_form_class` enables bulk edit; the core pattern is
 `circuits/forms.py:66-80`. Gotcha: with `STRICT_FILTERING` on (default) a parameter the filterset lacks is a REST 400, not ignored. `NautobotFilterSet` already adds `created`/`last_updated`, `cf_*`
-custom-field and relationship
-filters.
+custom-field and relationship filters.
 
 Source: `nautobot/extras/filters.py:607-620`; the core pattern at `nautobot/circuits/filters.py:31-72`, `circuits/forms.py:38-91`, `circuits/tables.py:52-75`; `nautobot/data_validation/filters.py:36`
 (`fields = "__all__"` in core).
@@ -213,8 +214,7 @@ urlpatterns = router.urls
 ```
 
 Gotcha: the endpoint is `/api/plugins/my-app/widgets/`, reverse name `plugins-api:my_app-api:widget-list`. Nautobot imports `<app>.api.urls.urlpatterns` and `<app>.urls.urlpatterns` by name; any
-other module is silently not mounted. Since 2.4 the viewsets add `select_related`/`prefetch_related`
-themselves, but annotations such as counts are still yours to add to `queryset`.
+other module is silently not mounted. Since 2.4 the viewsets add `select_related`/`prefetch_related` themselves, but annotations such as counts are still yours to add to `queryset`.
 
 Source: `nautobot/extras/plugins/__init__.py:113-122`, `nautobot/core/api/urls.py:68`, `nautobot/core/urls.py:81`, `nautobot/core/api/serializers.py:973`, `nautobot/extras/api/views.py:263`,
 `nautobot/core/api/routers.py:10`, `nautobot/circuits/api/urls.py:1-20`; `docs/development/apps/api/views/rest-api.html`.
@@ -350,7 +350,8 @@ register_jobs(*jobs)
 ```
 
 Gotcha: since 2.0 a Job not passed to `register_jobs()` cannot run, even if listed in `jobs`. A new Job record is created disabled (`enabled` defaults to False) until an administrator enables it.
-Workers import the app, so the worker image needs the same package version.
+Workers import the app, so the worker image needs the same package version. A Job record is keyed by module path and class name, so moving the module
+that defines a Job re-registers it and leaves the old record "not installed" (Learned 2026-10-20 (e) and (f) below).
 
 Source: `nautobot/apps/jobs.py:36`, `nautobot/extras/models/jobs.py:148`, `nautobot_golden_config/jobs.py:54,630-638` (an installed app doing the same);
 `docs/development/apps/api/platform-features/jobs.html`.
@@ -412,7 +413,8 @@ nautobot-server post_upgrade        # migrate, trace_paths, collectstatic, stale
 # restart web, worker and scheduler; Apps > Installed Apps then lists it
 ```
 
-Gotcha: run `post_upgrade` after every app install or upgrade. Templates and static files must be package data or they are missing from the wheel. For `pyproject.toml` bounds, a maintained example is
+Gotcha: run `post_upgrade` after every app install or upgrade. Templates and static files must be package data or they are missing from the wheel, and an explicit setuptools
+`packages` list must name every subpackage (Learned 2026-10-15 (y) below). For `pyproject.toml` bounds, a maintained example is
 `nautobot-app-ssot` 4.7.0: `python = ">=3.10,<3.15"`, `nautobot = ">=3.1.0,<4.0.0"`.
 
 Source: `nautobot/core/management/commands/post_upgrade.py:101-158`; `docs/user-guide/administration/installation/app-install.html`, `docs/development/apps/api/setup.html`;

@@ -8,17 +8,19 @@ Authority: >-
 Scope: >-
   pynautobot client patterns, SSoT/DiffSync reconciliation, Git repositories as data sources, export templates and Jinja filters, the Ansible collection's
   inventory plugins and modules, the Nornir inventory, and Golden Config settings, compliance and remediation
-Last reviewed: 2026-10-05
-Summary: Nine verified integration recipes for Nautobot 3.2.3, each with a gotcha and a source line; SSoT, DiffSync and the Ansible collection are checked against tagged source because they are not
-installed.
+Last reviewed: 2026-11-19
+Summary: >-
+  Nine verified integration recipes for Nautobot 3.2.3, each with a gotcha and a source line; SSoT, DiffSync and the Ansible collection are checked against
+  tagged source because they were not installed in the image inspected on 2026-10-05; a Learned entry adds an SSoT field-mirror DataSource read in a later
+  image that has them.
 ---
 
 # Nautobot integrations
 
 Verified against: Nautobot 3.2.3 and the apps installed in a 3.2.3 container, plus tagged GitHub source for components not installed, checked 2026-10-05.
 
-Installed in the inspected image: `pynautobot` 3.2.0, `nautobot_golden_config` 3.0.7, `nautobot_plugin_nornir` 3.2.4, `nornir-nautobot` 4.4.2, `nornir` 3.6.0, `netutils` 1.18.0. **Not installed:**
-`nautobot_ssot`, `diffsync`, the `networktocode.nautobot` Ansible collection, Device Lifecycle Management. For those, sources are the release tags `networktocode/diffsync@v2.2.3`,
+Installed in the inspected image: `pynautobot` 3.2.0, `nautobot_golden_config` 3.0.7, `nautobot_plugin_nornir` 3.2.4, `nornir-nautobot` 4.4.2, `nornir` 3.6.0, `netutils` 1.18.0. **Not installed** in that image (a later deployment
+added `nautobot_ssot` 4.7.0 and DLM 4.2.0, see [upgrade-and-troubleshooting.md](upgrade-and-troubleshooting.md)): `nautobot_ssot`, `diffsync`, the `networktocode.nautobot` Ansible collection, Device Lifecycle Management. For those, sources are the release tags `networktocode/diffsync@v2.2.3`,
 `nautobot/nautobot-app-ssot@v4.7.0` (requires `nautobot >=3.1.0,<4.0.0`) and `nautobot/nautobot-ansible@v6.3.0` (requires `ansible >=2.17.0`, `pynautobot >=3.0.0`); paths below for those are
 repository-relative at that tag. In `curl` examples `${H[@]}` is the token and version header array from the operations cookbook, section 2.
 
@@ -94,7 +96,7 @@ Source: `pynautobot/core/api.py`, `core/endpoint.py:85-560`, `core/query.py`, `c
 ## 2. SSoT and DiffSync reconciliation
 
 Decision: for a recurring sync between Nautobot and another system, build a `nautobot_ssot` DataSource or DataTarget Job from DiffSync models and two adapters; the Job gives dry run, diff storage,
-sync logs and scheduling. **`nautobot_ssot` and `diffsync` are not installed in the inspected deployment.**
+sync logs and scheduling. **`nautobot_ssot` and `diffsync` were not installed in the deployment inspected on 2026-10-05; the Learned entry below reads them in a later image.**
 
 ```python
 from typing import Optional
@@ -254,8 +256,7 @@ Gotcha: `query_filters` entries are ORed (the plugin's own example says so), and
 a `platforms` host variable holding the platform's `network_driver` (`platform` with `plurals: false`), but no `ansible_network_os`; compose it as above.
 
 Source: `nautobot-ansible` v6.3.0 `plugins/inventory/inventory.py` (DOCUMENTATION and EXAMPLES, `:362`, `:483-510`, `:586-588`, `:830-833`, `:1405-1435`), `plugins/inventory/gql_inventory.py`
-(`:149`, `:300-356`),
-`plugins/lookup/lookup.py`, `plugins/modules/device.py:255-270`, `galaxy.yml:12`, `meta/runtime.yml:2`, `requirements.txt:3`.
+(`:149`, `:300-356`), `plugins/lookup/lookup.py`, `plugins/modules/device.py:255-270`, `galaxy.yml:12`, `meta/runtime.yml:2`, `requirements.txt:3`.
 
 ## 6. Nornir inventory
 

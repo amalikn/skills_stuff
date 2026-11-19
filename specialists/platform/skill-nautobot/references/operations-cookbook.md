@@ -6,8 +6,10 @@ Authority: Installed Nautobot 3.2.3 source and version-matched official document
 Scope: >-
   Exact, version-matched syntax for Nautobot GraphQL, REST, Dynamic Groups, computed and custom fields, Config Contexts, Secrets, webhooks and events, approvals, data validation, permissions
   and change log, nautobot-server, Jobs and Circuits
-Last reviewed: 2026-10-05
-Summary: Twelve verified recipes with a gotcha and a source line each, cited to the installed 3.2.3 source and its bundled docs; re-verify on any version change.
+Last reviewed: 2026-11-19
+Summary: >-
+  Twelve verified recipes with a gotcha and a source line each, cited to the installed 3.2.3 source and its bundled docs; re-verify on any version change.
+  Learned entries add bulk-write timeouts, depth and tag-filter behaviour, /api/status/ apps, scripted nbshell, Job cancel and required-rule limits.
 ---
 
 # Operations cookbook
@@ -117,7 +119,8 @@ curl -s -X DELETE "${H[@]}" -H "Content-Type: application/json" https://nautobot
 | Related refs    | on write, a UUID, an API URL, or a natural-key string (`"status": "Active"`); `users.Group` takes its id or name |
 
 Gotcha: `STRICT_FILTERING` is on by default, so an unknown filter returns 400 instead of being ignored. Not every model has a filter for every field: the custom-fields endpoint has no `key` filter, so
-a lookup by `?key=` fails rather than returning nothing (seen in practice). Treat a 400 as an error, never as "not found".
+a lookup by `?key=` fails rather than returning nothing (seen in practice). Treat a 400 as an error, never as "not found". A bulk write is one request: keep batches small enough to finish inside the server's HTTP timeout
+(Learned 2026-10-15 (w) below).
 
 Source: `nautobot/core/settings.py:375-417`, `nautobot/core/api/versioning.py` (`NautobotAPIVersioning`), `nautobot/core/api/authentication.py:10-26`, `rest_framework/authentication.py:161`,
 `nautobot/core/api/constants.py:1-12`, `nautobot/core/api/serializers.py:55-120,804,932`, `nautobot/dcim/api/serializers.py:582`, `nautobot/core/api/views.py:90-175,226-241`, `nautobot/core/api/fields.py:134-145,234-237`,
@@ -377,7 +380,8 @@ nautobot-server remove_stale_scheduled_jobs
 > loops as comprehensions), which runs the code and prints its output after the banner; filter the output with `grep` on a marker prefix.
 
 Gotcha: `invalidate` (django-cacheops) no longer exists. Clearing the cache is `clear_cache` (django-extensions), which `post_upgrade` runs since 3.0.10. `runjob --data` defaults to `{}` from 3.2.0,
-and `null` is now an error. `init` and `--version` belong to the `nautobot-server` wrapper, not Django subcommands.
+and `null` is now an error. `init` and `--version` belong to the `nautobot-server` wrapper, not Django subcommands. Script `nbshell` with
+`--command`, not piped stdin (Learned 2026-10-19 above).
 
 Source: `nautobot-server help` and `help post_upgrade|runjob|validate_models|fix_custom_fields|health_check` in the 3.2.3 container; `nautobot/extras/management/commands/runjob.py:20,69-72`;
 `nautobot-core-3.2.3-nautobot-server.html`.

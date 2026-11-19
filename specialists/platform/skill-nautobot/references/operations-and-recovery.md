@@ -6,8 +6,10 @@ Authority: Installed Nautobot 3.2.3 source, its bundled documentation, and the P
 Scope: >-
   Backing up and restoring the Nautobot database and file stores, restore rehearsal, health checks, Prometheus metrics, logging, performance, security
   settings, authentication backends, tokens, and Celery worker and scheduler inspection
-Last reviewed: 2026-10-05
-Summary: Nine verified operations recipes for running and recovering Nautobot 3.2.3, each with a gotcha and a source line; restore ordering is labelled as practice where Nautobot documents none.
+Last reviewed: 2026-11-19
+Summary: >-
+  Nine verified operations recipes for running and recovering Nautobot 3.2.3, each with a gotcha and a source line; restore ordering is labelled as practice
+  where Nautobot documents none. Learned entries add environment banners and the CPU cost of nautobot-server health checks.
 ---
 
 # Nautobot operations and recovery
@@ -119,7 +121,9 @@ pg_isready; redis-cli ping
 `/health/` passes when the server runs, reaches the database, has applied all migrations, reaches Redis, can write to storage, and is not too busy to answer. `health_check` checks the same
 dependencies but not the web server. Worker file probes: set `CELERY_HEALTH_PROBES_AS_FILES = True` with `CELERY_WORKER_HEARTBEAT_FILE` and `CELERY_WORKER_READINESS_FILE`.
 
-Gotcha: `/health/` returning 200 says nothing about workers; Jobs can sit `PENDING` with a healthy web tier. `redis-cli ping` can answer before Redis has loaded its data.
+Gotcha: `/health/` returning 200 says nothing about workers; Jobs can sit `PENDING` with a healthy web tier. `redis-cli ping` can answer before Redis has loaded its data. Every
+`nautobot-server` command starts Django with every app (about 15-17 s of a core on a modest host), so size container healthcheck timeouts and intervals
+accordingly (Learned 2026-10-13 and 2026-10-15 (n) below).
 
 Source: `nautobot/core/urls.py:86`, `health_check/views.py:88-110`, `health_check/urls.py`, `nautobot/extras/health_checks.py:19-126`, `nautobot/core/settings.py:669-674,1083-1099`; `nautobot-server
 help health_check`; `docs/user-guide/administration/guides/health-checks.html`.
@@ -278,8 +282,7 @@ Staff users also have `/worker-status/` in the UI (workers and configured queues
 "nautobot.core.celery.backends.NautobotDatabaseBackend"`); the beat scheduler is `nautobot.core.celery.schedulers:NautobotDatabaseScheduler`, so schedules live in the database.
 
 Gotcha: `inspect` broadcasts over the Redis broker and waits 1.0 second by default (`--timeout`); a busy worker can miss it, so retry with `-t 5` before declaring it dead. A Job whose queue no
-worker consumes stays
-`PENDING` with no error. `nautobot-server celery inspect --help` prints Nautobot's own help; read Celery's options with `python -m celery inspect --help` or `--list`.
+worker consumes stays `PENDING` with no error. `nautobot-server celery inspect --help` prints Nautobot's own help; read Celery's options with `python -m celery inspect --help` or `--list`.
 
 Source: `nautobot/core/urls.py:95`, `nautobot/core/views/__init__.py:290-295`, `nautobot/core/settings.py:1102-1167`; `python -m celery inspect --help` and `--list` (Celery 5.6.3);
 `docs/user-guide/administration/guides/health-checks.html`, `docs/user-guide/administration/guides/celery-queues.html`.

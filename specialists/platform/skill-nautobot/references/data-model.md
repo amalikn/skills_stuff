@@ -6,9 +6,12 @@ Authority: Installed Nautobot 3.2.3 source and its bundled documentation; the ci
 Scope: >-
   Modelling decisions and REST payloads for Locations and Location Types, tenancy, Platforms and network_driver, Manufacturers, Device Families and Device
   Types, Interfaces and VLAN modes, VLANs and VLAN Groups, Prefix types, IP assignment, Virtual Chassis, Modules, Cables and paths, Contacts and Teams,
-  Statuses, Roles and Tags, Software Versions and Image Files
-Last reviewed: 2026-10-05
-Summary: Twelve verified modelling recipes for the Nautobot 3.2.3 core data model, each with the rule the model enforces, a payload, a gotcha and a source line.
+  Statuses, Roles and Tags, Software Versions and Image Files; Learned entries add Device and Interface Redundancy Groups, native wireless (Wireless
+  Networks, Radio Profiles), cable peers and Circuit-modelled uplinks
+Last reviewed: 2026-11-19
+Summary: >-
+  Twelve verified modelling recipes for the Nautobot 3.2.3 core data model, each with the rule the model enforces, a payload, a gotcha and a source line, plus
+  dated Learned entries from deployments (one on 3.2.9).
 ---
 
 # Nautobot core data model
@@ -17,7 +20,8 @@ Verified against: Nautobot 3.2.3 (installed source in a 3.2.3 container, and the
 
 Source paths are relative to `site-packages/`; `docs/...` is the page under `nautobot/project-static/docs/` (published at `https://archive.docs.nautobot.com/projects/core/en/v3.2.3/<same path>/`).
 Payloads go to `https://nautobot.example/api/<path>` with `Authorization: Token $NAUTOBOT_TOKEN`; related objects may be given as UUID or natural-key string (see the operations cookbook, section 2).
-Device Lifecycle Management is not installed; its software models are in core since 2.2.
+Device Lifecycle Management was not installed in the image inspected on 2026-10-05 (a later deployment added 4.2.0, see
+[upgrade-and-troubleshooting.md](upgrade-and-troubleshooting.md)); its software models are in core since 2.2.
 
 ## Summary
 
@@ -68,7 +72,7 @@ Rules enforced: a Location's type must match its parent's type (or the type's pa
 Device at a Location whose type lacks `dcim.device` fails with "Devices may not associate to locations of type".
 
 Gotcha: a Location's `location_type` can never be changed, a type with Locations cannot change parent, and a nestable type cannot be made non-nestable while nested Locations exist. Plan the tree
-before loading data. `LOCATION_LIST_DEFAULT_MAX_DEPTH` limits the default list view for deep trees.
+before loading data; a Location Type itself can be renamed in place (Learned 2026-10-16 below). `LOCATION_LIST_DEFAULT_MAX_DEPTH` limits the default list view for deep trees.
 
 Source: `nautobot/dcim/models/locations.py:34-48,81-101,126,218,272-333`, `nautobot/dcim/models/devices.py:755`, `nautobot/dcim/api/serializers.py:242-251`;
 `docs/user-guide/core-data-model/dcim/locationtype.html`, `docs/user-guide/core-data-model/dcim/location.html`.
@@ -297,7 +301,7 @@ POST /api/dcim/modules/      {"module_type": "<type-uuid>", "parent_module_bay":
 POST /api/dcim/modules/      {"module_type": "<type-uuid>", "location": "<store-uuid>", "status": "Active"}
 ```
 
-Gotcha: a Module has either `parent_module_bay` (installed) or `location` (spare in stock), never both. A bay assigned a Module Family accepts only Module Types of that family.  A Module Bay has
+Gotcha: a Module has either `parent_module_bay` (installed) or `location` (spare in stock), never both. A bay assigned a Module Family accepts only Module Types of that family. A Module Bay has
 `parent_device` or `parent_module`.
 
 Source: `nautobot/dcim/models/devices.py:1981-2022,2120-2138`, `nautobot/dcim/models/device_components.py:1985-1999`; `docs/user-guide/core-data-model/dcim/module.html`,
@@ -364,7 +368,7 @@ POST /api/dcim/software-image-files/  {"software_version": "<uuid>", "image_file
 ```
 
 Gotcha: a Status, Role or Tag must list the model's content type or it is rejected for that model. A Contact Association takes exactly one of `contact` or `team`, with a role and status.
- Software Image File also takes `image_file_checksum`, `hashing_algorithm`, `image_file_size`, `default_image` and `external_integration`.
+Software Image File also takes `image_file_checksum`, `hashing_algorithm`, `image_file_size`, `default_image` and `external_integration`.
 
 Source: `nautobot/extras/models/contacts.py:49-125`, `nautobot/extras/models/statuses.py:23-46`, `nautobot/extras/models/roles.py:21`, `nautobot/extras/models/tags.py:32,53`,
 `nautobot/dcim/models/devices.py:1401-1433,1500-1514`; `docs/user-guide/core-data-model/extras/contact.html`, `docs/user-guide/core-data-model/dcim/softwareversion.html`,
