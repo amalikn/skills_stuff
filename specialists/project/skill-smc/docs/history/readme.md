@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261120_0358.md](changelog-20261120_0358.md) 1 entry, 2026-11-10 to 2026-11-10: koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)
 - [changelog-20261120_0245.md](changelog-20261120_0245.md) 2 entries, 2026-11-10 to 2026-11-10: Fleet survey probes, bootloader census, writers probe; probe deadlines fixed (v0.13.2 -> v0.14.0); Deployed Pi fleet layout and root block spread (survey of 6) (v0.13.1 -> v0.13.2)
 - [changelog-20261120_0049.md](changelog-20261120_0049.md) 1 entry, 2026-11-10 to 2026-11-10: Pi 4 on the fleet bootloader 2023-01-11: autoboot.txt on GPT and EEPROM update path (v0.13.0 -> v0.13.1)
 - [changelog-20261119_1852.md](changelog-20261119_1852.md) 1 entry, 2026-11-09 to 2026-11-09: Pi 4 A/B on a GPT card: bootloader, firmware and update traps (smc-resiliency S1) (v0.12.9 -> v0.13.0)

@@ -139,6 +139,13 @@ lines[tail:tail] = ["", f"[{site}:children]", f"{site}_smc_bases"]  # before any
 > before keeping it: `sed -E 's/(auth_token:[[:space:]]*).*/\1<masked>/'`.
 > - **`ansible`/`ansible-inventory` do not show topology vars**: the plugin loads only from `vars_plugins/` beside a playbook, so check
 > `topology_interfaces` with a throwaway playbook in the repo root, not an ad-hoc command.
+> - **smc_rise_deploy on an rct stage Iridium host stops at the tstik spec** (`rct-tstik-iridium-update`): `'dict object' has no attribute 'env'`
+>   while rendering the spec, before any change; prod hosts carry the missing key. A bench Pi without a tstik board or Iridium modem runs it with
+>   `-e smc_bases_iridium=false`, which skips the AVR flash and SMSC plays only (malik-bench-rct01, 2026-11-20: ok=335 changed=94 failed=0).
+> - **The controller VM cannot follow `smc_change.yml`**: it is a symlink to an absolute `/Volumes/Data/...` path, and ansible-apn mounts that
+>   tree at `/home/vagrant/Data`. A `/Volumes/Data -> /home/vagrant/Data` link in the VM fixes every such symlink (not yet in the Vagrantfile).
+> - **Cost per task on a fast link:** 324 tasks in 40 min (7.4 s each) over 100 Mbps; SSH reuse through Teleport works (1.19 s first, 0.33 to 0.40 s
+>   after), Python on a Pi 4 starts in 0.44 s, so most of the time is work inside tasks (apt, dpkg on the card, clones), not the transport.
 
 ### Task key order: `when:` goes LAST, with `tags:` after it (operator convention, 2026-08-27)
 

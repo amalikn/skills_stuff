@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_0245
+Last rotated: 20261120_0358
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)](#20261120_0400--rise-deploy-on-a-stage-iridium-bench-pi-controller-symlinks-cost-per-task-v0162---v0163)
 - [20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)](#20261120_0250--clone-rename-fixed-check-mode-limits---diff-leaks-the-join-token-the-interface-activation-hook-loop-v0161---v0162)
 - [20261120_0050 — bench Pi inventoried on iridium and rise; Pi field image has no serial console and mounts root with discard (v0.16.0 -> v0.16.1)](#20261120_0050--bench-pi-inventoried-on-iridium-and-rise-pi-field-image-has-no-serial-console-and-mounts-root-with-discard-v0160---v0161)
 - [20261119_1852 — smc_root_key_probe.sh; the warehouse field image read; root's key and password shared fleet-wide (v0.15.9 -> v0.16.0)](#20261119_1852--smc_root_key_probesh-the-warehouse-field-image-read-roots-key-and-password-shared-fleet-wide-v0159---v0160)
@@ -38,9 +39,13 @@ Last reviewed: 2026-10-27
 - [20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)](#20261111_1318--smc_lynis-no_pubkey-7a9a1d9d5b27c6d3-and-apt_key_subkey_probesh-v0143---v0144)
 - [20261111_1213 — urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)](#20261111_1213--urlcapture-prune-galiwinku-checked-v0142---v0143)
 - [20261111_1105 — urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)](#20261111_1105--urlcapture-prune-first-run-read-uc-old-files-needs-the-cw-proxy-v0141---v0142)
-- [20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)](#20261110_1355--koonibba-wrong-teleport-cluster-stale-bastion-keys-url_capture-prune-gaps-root-lv-condition-urlcapture-prune-change-v0140---v0141)
 
 ---
+
+## 20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)
+
+- references/08_ansible-authoring.md: smc_rise_deploy stops at the tstik spec on an rct stage Iridium host (`-e smc_bases_iridium=false` on a bench Pi);
+  the controller VM needs `/Volumes/Data` linked to follow smc_change.yml; measured cost per task over 100 Mbps (smc-resiliency 20261120).
 
 ## 20261120_0250 — clone rename fixed; check-mode limits, --diff leaks the join token, the interface-activation hook loop (v0.16.1 -> v0.16.2)
 
@@ -188,10 +193,3 @@ kaltjiti-fergon-smc01.
 
 `references/19_smc-change-role.md`: Learned 2026-11-11, the canary's first cron prune (13 GB to two months, root 49% to 26%) and `tsh_each.sh`'s apn-cluster default
 (`PROXY=teleport.communitywifi.net.au` for nbn_accelerate boxes); the read recipe is `uc-old-files` (was `months`, `590716b`).
-
-## 20261110_1355 — koonibba: wrong Teleport cluster, stale bastion keys, url_capture prune gaps, root-LV condition, urlcapture-prune change (v0.14.0 -> v0.14.1)
-
-`references/01_overview.md`: a box missing from plain `tsh ls` is not offline (the cluster comes from the profile; nbn_accelerate is on communitywifi). `references/03_communication-flows.md`: Learned
-2026-11-10, a changed bastion key disables the backdoor's forwarding under `StrictHostKeyChecking=no`; verified fix and fleet sweep; `backdoor-watch.sh` misses a site ID kept in group vars (fix
-pending). `references/09_url-capture-pcap.md`: the on-box prune, three boxes without it, server check before deleting (`da4a328`). `references/13_known-issues.md`: `smc_system` root-LV condition
-(ansible-wifi `0fc086ca`) and the `smc_bases.yml --tags` always-task hazard (`da4a328`). `references/19_smc-change-role.md`: change `urlcapture-prune`, the first template action (`14eabeb`).
