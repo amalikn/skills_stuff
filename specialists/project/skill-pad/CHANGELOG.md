@@ -16,6 +16,7 @@ Last rotated: 20261119_1850
 
 ## Contents
 
+- [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 - [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
 - [20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders](#20261119_1820--ansible-wifi-workspace-adapted-conventions-file-one-workspace-for-three-folders)
 - [20261119_1648 — SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it](#20261119_1648--skillmd-names-installed-cli-0210---op-key-rule-names-the-commands-that-take-it)
@@ -41,6 +42,12 @@ Last rotated: 20261119_1850
 - [20261110_2020 — UNC moved: bugs, feature requests and tech debt in Pad in both workspaces](#20261110_2020--unc-moved-bugs-feature-requests-and-tech-debt-in-pad-in-both-workspaces)
 
 ---
+
+## 20261120_0300 — Tracker export: an item made in Pad renders its title
+
+- scripts/pad_tracker.py `from_pad`: an item created in Pad (its title differs from its body's first line) is rendered with the title as the line and the
+  whole body under it; before, the body's first line (`**Serves:** ...`) stood in for the item (smc-resiliency features-to-add, FR-95). Imported items
+  are unchanged. Two tests in tests/test_pad_tracker.py (9 pass; the first fails on the old code).
 
 ## 20261119_1849 — Markdown and Pad sync plan; peer sessions consulted
 

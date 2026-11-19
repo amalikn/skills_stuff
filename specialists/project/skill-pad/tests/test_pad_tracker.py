@@ -149,5 +149,22 @@ class Links(unittest.TestCase):
     self.assertIn("](../../lab/logic/x2.py#L5)", pt.render(pt.from_pad(rows)["A"]))
 
 
+class MadeInPad(unittest.TestCase):
+  """An item created in Pad renders its title as the line, its body below; an imported item is unchanged."""
+
+  def test_title_is_the_line_for_an_item_made_in_pad(self):
+    rows = [{"ref": "FR-95", "title": "Lab eeprom case: stage an EEPROM image", "content": "**Serves:** TASK-72\n\n**Why:** repeat runs",
+             "fields": {"status": "submitted"}}]
+    out = pt.render(pt.from_pad(rows)["Added in Pad"])
+    self.assertTrue(out.startswith("- [ ] Lab eeprom case: stage an EEPROM image"), out)
+    self.assertIn("**Serves:** TASK-72", out)
+
+  def test_imported_item_keeps_its_first_line(self):
+    rows = [{"ref": "BUG-1", "title": "N09 (P1) the thing", "content": "**N09 (P1)** the thing\n  - Cause: x",
+             "fields": {"status": "fixed", "section": "A", "order": 10}}]
+    out = pt.render(pt.from_pad(rows)["A"])
+    self.assertTrue(out.startswith("- [x] **N09 (P1)** the thing"), out)
+
+
 if __name__ == "__main__":
   unittest.main()

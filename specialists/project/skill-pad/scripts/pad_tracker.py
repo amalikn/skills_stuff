@@ -247,7 +247,13 @@ def from_pad(rows: list[dict]) -> dict[str, list[Item]]:
     f = r.get("fields") or {}
     f = json.loads(f) if isinstance(f, str) else f
     body = (r.get("content") or r.get("title") or "").split("\n")
-    it = Item(first=body[0], done=f.get("status") in CLOSED, indent=0, lines=body[1:], section=f.get("section") or "Added in Pad",
+    first, lines = body[0], body[1:]
+    title = r.get("title") or ""
+    if title and title_of(first) != title_of(title):
+      # An item made in Pad (not imported from the tracker) has its own title and a body that starts with its fields (**Serves:** ...):
+      # the title is the line, the whole body stays under it. Before 2026-11-20 the body's first line was rendered as the item.
+      first, lines = title, body
+    it = Item(first=first, done=f.get("status") in CLOSED, indent=0, lines=lines, section=f.get("section") or "Added in Pad",
               order=int(f.get("order") or 10**6))
     by_ref[r["ref"]] = it
     kids.setdefault(r.get("parent_ref"), []).append((it.order, r["ref"]))
