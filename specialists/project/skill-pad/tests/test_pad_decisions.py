@@ -48,7 +48,8 @@ class Build(unittest.TestCase):
             root = Path(tmp)
             write_project(root)
             items = {i["ref"]: i for i in pdm.conflict_items(root / ".kc") + pdm.log_items(root / "DECISION-LOG.md")}
-        self.assertEqual(sorted(items), ["DL-011", "cf-aaaaaaaaaa", "cf-bbbbbbbbbb"])
+        self.assertEqual(sorted(items), ["DL-001", "DL-011", "cf-aaaaaaaaaa", "cf-bbbbbbbbbb"])
+        self.assertEqual((items["DL-001"]["category"], items["DL-011"]["category"]), ("decision-log-process", "decision-log"))
         a = items["cf-aaaaaaaaaa"]
         self.assertEqual((a["status"], a["recommendation"], a["category"]), ("accepted", "not-followed", "contracts.api"))
         self.assertIn("| v1 |", a["body"])

@@ -9,10 +9,15 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_2213
+Last rotated: 20261119_1136
 ---
 
 # Changelog — skill-pad
+
+## 20261119_1136 — Decision-log process rows mirrored to Pad
+
+- `scripts/pad_decisions.py`: `process` rows of a decision log are mirrored as well as `architecture` rows (category `decision-log-process`); the operator wants every decision
+  in Pad (Continuum, 2026-11-19). `tests/test_pad_decisions.py` updated; it fails without the change.
 
 ## 20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check
 
@@ -186,14 +191,3 @@ Last rotated: 20261118_2213
 - `writing-standard` convention (always, should) in `conventions/apn-baseline.toml`, now six conventions; README table and tests updated (operator: yes).
 - Proposal section 3.3 (Writing standard): plan and task body templates, four update channels, comment types, tags; 3.8 lists the new convention;
   section 3 renumbered without letter suffixes (operator).
-
-## 20261110_1708 — Pad data moved to tools_stuff/pad; container image facts
-
-### Changed
-
-- Pad data moved from `/Volumes/malik1tb/malik-storage/pad` to `/Volumes/Data/_ai/_tool/tools_stuff/pad` (operator; tracked in tools_stuff by the
-  operator's choice). Server stopped, copied and compared, `~/.pad` relinked, restarted; the server holds the new pad.db, item counts unchanged (30 and
-  24). Old copy kept as `pad.moved-20261110_1706` on malik1tb. SETUP, ARCHITECTURE, SCRATCHPAD, cli-reference, integrations, the proposal and
-  `pad_backup.sh` updated.
-- integrations.md: container image `ghcr.io/perpetualsoftware/pad` (pin a version tag, first-run setup URL, PUID/PGID). cli-reference.md: the README
-  CLI Reference is a summary of the same tree. Mirror: `references/upstream/github.com/pkgs_container_pad.md`, treated as verbatim by the checker.
