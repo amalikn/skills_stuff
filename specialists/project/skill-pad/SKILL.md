@@ -94,7 +94,17 @@ into that session.
 - **Work is visible in Pad (operator, 2026-11-20; every project with a `.pad.toml`):** before starting any piece of work, find its item (`pad item list`,
   `pad item search`); when there is none, create it (a task to the writing standard, 3.3), since the operator's request for the work is the
   confirmation. Claim it, set it `in-progress` with `--comment`, comment at the start, at each result and at each blocker, and close it with the
-  `DONE:` comment. No work in a Pad project runs without an active item the operator can see; a relay, a write-back or a side task counts as work.
+  `DONE:` comment. No work in a Pad project runs without an active item the operator can see; a relay or a side task counts as work. Housekeeping gets no item (operator, 2026-11-20).
+- **Never add to Pad (operator, 2026-11-20):** the session's own housekeeping, whoever asks for it:
+  - session closeout and every slurp (`/slurp-chat`, in detail, close, the second close);
+  - skill and tool write-backs owed under a standing contract;
+  - project coherence sweeps (skill-project-coherence) and staleness audits (skill-staleness-audit);
+  - record upkeep: CHANGELOG entries and rotation, SCRATCHPAD budget, folder indexes, session records, `Last reviewed` reviews;
+  - session-start sync reports, memory-backend saves, checkpoints, Pad exports;
+  - commits and pushes of that work.
+
+  The project work they record keeps its own item (a decision recorded at close goes on the item it affects). When a request mixes both, only the project work
+  gets an item.
 - **Consult Pad at session start (operator, 2026-11-20):** in any folder whose tree has a `.pad.toml`, run the `status` mode (`pad project dashboard`)
   before planning, and say which item the session works on. project_stuff/AGENTS.md names this skill as required for those projects.
 - **Through the CLI only**: never read `~/.pad/pad.db` or `~/.pad/attachments/` directly.

@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1421
+Last rotated: 20261120_1426
 ---
 
 # Changelog — skill-pad
@@ -40,7 +40,6 @@ Last rotated: 20261120_1421
 - [20261118_2106 — item update has no --op-key; code paths in item bodies; a question without an Asks collection](#20261118_2106--item-update-has-no---op-key-code-paths-in-item-bodies-a-question-without-an-asks-collection)
 - [20261118_1742 — CLI at 0.21.0](#20261118_1742--cli-at-0210)
 - [20261111_1223 — .pad.toml rewrite behaviour tested](#20261111_1223--padtoml-rewrite-behaviour-tested)
-- [20261111_1213 — links step in a commit gate](#20261111_1213--links-step-in-a-commit-gate)
 
 ---
 
@@ -59,6 +58,8 @@ check fails on a KEEP decision with no log row (negative test: rc 1 with a row r
   closed with the closing statement (operator, 20 Nov 2026, from the enterprise-strategy hub session; hub items TASK-19, TASK-144, TASK-145 were run this way).
 - references/cli-reference.md Traps: a comment message starting with `-` is read as a flag and refused (v0.21.1); use `--stdin`.
 - Duplicate removed: a parallel session committed this rule and its own fuller "Work is visible in Pad" rule together (a0fea8bb); this rule's text is dropped and its "a relay, a write-back or a side task counts as work" clause joins the kept rule.
+- 20261120_1425: housekeeping exception (operator, 20 Nov 2026): closeout, slurp, skill write-backs, coherence sweeps and staleness audits get no Pad item; "a write-back" dropped from the work clause.
+- SKILL.md Rules: "Never add to Pad" lists the housekeeping kinds (closeout and slurps, write-backs, coherence sweeps, staleness audits, record upkeep, sync reports, memory saves, their commits) (operator, 20 Nov 2026).
 
 ## 20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
 
@@ -193,7 +194,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 
 - `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` refuses a linked folder; `switch` rewrites `.pad.toml`, keeping unknown tables but deleting comments; both write skill
   copies into the project. Project settings belong in a file Pad never writes.
-
-## 20261111_1213 — links step in a commit gate
-
-- `references/items-and-edits.md`: run `pad_tracker.py links` before the export in a project's commit gate.
