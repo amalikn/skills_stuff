@@ -39,9 +39,10 @@ runtimes: _require-venv
 test: _require-venv
     @{{py}} -m unittest discover -s tests
 
-# Lint the shell scripts.
+# Lint the shell scripts and, with ruff, Python (new files only; existing ones listed in ruff.toml).
 lint:
     @shellcheck scripts/pad_backup.sh scripts/pad_monitor.sh scripts/pad_upstream_refresh.sh && echo "shellcheck clean"
+    @mise exec ruff -- ruff check . && mise exec ruff -- ruff format --check . && echo "ruff clean"
 
 # The pack's governance claims as assertions (read-only).
 governance *ARGS: _require-venv

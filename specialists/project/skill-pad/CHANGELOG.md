@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1355
+Last rotated: 20261120_1408
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
 - [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
 - [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
@@ -39,9 +40,16 @@ Last rotated: 20261120_1355
 - [20261111_1223 — .pad.toml rewrite behaviour tested](#20261111_1223--padtoml-rewrite-behaviour-tested)
 - [20261111_1213 — links step in a commit gate](#20261111_1213--links-step-in-a-commit-gate)
 - [20261111_1135 — workspace sharing noted](#20261111_1135--workspace-sharing-noted)
-- [20261111_1054 — Pad link opener: repo links in Pad open in VS Code](#20261111_1054--pad-link-opener-repo-links-in-pad-open-in-vs-code)
 
 ---
+
+## 20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
+
+scripts/pad_decisions.py: decision-log rows wrapped by the Markdown hook were read as their first line only, so long decisions and reasons reached Pad cut
+short (continuum DL-001's reason ended at 'a'); table_rows() now joins continuation rows; an optional Status column sets the Pad status (accepted,
+deferred, rejected, superseded by DL-nnn, named in the body). Test added (3 pass). continuum: its next pad_decisions run updates 5 items to full text.
+README setup step 6: a decision log and Decisions collection in every Pad project (operator, 20 Nov 2026: 'this will be standard'); first done for
+enterprise-strategy (123 decisions, 7 superseded).
 
 ## 20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first
 
@@ -180,15 +188,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 ## 20261111_1135 — workspace sharing noted
 
 - `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` shares an existing workspace across repos (skill-ai-it asks at bootstrap).
-
-## 20261111_1054 — Pad link opener: repo links in Pad open in VS Code
-
-### Added
-
-- `scripts/pad_link_opener.py`: a localhost service (127.0.0.1:47800, launchd `pad_link_opener.plist`, `just link-opener`) that redirects `/open/<absolute path>?f=L<n>` to `vscode://file/<path>:<n>`.
-  Pad v0.19.2 strips vscode:// links (web/src/lib/utils/markdown.ts:224, only http(s), mailto, ftp, tel kept), so Pad holds http links and is not patched: upgrades need nothing. Existing paths under
-  `/Volumes/Data` only; no file content served. `just link-url PATH --line N` prints a link. Tests `tests/test_pad_link_opener.py`.
-- `pad_tracker.py links`: rewrites relative repo links in a collection's Pad bodies into opener links (each write guarded by the item's seq); `import` writes opener links (`--no-opener` to skip) and
-  `export` always turns them back into links relative to the tracker file, so the repo file is unchanged. Applied to smc-resiliency Bugs (7 items, 8 links); the operator confirmed a click in BUG-41
-  opens VS Code.
-- `references/items-and-edits.md`: Learned 2026-11-11, Pad strips vscode:// and relative links go nowhere; write opener links.

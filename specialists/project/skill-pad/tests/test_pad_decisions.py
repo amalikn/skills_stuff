@@ -58,6 +58,32 @@ class Build(unittest.TestCase):
         self.assertEqual(items["DL-011"]["recommendation"], "followed")
 
 
+class WrappedAndStatus(unittest.TestCase):
+    """A hook-wrapped row is read whole, and a Status column sets the Pad status (2026-11-20)."""
+
+    def test_wrapped_rows_and_status(self):
+        """Continuation rows join their cells; superseded names the replacement; deferred is kept.
+
+        Returns:
+            None.
+        """
+        log = ("| ID     | Date       | Kind    | Decision                   | Reason             | Status                 |\n"
+               "| ------ | ---------- | ------- | -------------------------- | ------------------ | ---------------------- |\n"
+               "| DL-001 | 2026-10-06 | process | Chris is out of            | Retail work; no    | superseded by DL-003   |\n"
+               "|        |            |         |   scope.                   |   enterprise role. |                        |\n"
+               "| DL-002 | 2026-10-07 | process | Dates wait.                | Session first.     | deferred               |\n"
+               "| DL-003 | 2026-11-20 | process | Chris joins the sessions.  | Martin named him.  | accepted               |\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "decision-log.md"
+            path.write_text(log)
+            items = {i["ref"]: i for i in pdm.log_items(path)}
+        self.assertEqual(sorted(items), ["DL-001", "DL-002", "DL-003"])
+        self.assertIn("Decision: Chris is out of scope.", items["DL-001"]["body"])
+        self.assertIn("Reason: Retail work; no enterprise role.", items["DL-001"]["body"])
+        self.assertIn("Superseded by: DL-003", items["DL-001"]["body"])
+        self.assertEqual([items[k]["status"] for k in ("DL-001", "DL-002", "DL-003")], ["superseded", "deferred", "accepted"])
+
+
 class Split(unittest.TestCase):
     """plan() creates the missing and rewrites only changed bodies."""
 

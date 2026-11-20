@@ -92,6 +92,10 @@ Learned in unified-network-controller, 2026-11-10:
 4. Seed plans and tasks that each name their tracker entry; pass `--op-key` on every create so a rerun does not duplicate.
 5. Keep a readable copy in Git: a `pad-export` recipe calling `scripts/pad_export.py --out <trackers>/pad-focus.md --apply`, run non-fatally in the project's commit gate (`-@` in just) so it never
    blocks a commit when Pad is stopped or its disk is absent.
+6. Decisions (operator, 2026-11-20: every decision, existing and new, in Pad; "this will be standard"): keep `docs/decision-log.md` with rows
+   `| DL-nnn | date | architecture or process | decision | reason | status |` (status accepted, deferred, rejected or `superseded by DL-nnn`; a reversal supersedes,
+   never rewrites), create the Decisions collection once from `conventions/collection-schemas/decisions.json`, and add a `pad-decisions` recipe calling
+   `scripts/pad_decisions.py --project-root . --decision-log docs/decision-log.md`. Accepted decisions are a closed status: list them with `pad item list decisions --all`.
 
 Install facts behind this folder (verified 2026-11-10): Claude Code reads user skills only from its own skills folder; Codex reads `~/.agents/skills` (path:install-example) and the deprecated codex
 skills folder (source openai/codex `codex-rs/ext/skills/src/host_roots.rs`); Pad writes skills with a plain file write, which follows a symlink.
