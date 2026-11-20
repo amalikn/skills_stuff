@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-20: backup-disaster-recovery.md (Copy placement and isolation), Learned 2026-11-20: repository passwords generated into a secrets store make that store's data part of every backup's recovery path (Continuum DL-067, FR-248).
 - 2026-11-20: edge-appliances.md (Image layout and updates), Learned 2026-11-20: a firmware one-shot A/B trial guards only the trial; a committed release that loops needs a post-commit guard (reset history, N watchdog resets).
 - 2026-11-20: edge-appliances.md (Hangs, watchdogs and power): a 15 s hardware watchdog resets a box whose card stalls on DISCARD; prove kernel.panic and the watchdog separately; sync before a fault test (smc-resiliency lab test record 27).
 - 2026-11-19: linux-unix.md (watchdog open_timeout gap, Ubuntu panic and lockup defaults, cloud-init 22.2 chpasswd, Launchpad +files), macos-and-endpoints.md (TCC raw-disk writes, automount read-back), edge-appliances.md (bench link versus field, media identity); from smc-resiliency.

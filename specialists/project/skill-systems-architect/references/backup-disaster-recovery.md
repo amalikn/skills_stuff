@@ -83,6 +83,17 @@ orders of magnitude (UNVERIFIED as targets); measure your own in a drill.
 - Pull the off-site copy from the backup side, so production credentials cannot reach it.
 - Escrow encryption keys and the backup catalog apart from production and apart from each other.
 
+> **Learned 2026-11-20** · repository passwords generated into a secrets store · UNVERIFIED (design review; dev only) · Source: Continuum DL-067, FR-248;
+> continuum-app `apps/coordinator/src/vault.rs` `resolve_or_create` (dffcd68) · Falsifier: a restic repository readable without its password.
+> When a service generates each encrypted repository's password on first use and keeps it only in the secrets store (OpenBao KV here), the secrets store's
+> data becomes part of every backup's recovery path: a copy of the repositories is unreadable without a separate, restore-tested copy of that store, kept
+> apart from both. Unseal-key custody (Shamir shares) does not cover it; that only reopens a store whose data still exists. An in-memory dev secrets store
+> beside persistent object storage reproduces the loss on every restart (orphaned repositories): give test runs a fresh namespace.
+>
+> ```text
+> restic data (SeaweedFS)  --needs-->  password (OpenBao KV)  --needs-->  OpenBao data backup + unseal shares
+> ```
+
 > **Learned 2026-11-18** · backup repository on the primary's host · UNVERIFIED (design review, nothing deployed) · Source: Continuum first-slice review, flow map
 > `docs/architecture/diagrams/first-slice/parts/components-data-and-offhost.yaml` (tools_stuff 2026-11-18) · Falsifier: a design where the snapshot store shares the host yet survives its loss.
 > A snapshot store (restic on S3, here SeaweedFS) placed on the same single host as the coordinator and its database is copy 1 only: losing that host loses live state and every checkpoint at

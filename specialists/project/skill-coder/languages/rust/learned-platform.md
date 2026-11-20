@@ -31,3 +31,18 @@ Part of [rust.md](../rust.md).
 > }
 > ```
 > Caveat: a child that fills its stdout pipe before exiting would stall this loop; it is fine for git's short outputs, not for large ones (read the pipes on a thread then).
+
+> **Learned 2026-11-20** · restoring a Git repository to a new path · VERIFIED_PRIMARY (seen: P2 gate run p2-gate-20261120_161642; fixed and re-run green) · Source: continuum-app
+> `apps/agent/src/tree/restore.rs` `link_worktrees` (a775069), BUG-247 · Falsifier: a `git worktree repair` that never writes outside the paths given on its command line.
+> `git worktree repair` follows the absolute paths already stored in the worktree links. When a restored copy still names the source's path and that path
+> resolves on the target (a VM's shared mount of the host, a same-named checkout), git 2.43 rewrote the *source's* link files. macOS git did not, so a unit
+> test on the Mac cannot catch it. Rewrite the two link files yourself in the staged copy and make the gate hash the source tree before and after.
+>
+> ```rust
+> fs::write(&dot_git, format!("gitdir: {}\n", into.join(main).join(".git/worktrees").join(&name).display()))?;
+> fs::write(admin.join("gitdir"), format!("{}\n", into.join(wt).join(".git").display()))?;
+> ```
+>
+> Also from the same gate: symlink permission bits are not portable (macOS keeps 0755 from lchmod, Linux reports 0777, Git ignores them), so a cross-OS file
+> listing records mode 0 for links. An integration test's submodule file lives beside the test: `#[path = "agent_e2e/p2_gate.rs"] mod p2_gate;` in
+> `tests/agent_e2e.rs` (without `#[path]` rustc looks for `tests/p2_gate.rs`).

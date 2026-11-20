@@ -31,6 +31,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-20: languages/rust/learned-platform.md, Learned 2026-11-20: `git worktree repair` writes through old absolute paths (rewrote a source over a VM shared mount; BUG-247); symlink modes are not portable; `#[path]` for an integration test's submodule.
 - 2026-11-19: languages/shell/learned-safety.md Disputed 2026-11-19 entry reordered to the entry format (Conflicts last; `just test` caught it) and its source cited as commit 0ffd12f.
 - 2026-11-19: languages/rust/ folder (operator: Rust needs its own folder and a readable guide): rust.md split by topic (topics.toml; learned-cargo-and-builds, learned-crates,
   learned-async-and-tests, learned-platform, open-items); five new Learned entries (axum body limit, spawn_blocking, clippy result_large_err, lints in tests, Command timeout);
