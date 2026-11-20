@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261120_1421.md](changelog/changelog-20261120_1421.md) 1 entry, 2026-11-11 to 2026-11-11: workspace sharing noted
 - [changelog-20261120_1408.md](changelog/changelog-20261120_1408.md) 1 entry, 2026-11-11 to 2026-11-11: Pad link opener: repo links in Pad open in VS Code
 - [changelog-20261120_1355.md](changelog/changelog-20261120_1355.md) 1 entry, 2026-11-10 to 2026-11-10: tracker import spike noted for the trial review
 - [changelog-20261120_1334.md](changelog/changelog-20261120_1334.md) 1 entry, 2026-11-10 to 2026-11-10: slurp close: session record, write-backs, collection schemas

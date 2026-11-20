@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing Pad and skill-pad on the operator's Mac, and checking that each part works
-Last reviewed: 2026-11-19
+Last reviewed: 2026-11-20
 Summary: A working setup needs the pad CLI from Homebrew, an initialised local Pad, the two install links, the pack's venv, the backup and link-opener jobs and the presence hooks.
 Depends on: justfile, .mise.toml, scripts/pad_backup.plist, scripts/pad_link_opener.plist
 ---
@@ -25,13 +25,14 @@ Depends on: justfile, .mise.toml, scripts/pad_backup.plist, scripts/pad_link_ope
 
 ## Prerequisites
 
-| Tool       | Version | Pinned in / from                                    |
-| ---------- | ------- | --------------------------------------------------- |
-| pad        | 0.21.0  | `brew install perpetualsoftware/tap/pad` (installed 0.21.0, read 2026-11-18; the CLI map is still v0.19.2) |
-| Python     | 3.14    | `.mise.toml` (venv in the working-cache peer)       |
-| just, mise | current | Homebrew                                            |
-| gh, curl   | current | Homebrew; `gh auth status` for the upstream refresh |
-| shellcheck | current | Homebrew (script lint)                              |
+| Tool       | Version | Pinned in / from                                                                                                           |
+| ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| pad        | 0.21.1  | `brew install perpetualsoftware/tap/pad` (installed 0.21.1, `pad --version` read 2026-11-20; the CLI map is still v0.19.2) |
+| Python     | 3.14    | `.mise.toml` (venv in the working-cache peer)                                                                              |
+| just, mise | current | Homebrew                                                                                                                   |
+| gh, curl   | current | Homebrew; `gh auth status` for the upstream refresh                                                                        |
+| shellcheck | current | Homebrew (script lint)                                                                                                     |
+| ruff       | latest  | run through mise by `just lint` (not pinned in `.mise.toml`; new Python files only, per `ruff.toml`)                       |
 
 Pad's data folder: `~/.pad` is a symlink to `/Volumes/Data/_ai/_tool/tools_stuff/pad` (moved from malik1tb 2026-11-10; tracked in the tools_stuff repo, operator), so the Data volume must be mounted
 for Pad to start. Git tracks the live database there: never stash, check out, reset, clean or switch branches in tools_stuff while Pad runs, and commit `pad/` only after `pad server stop` (rule in
@@ -59,10 +60,9 @@ Never add `~/.claude/skills/pad` or `~/.agents/skills/pad` (what `pad agent inst
 
 ## Link opener
 
-`just link-opener install` symlinks `scripts/pad_link_opener.plist` as `~/Library/LaunchAgents/au.malik.pad-link-opener.plist` and bootstraps it; the job runs
-`pad_link_opener.py serve` from the pack's venv on `127.0.0.1:47800`, kept alive. `just link-opener` (status) shows the job and probes the port; `uninstall` and `restart`
-do what they say. Log: `/Volumes/Data/_ai/_scripts/scripts-runtime/pad-link-opener.log`. The first click on a link in Pad asks the browser whether to open Visual Studio
-Code; allow it (and "always", if offered).
+`just link-opener install` symlinks `scripts/pad_link_opener.plist` as `~/Library/LaunchAgents/au.malik.pad-link-opener.plist` and bootstraps it; the job runs `pad_link_opener.py serve` from the
+pack's venv on `127.0.0.1:47800`, kept alive. `just link-opener` (status) shows the job and probes the port; `uninstall` and `restart` do what they say. Log:
+`/Volumes/Data/_ai/_scripts/scripts-runtime/pad-link-opener.log`. The first click on a link in Pad asks the browser whether to open Visual Studio Code; allow it (and "always", if offered).
 
 ## Presence hooks
 
@@ -70,13 +70,13 @@ Code; allow it (and "always", if offered).
 
 ## Environment
 
-| Variable                              | Purpose                                   | Source of the value                            |
-| ------------------------------------- | ----------------------------------------- | ---------------------------------------------- |
-| `PAD_AGENT`                           | agent name under Codex or other harnesses | set per harness; Claude Code detected          |
-| `PAD_BACKUP_DIR`, `_KEEP`, `_TIMEOUT` | backup target, copies kept, timeout       | defaults in `scripts/pad_backup.sh`            |
-| `PAD_MONITOR_BACKOFF`, `PAD_BIN`      | monitor reconnect delay, pad binary       | defaults in `scripts/pad_monitor.sh`           |
+| Variable                              | Purpose                                   | Source of the value                                               |
+| ------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
+| `PAD_AGENT`                           | agent name under Codex or other harnesses | set per harness; Claude Code detected                             |
+| `PAD_BACKUP_DIR`, `_KEEP`, `_TIMEOUT` | backup target, copies kept, timeout       | defaults in `scripts/pad_backup.sh`                               |
+| `PAD_MONITOR_BACKOFF`, `PAD_BIN`      | monitor reconnect delay, pad binary       | defaults in `scripts/pad_monitor.sh`                              |
 | `PAD_LINK_OPENER_PORT`, `_ROOTS`      | link opener port, allowed folders (`:`)   | defaults in `scripts/pad_link_opener.py` (47800, `/Volumes/Data`) |
-| Pad credentials                       | CLI session                               | `~/.pad/credentials.json` (0600); never copied |
+| Pad credentials                       | CLI session                               | `~/.pad/credentials.json` (0600); never copied                    |
 
 ## First run
 

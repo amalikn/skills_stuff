@@ -9,13 +9,15 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1408
+Last rotated: 20261120_1421
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
+- [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
 - [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
 - [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
 - [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
@@ -39,50 +41,60 @@ Last rotated: 20261120_1408
 - [20261118_1742 — CLI at 0.21.0](#20261118_1742--cli-at-0210)
 - [20261111_1223 — .pad.toml rewrite behaviour tested](#20261111_1223--padtoml-rewrite-behaviour-tested)
 - [20261111_1213 — links step in a commit gate](#20261111_1213--links-step-in-a-commit-gate)
-- [20261111_1135 — workspace sharing noted](#20261111_1135--workspace-sharing-noted)
 
 ---
 
+## 20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions
+
+SKILL.md Rules: two operator rules (20 Nov 2026). (1) Work is visible in Pad. In a project with a `.pad.toml`, work runs on an item the operator can see: it is found, or created before the work starts
+(the operator's request is the confirmation), then claimed, kept `in-progress` with comments, and closed with its `DONE:` comment. The confirm-before-create rule names this exception. (2) Pad is
+consulted at session start (`status` mode) in every such project. project_stuff/AGENTS.md now names skill-pad as required there. README step 6: smc-resiliency keeps its decision log at
+docs/trackers/decision-log.md (91 decisions on 20 Nov, 1 superseded, built from SCRATCHPAD's Recent decisions, live and rotated). Its commit gate runs `just pad-decisions --apply` non-fatally. Its
+check fails on a KEEP decision with no log row (negative test: rc 1 with a row removed). Mirror run time: 29.6 s for 89 creates. SETUP.md re-read against the justfile (ruff lint added in dda2a020),
+.mise.toml and `pad --version`: pad 0.21.1 and a ruff row (run through mise, not pinned); Last reviewed 2026-11-20.
+
+## 20261120_1417 — Rule: work in Pad shows as active
+
+- SKILL.md Rules: new rule after "Claim before working an item": work found in Pad is claimed and set `in-progress` before it starts; work not in Pad gets an item created first, then kept current and
+  closed with the closing statement (operator, 20 Nov 2026, from the enterprise-strategy hub session; hub items TASK-19, TASK-144, TASK-145 were run this way).
+- references/cli-reference.md Traps: a comment message starting with `-` is read as a flag and refused (v0.21.1); use `--stdin`.
+
 ## 20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
 
-scripts/pad_decisions.py: decision-log rows wrapped by the Markdown hook were read as their first line only, so long decisions and reasons reached Pad cut
-short (continuum DL-001's reason ended at 'a'); table_rows() now joins continuation rows; an optional Status column sets the Pad status (accepted,
-deferred, rejected, superseded by DL-nnn, named in the body). Test added (3 pass). continuum: its next pad_decisions run updates 5 items to full text.
-README setup step 6: a decision log and Decisions collection in every Pad project (operator, 20 Nov 2026: 'this will be standard'); first done for
-enterprise-strategy (123 decisions, 7 superseded).
+scripts/pad_decisions.py: decision-log rows wrapped by the Markdown hook were read as their first line only, so long decisions and reasons reached Pad cut short (continuum DL-001's reason ended at
+'a'); table_rows() now joins continuation rows; an optional Status column sets the Pad status (accepted, deferred, rejected, superseded by DL-nnn, named in the body). Test added (3 pass). continuum:
+its next pad_decisions run updates 5 items to full text. README setup step 6: a decision log and Decisions collection in every Pad project (operator, 20 Nov 2026: 'this will be standard'); first done
+for enterprise-strategy (123 decisions, 7 superseded).
 
 ## 20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first
 
-README.md, Setting Pad up in a project, step 3: a project without bug, feature or tech-debt trackers applies the baseline with --only (pad-owned-trackers
-left out) and starts with the Asks collection; learned setting up the enterprise-strategy hub workspace (20 Nov 2026: six conventions, Asks with ASK-11 to ASK-15).
+README.md, Setting Pad up in a project, step 3: a project without bug, feature or tech-debt trackers applies the baseline with --only (pad-owned-trackers left out) and starts with the Asks collection;
+learned setting up the enterprise-strategy hub workspace (20 Nov 2026: six conventions, Asks with ASK-11 to ASK-15).
 
 ## 20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs
 
-references/cli-reference.md (Traps), Learned 2026-11-20: on 0.21.1 --awaits-human and --tracks-work need the = form (the space form fails
-with "accepts 1 arg(s), received 2"); refs number across the workspace (ASK-105 after TASK-104); no collection get. docs/pad-usage-guidelines:
-the Asks create command corrected. The smc-resiliency workspace now has its Asks collection (operator decision Q1 A, 10 Nov), with ASK-105 and ASK-106.
+references/cli-reference.md (Traps), Learned 2026-11-20: on 0.21.1 --awaits-human and --tracks-work need the = form (the space form fails with "accepts 1 arg(s), received 2"); refs number across the
+workspace (ASK-105 after TASK-104); no collection get. docs/pad-usage-guidelines: the Asks create command corrected. The smc-resiliency workspace now has its Asks collection (operator decision Q1 A,
+10 Nov), with ASK-105 and ASK-106.
 
 ## 20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen
 
-SKILL.md: the installed Pad CLI is 0.21.1 (pad --version, 2026-11-20, build 0d76fda of 2026-11-18). Used from smc-resiliency with no change in behaviour
-seen: bootstrap, item create with --op-key, and the pack's item-check (TASK-103 and TASK-104, 0 findings) all worked as on 0.21.0. Learned from the
-enterprise-strategy slurp close of 20 Nov 2026.
+SKILL.md: the installed Pad CLI is 0.21.1 (pad --version, 2026-11-20, build 0d76fda of 2026-11-18). Used from smc-resiliency with no change in behaviour seen: bootstrap, item create with --op-key, and
+the pack's item-check (TASK-103 and TASK-104, 0 findings) all worked as on 0.21.0. Learned from the enterprise-strategy slurp close of 20 Nov 2026.
 
 ## 20261120_0300 — Tracker export: an item made in Pad renders its title
 
-- scripts/pad_tracker.py `from_pad`: an item created in Pad (its title differs from its body's first line) is rendered with the title as the line and the
-  whole body under it; before, the body's first line (`**Serves:** ...`) stood in for the item (smc-resiliency features-to-add, FR-95). Imported items
-  are unchanged. Two tests in tests/test_pad_tracker.py (9 pass; the first fails on the old code).
+- scripts/pad_tracker.py `from_pad`: an item created in Pad (its title differs from its body's first line) is rendered with the title as the line and the whole body under it; before, the body's first
+  line (`**Serves:** ...`) stood in for the item (smc-resiliency features-to-add, FR-95). Imported items are unchanged. Two tests in tests/test_pad_tracker.py (9 pass; the first fails on the old
+  code).
 
 ## 20261119_1849 — Markdown and Pad sync plan; peer sessions consulted
 
-Operator asked whether skill-pad has the scripts projects need to work with Pad, whether markdown needs a mapping to Pad items, and for a plan
-with a reversible script (markdown edited, Pad updated, markdown regenerated). Three live sessions consulted (smc-resiliency-44, ansible-wifi-47,
-continuum-32) on sync, revert and script gaps.
+Operator asked whether skill-pad has the scripts projects need to work with Pad, whether markdown needs a mapping to Pad items, and for a plan with a reversible script (markdown edited, Pad updated,
+markdown regenerated). Three live sessions consulted (smc-resiliency-44, ansible-wifi-47, continuum-32) on sync, revert and script gaps.
 
-- New `docs/pad-markdown-sync-plan-20261119_1845.md` (proposed): one owner per record type, keys in the markdown, sync cycle, journal and
-  revert, conflicts, link checks, script constraints, collections review (keep, leave empty, add Asks, Decisions, Risks, Handoffs, Runs), gaps
-  G1-G18, stages S0-S6, decisions D1-D9. Indexed in README and SKILL.md.
+- New `docs/pad-markdown-sync-plan-20261119_1845.md` (proposed): one owner per record type, keys in the markdown, sync cycle, journal and revert, conflicts, link checks, script constraints,
+  collections review (keep, leave empty, add Asks, Decisions, Risks, Handoffs, Runs), gaps G1-G18, stages S0-S6, decisions D1-D9. Indexed in README and SKILL.md.
 - `references/cli-reference.md`: Learned 2026-11-19 (format names per command, `item list` has no body, no `collection show`, what Pad can undo).
 - No script added: the probes run were one-off; their reusable logic is planned as padlib (G1) and pad_links.py (G7).
 - Pad read only (collections, playbooks, items, history); nothing written to Pad.
@@ -184,7 +196,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 ## 20261111_1213 — links step in a commit gate
 
 - `references/items-and-edits.md`: run `pad_tracker.py links` before the export in a project's commit gate.
-
-## 20261111_1135 — workspace sharing noted
-
-- `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` shares an existing workspace across repos (skill-ai-it asks at bootstrap).

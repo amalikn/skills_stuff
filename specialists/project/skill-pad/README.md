@@ -96,6 +96,8 @@ Learned in unified-network-controller, 2026-11-10:
    `| DL-nnn | date | architecture or process | decision | reason | status |` (status accepted, deferred, rejected or `superseded by DL-nnn`; a reversal supersedes,
    never rewrites), create the Decisions collection once from `conventions/collection-schemas/decisions.json`, and add a `pad-decisions` recipe calling
    `scripts/pad_decisions.py --project-root . --decision-log docs/decision-log.md`. Accepted decisions are a closed status: list them with `pad item list decisions --all`.
+   A project with a `docs/trackers/` folder keeps the log there (smc-resiliency, 20 Nov 2026: 90 decisions, 1 superseded, built from SCRATCHPAD's
+   Recent decisions, live and rotated). Run the recipe non-fatally in the commit gate, and have the project's check fail on a KEEP decision with no log row.
 
 Install facts behind this folder (verified 2026-11-10): Claude Code reads user skills only from its own skills folder; Codex reads `~/.agents/skills` (path:install-example) and the deprecated codex
 skills folder (source openai/codex `codex-rs/ext/skills/src/host_roots.rs`); Pad writes skills with a plain file write, which follows a symlink.
