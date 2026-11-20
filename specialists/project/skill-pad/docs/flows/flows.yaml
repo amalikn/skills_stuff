@@ -1,0 +1,505 @@
+# GENERATED from docs/flows/parts/master.yaml and the parts it includes, by skill-drawio's assemble_flowmap.py (`just flows`).
+# Edit the parts, never this file: the check fails when it differs from what the parts assemble to.
+
+# skill-pad flow map (operator, 2026-11-20: "add flows to skill-pad", draw.io flows). Data first, skill-drawio's standard layout: this master and
+# the parts beside it are the source; `just flows` assembles ../flows.yaml (assemble_flowmap.py) and renders ../drawio/skill-pad-flows.drawio (output path from the skill root)
+# (render_flowmap.py). Edit the parts, never the two generated files. `just check` runs the assembly and render drift checks and the layout audits.
+schema_version: 1
+title: "skill-pad: how Pad work moves between the agent, the pad CLI and the project repo"
+updated: "2026-11-20"
+
+drawing:
+  output: docs/flows/drawio/skill-pad-flows.drawio
+  command: just flows
+  kinds:
+    person: ["#ffffff", "#000000"]
+    cli: ["#dae8fc", "#6c8ebf"]
+    service: ["#d5e8d4", "#82b366"]
+    script: ["#ffe6cc", "#d79b00"]
+    timer: ["#fff2cc", "#d6b656"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People, groups: [People]}
+    - {name: Pad, groups: [Pad]}
+    - {name: skill-pad scripts, groups: [skill-pad scripts]}
+    - {name: Outside, groups: [Outside]}
+  below: {groups: [Project repo]}
+  band_title: Project repo
+  families:
+    - {id: work, name: Work items, colour: "#1f4e9c", flows: [work-item, ask, bug]}
+    - {id: records, name: Records, colour: "#1b7a3a", flows: [tracker-export, decision-mirror, focus-export]}
+    - {id: standard, name: Writing standard, colour: "#6a3fa0", flows: [conventions-apply, layout-pass, links-pass]}
+    - {id: operations, name: Operations, colour: "#9c4a1f", flows: [nightly-backup, live-feed]}
+
+components:
+  - id: operator
+    name: Operator
+    kind: person
+    group: People
+    host: the Mac and the Pad web UI
+    health: answers asks; ticks shipped feature requests
+    depends_on: [pad-web]
+  - id: agent
+    name: Agent session
+    kind: person
+    group: People
+    host: Claude Code or Codex on the Mac
+    health: loads skill-pad and runs pad bootstrap before the first Pad action
+    depends_on: [pad-cli, pad-toml]
+  - id: pad-cli
+    name: pad CLI
+    kind: cli
+    group: Pad
+    host: the Mac (Homebrew perpetualsoftware/tap/pad)
+    health: pad --version answers; pad auth whoami names a user
+    depends_on: [pad-server]
+  - id: pad-server
+    name: Pad server
+    kind: service
+    group: Pad
+    host: the Mac, 127.0.0.1:7777 (mode local)
+    health: pad server info answers
+    depends_on: [pad-db]
+  - id: pad-web
+    name: Pad web UI
+    kind: service
+    group: Pad
+    host: the Mac, pad server open
+    health: the workspace page loads
+    depends_on: [pad-server]
+  - id: pad-db
+    name: Pad data (pad.db, attachments)
+    kind: store
+    group: Pad
+    host: ~/.pad, a symlink to tools_stuff/pad data
+    health: read only through the CLI, never directly
+  - id: conventions-script
+    name: pad_conventions.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by just conventions
+    health: a second plan after --apply shows 0 changes
+    depends_on: [pad-cli, baseline]
+  - id: decisions-script
+    name: pad_decisions.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by a project's just pad-decisions
+    health: a second plan shows 0 to create and 0 to update; orphans listed
+    depends_on: [pad-cli, decision-records]
+  - id: tracker-script
+    name: pad_tracker.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by a project's just pad-trackers
+    health: refuses a generated block edited by hand (exit 1)
+    depends_on: [pad-cli, tracker-files]
+  - id: export-script
+    name: pad_export.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by a project's just pad-export
+    health: writes only when an item changed
+    depends_on: [pad-cli]
+  - id: layout-scripts
+    name: pad_format_spec.py and pad_rewrite.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by just format-spec and just rewrite
+    health: the spec changes no word; writes are guarded by seq
+    depends_on: [pad-cli]
+  - id: links-script
+    name: pad_links.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by just links
+    health: a second plan shows nothing to write
+    depends_on: [pad-cli]
+  - id: check-script
+    name: pad_item_check.py and pad_spec_words.py
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by just item-check
+    health: exit 0 on the items checked
+    depends_on: [pad-cli]
+  - id: backup-timer
+    name: Nightly backup (launchd)
+    kind: timer
+    group: skill-pad scripts
+    host: the Mac, au.malik.pad-backup at 02:30
+    health: a dated archive in pad_backups and a clean pad-backup.log
+    depends_on: [pad-db, onedrive]
+  - id: monitor-script
+    name: pad_monitor.sh
+    kind: script
+    group: skill-pad scripts
+    host: skill-pad scripts/, run by the Monitor tool
+    health: one stream per session, re-armed every 30 minutes
+    depends_on: [pad-cli]
+  - id: onedrive
+    name: OneDrive pad_backups
+    kind: external
+    group: Outside
+    host: OneDrive, the stated exception to private by default (Q6)
+    health: the newest archive is under a day old
+  - id: pad-toml
+    name: .pad.toml
+    kind: store
+    group: Project repo
+    host: the project folder (Pad rewrites it on workspace switch)
+    health: names the workspace slug
+  - id: tracker-files
+    name: Generated trackers
+    kind: store
+    group: Project repo
+    host: docs/trackers/bug-tracker.md, features-to-add.md, pad-focus.md
+    health: just check passes; generated blocks unedited
+  - id: decision-records
+    name: Decision records
+    kind: store
+    group: Project repo
+    host: a decision log, .kc ledger or ARCHITECTURE.md Key decisions
+    health: every decision has a row; the Pad mirror plans 0 changes
+  - id: repo-records
+    name: Repo trackers and CHANGELOG
+    kind: store
+    group: Project repo
+    host: target-map, ROADMAP, plan tracker, CHANGELOG
+    health: the truth; Pad items link to them
+  - id: baseline
+    name: Convention baselines
+    kind: store
+    group: Project repo
+    host: skill-pad conventions/apn-baseline.toml and adapted files
+    health: parses; every content has Rule and Source
+  - id: commit-gate
+    name: Commit gate
+    kind: script
+    group: Project repo
+    host: a project's just commit-gate (run by just commit-project)
+    health: exits 0 before a commit
+    depends_on: [tracker-script, decisions-script, export-script]
+
+flows:
+  - id: work-item
+    title: A piece of work, visible in Pad from start to done
+    category: custom
+    purpose: Any work in a project with a .pad.toml runs on an item the operator can see, and the item tells its whole story (SKILL.md Rules).
+    trigger: {kind: manual, detail: "The operator asks for work in a Pad project"}
+    runs_on: agent
+    owner: agent
+    budget: one session or less per task; split a bigger one (split-from)
+    dependencies: {components: [pad-cli, pad-server, repo-records]}
+    steps:
+      - id: find
+        actor: agent
+        action: Runs the status mode (pad project dashboard), then finds the item for the work, or creates a task to the writing standard.
+        via: [CLI]
+        failures: [no item found and none created, so the work is invisible]
+        look: [pad project dashboard, pad item search]
+      - id: create
+        actor: pad-cli
+        action: Creates the task with its template, priority, due date and parent, and an op-key so a retry does not create two.
+        via: [CLI]
+        writes: [pad.db]
+      - id: claim
+        actor: agent
+        action: Claims the item (pad item claim) and sets it in-progress with a --comment that says why, item refs as [[REF]] links.
+        via: [CLI]
+        failures: [lease_held, so pick other work]
+      - id: update
+        actor: agent
+        action: Comments at the start, at each result and at each blocker, as bullets (What, Result, Evidence, Not verified, Next), time from date.
+        via: [CLI]
+        writes: [comments]
+      - id: record
+        actor: repo-records
+        action: The repo record is written first (tracker, CHANGELOG, decision record); Pad links to it.
+        via: [file]
+      - id: done
+        actor: agent
+        action: Adds the DONE or CLOSED comment, attaches logs, runs item-check, then sets the status with a one-line --comment pointing to it.
+        via: [CLI]
+        gate: just item-check exits 0
+        code: [scripts/pad_item_check.py:findings]
+        failures: [labels missing, no closing comment, a named log not attached]
+        look: [just item-check <ref>]
+  - id: ask
+    title: An ask waits on the operator and blocks its work
+    category: custom
+    purpose: A decision or approval the operator owns is an ASK item, never only chat (guidelines 3.1).
+    trigger: {kind: manual, detail: "Work needs an operator decision, approval, bench time or review"}
+    runs_on: agent
+    owner: operator
+    dependencies: {components: [pad-cli, pad-web, repo-records]}
+    steps:
+      - id: raise
+        actor: agent
+        action: Creates the ask (Question, Options with the recommended one, Blocks, Evidence) with kind, priority and due date.
+        via: [CLI]
+        writes: [asks collection]
+      - id: block
+        actor: pad-cli
+        action: pad item block ASK-n TASK-m takes the task out of next and into stale.
+        via: [CLI]
+      - id: answer
+        actor: operator
+        action: Answers on the ask in the web UI or in the session chat.
+        via: [HTTP, chat]
+      - id: record
+        actor: repo-records
+        action: The agent records the answer in the repo first (decision log, guidelines, ROADMAP).
+        via: [file]
+      - id: close
+        actor: pad-cli
+        action: Sets answer and status answered with a comment citing the record, then unblocks the task.
+        via: [CLI]
+        failures: [answer recorded only in Pad, so not recorded]
+  - id: bug
+    title: A bug from report to fixed and live
+    category: custom
+    purpose: Bugs live in Pad; the tracker file is generated (convention pad-owned-trackers).
+    trigger: {kind: manual, detail: "A defect is seen, by the operator, an audit or an agent"}
+    runs_on: agent
+    owner: agent
+    dependencies: {components: [pad-cli, tracker-files, commit-gate]}
+    steps:
+      - id: report
+        actor: agent
+        action: Creates the bug with Seen, Evidence, Effect and Closure, and Cause, Options, Not verified when known; section and order fields place it.
+        via: [CLI]
+        writes: [bugs collection]
+      - id: work
+        actor: agent
+        action: The task that fixes it implements it (pad item implements TASK-n BUG-n).
+        via: [CLI]
+      - id: fix
+        actor: agent
+        action: Fixed in code with a test; a fix not yet deployed stays in-progress, with a comment saying so.
+        via: [file]
+        failures: [set fixed before the deploy, so the live system still fails]
+      - id: closed
+        actor: agent
+        action: Fixed only when fixed and live, after a DONE comment with the evidence.
+        via: [CLI]
+        gate: just item-check exits 0
+      - id: export
+        actor: commit-gate
+        action: The next commit regenerates bug-tracker.md from Pad.
+        via: [CLI]
+        code: [scripts/pad_tracker.py:export_text]
+  - id: tracker-export
+    title: Bug and feature trackers generated from Pad
+    category: custom
+    purpose: bug-tracker.md and features-to-add.md stay readable in the repo while Pad holds the truth (operator, 2026-11-10).
+    trigger: {kind: manual, detail: "just commit-project runs the commit gate"}
+    runs_on: commit-gate
+    owner: tracker-script
+    budget: under 1 s per file
+    dependencies: {components: [pad-cli, tracker-files]}
+    steps:
+      - id: gate
+        actor: commit-gate
+        action: Runs just pad-trackers --apply.
+        via: [CLI]
+      - id: read
+        actor: tracker-script
+        action: Lists the collection (--all --full) and rebuilds each section's item tree; an item made in Pad renders its title, its body under it.
+        via: [CLI]
+        code: [scripts/pad_tracker.py:from_pad]
+      - id: write
+        actor: tracker-script
+        action: Rewrites each generated block, keeping the hand-written text around it.
+        via: [file]
+        writes: [docs/trackers/bug-tracker.md, docs/trackers/features-to-add.md]
+        gate: no generated block edited by hand
+        code: [scripts/pad_tracker.py:export_text]
+        failures: [a hand edit inside a block stops the gate (exit 1)]
+      - id: stored
+        actor: tracker-files
+        action: The generated files are committed with the work.
+        via: [file]
+  - id: decision-mirror
+    title: Decisions mirrored read-only into Pad
+    category: custom
+    purpose: Every decision shows in Pad's Decisions collection while the repo record stays the truth.
+    trigger: {kind: manual, detail: "just pad-decisions --apply, also run by the commit gate"}
+    runs_on: commit-gate
+    owner: decisions-script
+    budget: about 60 s for 110 items; a re-run with nothing changed writes nothing
+    dependencies: {components: [pad-cli, decision-records]}
+    steps:
+      - id: read
+        actor: decisions-script
+        action: Reads the .kc ledger, the decision log's DL rows and, with --architecture, an architecture document's Key decisions bullets.
+        via: [file]
+        reads: [decision log, .kc/decisions.jsonl, ARCHITECTURE.md]
+        code: [scripts/pad_decisions.py:architecture_items]
+      - id: match
+        actor: decisions-script
+        action: Matches each to a Pad item by decision_ref; plans creates and body rewrites; lists orphans (a renamed bullet) without changing them.
+        via: [CLI]
+        code: [scripts/pad_decisions.py:orphans]
+        failures: [a renamed ARCH bullet leaves an orphaned item]
+      - id: write
+        actor: pad-cli
+        action: Creates or rewrites the items with bold labels (Serves, Decision, Reason or Detail, Source).
+        via: [CLI]
+        writes: [decisions collection]
+        code: [scripts/pad_decisions.py:apply]
+  - id: focus-export
+    title: The operator's focus exported to the repo
+    category: custom
+    purpose: docs/trackers/pad-focus.md shows the open plans, tasks and asks in the repo.
+    trigger: {kind: manual, detail: "The commit gate runs pad_export.py --apply (non-fatal)"}
+    runs_on: commit-gate
+    owner: export-script
+    dependencies: {components: [pad-cli, tracker-files]}
+    steps:
+      - id: read
+        actor: export-script
+        action: Reads the workspace, skipping conventions, playbooks, bugs, feature requests, tech debt and decisions.
+        via: [CLI]
+        code: [scripts/pad_export.py:read_items]
+      - id: write
+        actor: export-script
+        action: Writes pad-focus.md only when an item changed; Pad stopped never blocks the gate.
+        via: [file]
+        writes: [docs/trackers/pad-focus.md]
+        code: [scripts/pad_export.py:render]
+  - id: conventions-apply
+    title: Conventions applied from the central baseline
+    category: custom
+    purpose: Every apn workspace carries the same conventions, edited once in skill-pad (operator, 2026-11-10).
+    trigger: {kind: manual, detail: "A baseline file changed: just conventions --project <p> --trackers <list>"}
+    runs_on: agent
+    owner: conventions-script
+    budget: under 1 s per workspace
+    dependencies: {components: [pad-cli, baseline]}
+    steps:
+      - id: read
+        actor: conventions-script
+        action: Loads the baseline (apn-baseline.toml or an adapted file) and fills {project} and {trackers}; the trackers text is read from the workspace's own trackers-truth first.
+        via: [file]
+        code: [scripts/pad_conventions.py:load_baseline]
+        failures: [a new --trackers value overwrites a fuller list]
+      - id: plan
+        actor: conventions-script
+        action: Plans same, update or create per convention (the startup template's four are rewritten in place).
+        via: [CLI]
+        code: [scripts/pad_conventions.py:plan]
+      - id: apply
+        actor: pad-cli
+        action: Writes with --apply; a second plan must show 0 changes.
+        via: [CLI]
+        writes: [conventions collection]
+        code: [scripts/pad_conventions.py:apply]
+        failures: [a rate limit stops a run partway, so re-plan]
+  - id: layout-pass
+    title: Bodies laid out to the templates, words unchanged
+    category: custom
+    purpose: Brings a workspace's bodies to the bold-label layout without rewording (guidelines 3.3).
+    trigger: {kind: manual, detail: "just format-spec spec.json, review, just rewrite spec.json --apply"}
+    runs_on: agent
+    owner: layout-scripts
+    budget: about 0.3 s per write
+    dependencies: {components: [pad-cli]}
+    steps:
+      - id: spec
+        actor: layout-scripts
+        action: Reads every body and writes a spec that bolds labels and joins hard wraps, with each item's seq.
+        via: [CLI]
+        code: [scripts/pad_format_spec.py:reformat]
+      - id: review
+        actor: check-script
+        action: just spec-words checks every body in the spec keeps every word of the item's current body (labels may be added), before applying.
+        via: [CLI]
+        gate: 0 items with lost words
+        code: [scripts/pad_spec_words.py:lost]
+      - id: rewrite
+        actor: layout-scripts
+        action: Applies the spec, each write guarded by seq.
+        via: [CLI]
+        writes: [item bodies]
+        code: [scripts/pad_rewrite.py:commands]
+        failures: ["seq moved, so someone changed the item: re-read"]
+      - id: check
+        actor: check-script
+        action: item-check over the workspace reports what still lacks a required label or a closing comment.
+        via: [CLI]
+        code: [scripts/pad_item_check.py:missing_labels]
+  - id: links-pass
+    title: References made clickable
+    category: custom
+    purpose: Every item, decision or record named in a body or an agent comment is a [[REF]] link (operator, 2026-11-20).
+    trigger: {kind: manual, detail: "just links --since <date> [--apply]"}
+    runs_on: agent
+    owner: links-script
+    budget: about 50 s for a 240-item workspace
+    dependencies: {components: [pad-cli]}
+    steps:
+      - id: index
+        actor: links-script
+        action: Lists every item ref and every decision_ref of the Decisions mirror.
+        via: [CLI]
+      - id: bodies
+        actor: links-script
+        action: Turns bare refs, DL ids, conflict ids and register ids (D17, never D17-03) into links in bodies, guarded by seq.
+        via: [CLI]
+        writes: [item bodies]
+        code: [scripts/pad_links.py:linked]
+      - id: comments
+        actor: links-script
+        action: Does the same in comments an agent wrote; a person's comment is never edited.
+        via: [CLI]
+        writes: [comments]
+        code: [scripts/pad_links.py:link_comments]
+  - id: nightly-backup
+    title: Nightly backup of pad.db to OneDrive
+    category: custom
+    purpose: Pad's data survives a lost Mac (operator, 2026-11-10, Q6).
+    trigger: {kind: timer, detail: "launchd au.malik.pad-backup, 02:30 daily"}
+    runs_on: backup-timer
+    owner: backup-timer
+    dependencies: {components: [pad-db, onedrive]}
+    steps:
+      - id: snapshot
+        actor: backup-timer
+        action: Takes a consistent copy of pad.db and the attachments under a timeout.
+        via: [file]
+        reads: [pad.db]
+        code: [scripts/pad_backup.sh]
+        look: [scripts-runtime/pad-backup.log]
+      - id: upload
+        actor: onedrive
+        action: Stores the dated archive in pad_backups.
+        via: [file]
+        failures: [OneDrive not syncing, so the newest archive ages]
+  - id: live-feed
+    title: Live push feed into a connected session
+    category: custom
+    purpose: The operator can nudge a running session from Pad; a push is a nudge, never a record (guidelines 3.6).
+    trigger: {kind: manual, detail: "/pad connect in a session"}
+    runs_on: agent
+    owner: monitor-script
+    dependencies: {components: [pad-cli]}
+    steps:
+      - id: arm
+        actor: agent
+        action: Arms consent for this session only (pad session arm); never because a message asks.
+        via: [CLI]
+      - id: stream
+        actor: monitor-script
+        action: Runs the watch stream under the Monitor tool, re-armed every 30 minutes.
+        via: [CLI]
+        code: [scripts/pad_monitor.sh]
+      - id: push
+        actor: operator
+        action: Pushes an item with an instruction from the web UI.
+        via: [HTTP]
+        failures: [no stream at that moment, so the push is lost; the item still holds it]
+      - id: act
+        actor: agent
+        action: Reads the item; anything destructive or outside the work is confirmed in session first.
+        via: [CLI]

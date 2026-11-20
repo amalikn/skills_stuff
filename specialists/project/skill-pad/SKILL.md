@@ -81,9 +81,9 @@ into that session.
   (`TASK-5`), never slugs. Pass `--op-key` on the writes that accept it so a retry does not apply twice: in 0.21.0 `item create`, `item patch`, `item comment`, `item note`, `item decide`, `item copy`,
   `chat send` and `push`; `item update` has no `--op-key` (`pad help <group> <command> --format md`, read 2026-11-19); guard body rewrites with `--expected-seq`; every status change carries
   `--comment` saying why.
-- **Single calls retry on rate limits (operator, 2026-11-20):** every session, agent and script shares one limiter on the local server, so a
-  sweep elsewhere makes plain calls fail with 429. Make writes and reads in loops through `just -f <skill-pad>/justfile pad <args>`
-  (`scripts/pad_retry.sh`: backoff, stdin replayed); bulk scripts keep their own retry. Space sweeps; read only items changed recently.
+- **Single calls retry on rate limits (operator, 2026-11-20):** every session, agent and script shares one limiter on the local server, so a sweep elsewhere makes plain calls fail with 429. Make
+  writes and reads in loops through `just -f <skill-pad>/justfile pad <args>` (`scripts/pad_retry.sh`: backoff, stdin replayed); bulk scripts keep their own retry. Space sweeps; read only items
+  changed recently.
 - **Tickets tell the whole story (operator, 2026-11-18; applies in every project).** A reader who opens one item must learn what happened without the chat:
   - **Body:** every section label is bold and starts its own paragraph (`**Serves:**`, `**Why:**`, `**Do:**`, `**Done when:**`, `**Writes:**`, `**Refs:**`; a bug: `**Seen:**`, `**Evidence:**`,
     `**Cause:**`, `**Effect:**`, `**Options:**`, `**Not verified:**`, `**Closure:**`), with a blank line between sections.
@@ -103,6 +103,9 @@ into that session.
   it (a task to the writing standard, 3.3), since the operator's request for the work is the confirmation. Claim it, set it `in-progress` with `--comment`, comment at the start, at each result and at
   each blocker, and close it with the `DONE:` comment. No work in a Pad project runs without an active item the operator can see; a relay or a side task counts as work. Housekeeping gets no item
   (operator, 2026-11-20).
+- **Skill work goes to the `skills` workspace (operator, 2026-11-20: "All skill related stuff will go into skill workspace in the pad"):** work on any skill pack (its scripts, references, conventions,
+  templates, flows) is an item in the `skills` workspace (`skills_stuff/.pad.toml`), even when a project's session found it; the project's own item names it in its text, since `[[REF]]` links do not
+  cross workspaces.
 - **Never add to Pad (operator, 2026-11-20):** the session's own housekeeping, whoever asks for it:
   - session closeout and every slurp (`/slurp-chat`, in detail, close, the second close);
   - skill and tool write-backs owed under a standing contract;
@@ -144,6 +147,8 @@ clients and Pad Cloud: [references/integrations.md](references/integrations.md).
 - [references/upgrade.md](references/upgrade.md): refreshing the upstream mirror and this skill after a Pad release.
 - [docs/pad-usage-guidelines-20261110_1628.md](docs/pad-usage-guidelines-20261110_1628.md): **in force for apn workspaces** (operator, 2026-11-10): Asks for anything that needs the operator, current-focus plans and tasks, the writing standard
   (3.3), tags (3.4); read it before creating items in an apn workspace.
+- [docs/flows/readme.md](docs/flows/readme.md): the flow map (draw.io, data first, `just flows`): how work, asks, bugs, records, conventions, the layout and links passes, the backup and the live feed move between the agent,
+  the pad CLI, the scripts and a project's repo (2026-11-20).
 - [docs/pad-markdown-sync-plan-20261119_1845.md](docs/pad-markdown-sync-plan-20261119_1845.md): **proposed** (2026-11-19): markdown and Pad sync, one owner per record type, journal and revert, script gaps G1-G18, collections to add; not in force
   until the operator answers its section 6.
 - [references/upstream/readme.md](references/upstream/readme.md): verbatim upstream sources (site pages, repo files, release notes, CLI help).

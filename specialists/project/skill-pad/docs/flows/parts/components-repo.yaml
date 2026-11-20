@@ -1,0 +1,39 @@
+#% Part: components, project repo
+#% Lands under: components
+- id: pad-toml
+  name: .pad.toml
+  kind: store
+  group: Project repo
+  host: the project folder (Pad rewrites it on workspace switch)
+  health: names the workspace slug
+- id: tracker-files
+  name: Generated trackers
+  kind: store
+  group: Project repo
+  host: docs/trackers/bug-tracker.md, features-to-add.md, pad-focus.md
+  health: just check passes; generated blocks unedited
+- id: decision-records
+  name: Decision records
+  kind: store
+  group: Project repo
+  host: a decision log, .kc ledger or ARCHITECTURE.md Key decisions
+  health: every decision has a row; the Pad mirror plans 0 changes
+- id: repo-records
+  name: Repo trackers and CHANGELOG
+  kind: store
+  group: Project repo
+  host: target-map, ROADMAP, plan tracker, CHANGELOG
+  health: the truth; Pad items link to them
+- id: baseline
+  name: Convention baselines
+  kind: store
+  group: Project repo
+  host: skill-pad conventions/apn-baseline.toml and adapted files
+  health: parses; every content has Rule and Source
+- id: commit-gate
+  name: Commit gate
+  kind: script
+  group: Project repo
+  host: a project's just commit-gate (run by just commit-project)
+  health: exits 0 before a commit
+  depends_on: [tracker-script, decisions-script, export-script]

@@ -1,0 +1,65 @@
+#% Part: components, skill-pad scripts
+#% Lands under: components
+- id: conventions-script
+  name: pad_conventions.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by just conventions
+  health: a second plan after --apply shows 0 changes
+  depends_on: [pad-cli, baseline]
+- id: decisions-script
+  name: pad_decisions.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by a project's just pad-decisions
+  health: a second plan shows 0 to create and 0 to update; orphans listed
+  depends_on: [pad-cli, decision-records]
+- id: tracker-script
+  name: pad_tracker.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by a project's just pad-trackers
+  health: refuses a generated block edited by hand (exit 1)
+  depends_on: [pad-cli, tracker-files]
+- id: export-script
+  name: pad_export.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by a project's just pad-export
+  health: writes only when an item changed
+  depends_on: [pad-cli]
+- id: layout-scripts
+  name: pad_format_spec.py and pad_rewrite.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by just format-spec and just rewrite
+  health: the spec changes no word; writes are guarded by seq
+  depends_on: [pad-cli]
+- id: links-script
+  name: pad_links.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by just links
+  health: a second plan shows nothing to write
+  depends_on: [pad-cli]
+- id: check-script
+  name: pad_item_check.py and pad_spec_words.py
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by just item-check
+  health: exit 0 on the items checked
+  depends_on: [pad-cli]
+- id: backup-timer
+  name: Nightly backup (launchd)
+  kind: timer
+  group: skill-pad scripts
+  host: the Mac, au.malik.pad-backup at 02:30
+  health: a dated archive in pad_backups and a clean pad-backup.log
+  depends_on: [pad-db, onedrive]
+- id: monitor-script
+  name: pad_monitor.sh
+  kind: script
+  group: skill-pad scripts
+  host: skill-pad scripts/, run by the Monitor tool
+  health: one stream per session, re-armed every 30 minutes
+  depends_on: [pad-cli]

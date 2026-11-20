@@ -88,6 +88,18 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > - Rate limits hit reads too: a burst of `pad item show` calls in a loop returned `rate_limited` (`retry_after_seconds: 1`) on stdout's place, so a JSON parse of the output failed. Retry on empty
 > output, or space the calls.
 
+> **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed, unc and skills workspaces) · Source: `pad item history CONVE-24 --full --format json`; `pad help item comment-edit`;
+> `pad item comments <ref> --format json`; `pad item update --tags` · Falsifier: a history version without its content, or comment-edit accepting another author's comment
+> - `pad item history <ref> --full --format json` returns each version with its content as it was **before** that change: it recovered a convention's tracker list that a baseline run had overwritten
+> the same day (unc CONVE-24). Read it before re-applying anything that fills a value from the command line.
+> - `pad item comment-edit <ref> <comment-id> --stdin` edits a comment; only its author may (an admin from the web UI). Comment JSON carries `created_by` (`agent` or a person) and `deleted`, so a
+> script can edit only agent comments (pad_links.py link_comments).
+> - Tags are set with `pad item update <ref> --tags '["a","b"]'` (the whole list, JSON); `pad tag list` counts them per workspace.
+> - A long script run (item-check over 270 items, about 2.5 min) rate-limits every other Pad call made meanwhile, writes included; a script without a retry stops partway with no "applied" line
+> (pad_conventions.py did, three workspaces of four). Every skill-pad script now retries `rate_limited`; avoid writes while a long read runs.
+> - A body drafted with the Write tool in a `.md` file is reflowed by the markdown hook (a line hard-wrapped mid-sentence reached TASK-13); a heredoc written by Bash, or a file with another
+> extension, is not. Read a new item back and join any wrapped line (`pad item patch --old $'a\nb' --new 'a b'`).
+
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED (three refused comments, one session) · Source: `pad item comment TASK-145 "- **What:** ..."` → `Error: unknown shorthand flag: ' '` · Falsifier: a message argument starting with `-` saved as a comment
 > A message argument that starts with `-` (a bullet list) is parsed as a flag and refused; the usage text goes to stdout, so `| tail -1` hides the error. Pass bullet comments with `--stdin` and a
 > heredoc, and check for `Comment added` in the output.
@@ -200,10 +212,9 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > the text moved); `pad item restore` only un-archives a soft-deleted item. Fields, status and comments have no CLI undo, so a sync keeps its own before-image journal ([pad-markdown-sync-plan](../docs/pad-markdown-sync-plan-20261119_1845.md) 3.4).
 
 > **Learned 2026-11-20** · Pad CLI v0.21.0 · VERIFIED_PRIMARY (continuum workspace, 2026-11-20) · Source: `pad item list decisions` printed one item while
-> `pad item list decisions --all --format json` returned 174 · Falsifier: a Pad version whose list shows terminal statuses by default.
-> `pad item list` hides items in a done-like status (done, accepted, answered, fixed) unless `--all` is given, so a count of a decisions collection without
-> `--all` looks like a broken mirror. A comment or note body that starts with `- ` is parsed as a flag ("unknown shorthand flag"): pass bodies with
-> `--stdin`. Bursts of writes get `rate_limited` (retry after 1 s): space them or retry with the same `--op-key`.
+> `pad item list decisions --all --format json` returned 174 · Falsifier: a Pad version whose list shows terminal statuses by default. `pad item list` hides items in a done-like status (done,
+> accepted, answered, fixed) unless `--all` is given, so a count of a decisions collection without `--all` looks like a broken mirror. A comment or note body that starts with `- ` is parsed as a flag
+> ("unknown shorthand flag"): pass bodies with `--stdin`. Bursts of writes get `rate_limited` (retry after 1 s): space them or retry with the same `--op-key`.
 >
 > ```sh
 > pad item list decisions --all --format json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))'
@@ -213,6 +224,6 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > ```
 
 > **Learned 2026-11-20** · Pad server (local, v0.21.x) · VERIFIED_PRIMARY · Source: ~/.pad/logs/server.log, 18:00 to 18:07 AEDT: 3,315 requests (unified-network-controller 1,594, continuum 457, smc-resiliency 11), 305 answered 429; `msg="rate limited" key=user:<id> limiter=api` · Falsifier: a 429 keyed by client address or workspace
-> The API limiter is keyed by the Pad user, so all sessions on the Mac share it: one session sweeping a workspace (item show plus comments for every
-> item) starves the others. `pad server start` has no rate-limit option. Retry single calls (`scripts/pad_retry.sh`) and run sweeps one at a time.
+> The API limiter is keyed by the Pad user, so all sessions on the Mac share it: one session sweeping a workspace (item show plus comments for every item) starves the others. `pad server start` has no
+> rate-limit option. Retry single calls (`scripts/pad_retry.sh`) and run sweeps one at a time.
 

@@ -1,0 +1,29 @@
+#% Part: components, Pad
+#% Lands under: components
+- id: pad-cli
+  name: pad CLI
+  kind: cli
+  group: Pad
+  host: the Mac (Homebrew perpetualsoftware/tap/pad)
+  health: pad --version answers; pad auth whoami names a user
+  depends_on: [pad-server]
+- id: pad-server
+  name: Pad server
+  kind: service
+  group: Pad
+  host: the Mac, 127.0.0.1:7777 (mode local)
+  health: pad server info answers
+  depends_on: [pad-db]
+- id: pad-web
+  name: Pad web UI
+  kind: service
+  group: Pad
+  host: the Mac, pad server open
+  health: the workspace page loads
+  depends_on: [pad-server]
+- id: pad-db
+  name: Pad data (pad.db, attachments)
+  kind: store
+  group: Pad
+  host: ~/.pad, a symlink to tools_stuff/pad data
+  health: read only through the CLI, never directly

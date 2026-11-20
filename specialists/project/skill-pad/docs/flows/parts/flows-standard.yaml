@@ -1,0 +1,89 @@
+#% Part: flows, writing standard
+#% Lands under: flows
+- id: conventions-apply
+  title: Conventions applied from the central baseline
+  category: custom
+  purpose: Every apn workspace carries the same conventions, edited once in skill-pad (operator, 2026-11-10).
+  trigger: {kind: manual, detail: "A baseline file changed: just conventions --project <p> --trackers <list>"}
+  runs_on: agent
+  owner: conventions-script
+  budget: under 1 s per workspace
+  dependencies: {components: [pad-cli, baseline]}
+  steps:
+    - id: read
+      actor: conventions-script
+      action: Loads the baseline (apn-baseline.toml or an adapted file) and fills {project} and {trackers}; the trackers text is read from the workspace's own trackers-truth first.
+      via: [file]
+      code: [scripts/pad_conventions.py:load_baseline]
+      failures: [a new --trackers value overwrites a fuller list]
+    - id: plan
+      actor: conventions-script
+      action: Plans same, update or create per convention (the startup template's four are rewritten in place).
+      via: [CLI]
+      code: [scripts/pad_conventions.py:plan]
+    - id: apply
+      actor: pad-cli
+      action: Writes with --apply; a second plan must show 0 changes.
+      via: [CLI]
+      writes: [conventions collection]
+      code: [scripts/pad_conventions.py:apply]
+      failures: [a rate limit stops a run partway, so re-plan]
+- id: layout-pass
+  title: Bodies laid out to the templates, words unchanged
+  category: custom
+  purpose: Brings a workspace's bodies to the bold-label layout without rewording (guidelines 3.3).
+  trigger: {kind: manual, detail: "just format-spec spec.json, review, just rewrite spec.json --apply"}
+  runs_on: agent
+  owner: layout-scripts
+  budget: about 0.3 s per write
+  dependencies: {components: [pad-cli]}
+  steps:
+    - id: spec
+      actor: layout-scripts
+      action: Reads every body and writes a spec that bolds labels and joins hard wraps, with each item's seq.
+      via: [CLI]
+      code: [scripts/pad_format_spec.py:reformat]
+    - id: review
+      actor: check-script
+      action: just spec-words checks every body in the spec keeps every word of the item's current body (labels may be added), before applying.
+      via: [CLI]
+      gate: 0 items with lost words
+      code: [scripts/pad_spec_words.py:lost]
+    - id: rewrite
+      actor: layout-scripts
+      action: Applies the spec, each write guarded by seq.
+      via: [CLI]
+      writes: [item bodies]
+      code: [scripts/pad_rewrite.py:commands]
+      failures: ["seq moved, so someone changed the item: re-read"]
+    - id: check
+      actor: check-script
+      action: item-check over the workspace reports what still lacks a required label or a closing comment.
+      via: [CLI]
+      code: [scripts/pad_item_check.py:missing_labels]
+- id: links-pass
+  title: References made clickable
+  category: custom
+  purpose: Every item, decision or record named in a body or an agent comment is a [[REF]] link (operator, 2026-11-20).
+  trigger: {kind: manual, detail: "just links --since <date> [--apply]"}
+  runs_on: agent
+  owner: links-script
+  budget: about 50 s for a 240-item workspace
+  dependencies: {components: [pad-cli]}
+  steps:
+    - id: index
+      actor: links-script
+      action: Lists every item ref and every decision_ref of the Decisions mirror.
+      via: [CLI]
+    - id: bodies
+      actor: links-script
+      action: Turns bare refs, DL ids, conflict ids and register ids (D17, never D17-03) into links in bodies, guarded by seq.
+      via: [CLI]
+      writes: [item bodies]
+      code: [scripts/pad_links.py:linked]
+    - id: comments
+      actor: links-script
+      action: Does the same in comments an agent wrote; a person's comment is never edited.
+      via: [CLI]
+      writes: [comments]
+      code: [scripts/pad_links.py:link_comments]

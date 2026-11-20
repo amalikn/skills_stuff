@@ -1,0 +1,8 @@
+#% Part: components, outside
+#% Lands under: components
+- id: onedrive
+  name: OneDrive pad_backups
+  kind: external
+  group: Outside
+  host: OneDrive, the stated exception to private by default (Q6)
+  health: the newest archive is under a day old

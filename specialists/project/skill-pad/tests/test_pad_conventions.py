@@ -1,8 +1,10 @@
 """Offline tests for scripts/pad_conventions.py: the baseline loads with placeholders filled, and the plan says same, update or create correctly."""
 
 import importlib.util
+import subprocess
 import unittest
 from pathlib import Path
+from unittest import mock
 
 _spec = importlib.util.spec_from_file_location("pad_conventions", Path(__file__).resolve().parents[1] / "scripts" / "pad_conventions.py")
 pc = importlib.util.module_from_spec(_spec)
@@ -74,6 +76,33 @@ class Baseline(unittest.TestCase):
         self.assertEqual(len(pc.select_entries(self.b, None)), 7)
         with self.assertRaises(ValueError):
             pc.select_entries(self.b, "writing-standard,nope")
+
+
+
+class RateLimit(unittest.TestCase):
+    """pad() retries a rate-limited call and gives up on any other error (2026-11-20)."""
+
+    def test_retry_then_answer(self):
+        """Two rate-limited answers, then success: the output is returned.
+
+        Returns:
+            None.
+        """
+        limited = subprocess.CompletedProcess([], 1, "", "rate_limited")
+        ok = subprocess.CompletedProcess([], 0, "done", "")
+        with mock.patch.object(pc.subprocess, "run", side_effect=[limited, limited, ok]), mock.patch.object(pc.time, "sleep"):
+            self.assertEqual(pc.pad(["item", "list"], 5), "done")
+
+    def test_other_error_not_retried(self):
+        """A refusal that is not a rate limit raises at once.
+
+        Returns:
+            None.
+        """
+        bad = subprocess.CompletedProcess([], 1, "", "not found")
+        with mock.patch.object(pc.subprocess, "run", side_effect=[bad]) as run, self.assertRaises(RuntimeError):
+            pc.pad(["item", "show", "X-1"], 5)
+        self.assertEqual(run.call_count, 1)
 
 
 if __name__ == "__main__":

@@ -106,13 +106,12 @@ For each existing entry, ask only: does the conversation hold specific detail (c
 - memory-keeper: `context_save(key="<project>.<topic>", category, priority, channel, value)`. One key per topic. `high` for blockers.
 - project-context: `add_note` per Zone B topic; `record_decision` for each operator decision. Never duplicate an existing note.
 - Undecided proposals are saved as open, never as decisions.
-- Pad (operator, 2026-11-20: "are you capturing decision in pad?"): when the project has a `.pad.toml`, each operator decision also gets `pad item decide <ref>` on the
-  item it affects, pointing at the repo record (session record or decision surface), and each decision the operator still owes becomes an ask in its Asks
-  collection (skill-pad, docs/pad-usage-guidelines 3.1 and 3.5). An ask that blocks a task goes in that task's workspace: Pad's block links do not cross
-  workspaces. Every decision, existing and new, is also a row of the project's `docs/decision-log.md` (`| DL-nnn | date | architecture or process |
-  decision | reason | status |`), mirrored into its Decisions collection with skill-pad `pad_decisions.py` (`just pad-decisions --apply`); a reversal sets the
-  earlier row to `superseded by DL-nnn`, never rewrites it (operator, 2026-11-20: "decision all existing and new to be added.. this will be standard").
-  A project with Pad but no log yet gets one (skill-pad README, setup step 6). Refresh the project's Pad export after.
+- Pad (operator, 2026-11-20: "are you capturing decision in pad?"): when the project has a `.pad.toml`, each operator decision also gets `pad item decide <ref>` on the item it affects, pointing at the
+  repo record (session record or decision surface), and each decision the operator still owes becomes an ask in its Asks collection (skill-pad, docs/pad-usage-guidelines 3.1 and 3.5). An ask that
+  blocks a task goes in that task's workspace: Pad's block links do not cross workspaces. Every decision, existing and new, is also a row of the project's `docs/decision-log.md` (`| DL-nnn | date |
+  architecture or process | decision | reason | status |`), mirrored into its Decisions collection with skill-pad `pad_decisions.py` (`just pad-decisions --apply`); a reversal sets the earlier row to
+  `superseded by DL-nnn`, never rewrites it (operator, 2026-11-20: "decision all existing and new to be added.. this will be standard"). A project with Pad but no log yet gets one (skill-pad README,
+  setup step 6). Refresh the project's Pad export after.
 
 ## Step 5a — Persistent scripts (every slurp, unprompted; operator, 2026-10-09: "when slurp is called, scripts should be handled in it as well")
 List every script the session wrote or ran ad hoc: scratchpad files, heredoc programs, one-off probes and measurements. Judge each by how likely it is to be needed again (operator, 2026-10-09: "only
@@ -271,8 +270,10 @@ files checked against companion rules, the Step 6b result, and the last memory-k
 |                                                             |   was missing from pass 1 (only its later "split done" showed). Search the transcript for `cross-session-message` and route each one   |
 |                                                             |   Since 2026-11-19 pass 1 lists queued peer messages as `peer` and pass 2 lists SendMessage replies as `send`; still grep: a peer      |
 |                                                             |   message embedded in a tool result is not parsed                                                                                      |
-| "Pass 1 lists every mid-turn message"                       | On 2026-11-20 (continuum) it missed three: a pasted-image message, an image-only one and two typed mid-turn lines ("why are these     |
+| "Pass 1 lists every mid-turn message"                       | On 2026-11-20 (continuum) it missed three: a pasted-image message, an image-only one and two typed mid-turn lines ("why are these      |
 |                                                             |   references not links", "did you write it back to skill-pad"). Walk the conversation itself for mid-turn messages and route each      |
+| "Every `user` line in pass 1 is the operator's"             | Not an `[Image: original ...]` line: on 2026-11-20 (unc) two were the agent's own Read of exported PNGs. Match each image line's time  |
+|                                                             |   against the agent's tool calls before routing it as an operator message                                                              |
 | "Pass 1 lists every approval I gave"                        | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the user |
 |                                                             |   count with the raw transcript when approvals matter                                                                                  |
 | "The reference entry is there, so the write-back is         | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26)    |

@@ -1,0 +1,109 @@
+#% Part: flows, work items
+#% Lands under: flows
+- id: work-item
+  title: A piece of work, visible in Pad from start to done
+  category: custom
+  purpose: Any work in a project with a .pad.toml runs on an item the operator can see, and the item tells its whole story (SKILL.md Rules).
+  trigger: {kind: manual, detail: "The operator asks for work in a Pad project"}
+  runs_on: agent
+  owner: agent
+  budget: one session or less per task; split a bigger one (split-from)
+  dependencies: {components: [pad-cli, pad-server, repo-records]}
+  steps:
+    - id: find
+      actor: agent
+      action: Runs the status mode (pad project dashboard), then finds the item for the work, or creates a task to the writing standard.
+      via: [CLI]
+      failures: [no item found and none created, so the work is invisible]
+      look: [pad project dashboard, pad item search]
+    - id: create
+      actor: pad-cli
+      action: Creates the task with its template, priority, due date and parent, and an op-key so a retry does not create two.
+      via: [CLI]
+      writes: [pad.db]
+    - id: claim
+      actor: agent
+      action: Claims the item (pad item claim) and sets it in-progress with a --comment that says why, item refs as [[REF]] links.
+      via: [CLI]
+      failures: [lease_held, so pick other work]
+    - id: update
+      actor: agent
+      action: Comments at the start, at each result and at each blocker, as bullets (What, Result, Evidence, Not verified, Next), time from date.
+      via: [CLI]
+      writes: [comments]
+    - id: record
+      actor: repo-records
+      action: The repo record is written first (tracker, CHANGELOG, decision record); Pad links to it.
+      via: [file]
+    - id: done
+      actor: agent
+      action: Adds the DONE or CLOSED comment, attaches logs, runs item-check, then sets the status with a one-line --comment pointing to it.
+      via: [CLI]
+      gate: just item-check exits 0
+      code: [scripts/pad_item_check.py:findings]
+      failures: [labels missing, no closing comment, a named log not attached]
+      look: [just item-check <ref>]
+- id: ask
+  title: An ask waits on the operator and blocks its work
+  category: custom
+  purpose: A decision or approval the operator owns is an ASK item, never only chat (guidelines 3.1).
+  trigger: {kind: manual, detail: "Work needs an operator decision, approval, bench time or review"}
+  runs_on: agent
+  owner: operator
+  dependencies: {components: [pad-cli, pad-web, repo-records]}
+  steps:
+    - id: raise
+      actor: agent
+      action: Creates the ask (Question, Options with the recommended one, Blocks, Evidence) with kind, priority and due date.
+      via: [CLI]
+      writes: [asks collection]
+    - id: block
+      actor: pad-cli
+      action: pad item block ASK-n TASK-m takes the task out of next and into stale.
+      via: [CLI]
+    - id: answer
+      actor: operator
+      action: Answers on the ask in the web UI or in the session chat.
+      via: [HTTP, chat]
+    - id: record
+      actor: repo-records
+      action: The agent records the answer in the repo first (decision log, guidelines, ROADMAP).
+      via: [file]
+    - id: close
+      actor: pad-cli
+      action: Sets answer and status answered with a comment citing the record, then unblocks the task.
+      via: [CLI]
+      failures: [answer recorded only in Pad, so not recorded]
+- id: bug
+  title: A bug from report to fixed and live
+  category: custom
+  purpose: Bugs live in Pad; the tracker file is generated (convention pad-owned-trackers).
+  trigger: {kind: manual, detail: "A defect is seen, by the operator, an audit or an agent"}
+  runs_on: agent
+  owner: agent
+  dependencies: {components: [pad-cli, tracker-files, commit-gate]}
+  steps:
+    - id: report
+      actor: agent
+      action: Creates the bug with Seen, Evidence, Effect and Closure, and Cause, Options, Not verified when known; section and order fields place it.
+      via: [CLI]
+      writes: [bugs collection]
+    - id: work
+      actor: agent
+      action: The task that fixes it implements it (pad item implements TASK-n BUG-n).
+      via: [CLI]
+    - id: fix
+      actor: agent
+      action: Fixed in code with a test; a fix not yet deployed stays in-progress, with a comment saying so.
+      via: [file]
+      failures: [set fixed before the deploy, so the live system still fails]
+    - id: closed
+      actor: agent
+      action: Fixed only when fixed and live, after a DONE comment with the evidence.
+      via: [CLI]
+      gate: just item-check exits 0
+    - id: export
+      actor: commit-gate
+      action: The next commit regenerates bug-tracker.md from Pad.
+      via: [CLI]
+      code: [scripts/pad_tracker.py:export_text]

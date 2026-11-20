@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1813
+Last rotated: 20261120_1827
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
 - [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
@@ -38,10 +39,19 @@ Last rotated: 20261120_1813
 - [20261119_1325 — Comment edits can be refused by the server](#20261119_1325--comment-edits-can-be-refused-by-the-server)
 - [20261119_1136 — Decision-log process rows mirrored to Pad](#20261119_1136--decision-log-process-rows-mirrored-to-pad)
 - [20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check](#20261118_2212--tickets-tell-the-whole-story-bold-labels-updates-a-closing-statement-logs-attached-item-check)
-- [20261118_2200 — A run planned and recorded in Pad with fields set at create](#20261118_2200--a-run-planned-and-recorded-in-pad-with-fields-set-at-create)
-- [20261118_2149 — pad_decisions.py and a Decisions schema](#20261118_2149--pad_decisionspy-and-a-decisions-schema)
 
 ---
+
+## 20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted
+
+- docs/pad-usage-guidelines-20261110_1628.md 3.3: Templates by collection (operator 2026-11-20, Extend and enforce): required and optional labels for plans, tasks, bugs, tech debt, ideas, asks, feature requests (a one-line request keeps the operator's words), decisions, conventions; the closing-comment check is for work only. 3.4: component tags in a workspace shared by several projects or packs (operator 2026-11-20). Section 6 step 6: trial over, Pad adopted for all important projects (unc ASK-237).
+- scripts/pad_item_check.py: required labels per collection; closing-comment and log checks only on work collections (a decision naming its .jsonl ledger is not a log: 102 false findings in continuum); a one-line feature request is exempt even with a cut title; a collection missing from a workspace is skipped. Tests added.
+- scripts/pad_decisions.py: bold labels in both generated bodies (Serves, Question, Decision, Reason, Versions, Source); unc 34, smc-resiliency 100, continuum 191 and enterprise-strategy 128 decisions re-synced.
+- scripts/pad_links.py: agent-written comments linked as well as bodies (operator: "Unblocked: ASK-237 answered" went out unlinked); a person's comment is never edited. Test with a fake pad.
+- scripts/pad_conventions.py: retries a rate-limited call (three of four applies had stopped). Tests.
+- conventions/apn-baseline.toml and ansible-wifi.toml: every content as Rule and Source; writing-standard names every template, links in comments and component tags; pad-owned-trackers drops the old bug first-line form. Applied to unc, smc-resiliency, enterprise-strategy (without pad-owned-trackers) and ansible-wifi; a second plan shows 0 changes. unc's CONVE-24 tracker list restored (an earlier run today had replaced it with docs/trackers/).
+- docs/flows/: draw.io flow map (operator 2026-11-20): 11 flows in four families rendered by skill-drawio's engine; just flows, just flows-check in just check (drift, code citations, layout audits clean).
+- SKILL.md Rules: links in comments and status comments; skill work goes to the skills workspace (operator 2026-11-20). Pad items: skills TASK-12, TASK-13, TASK-14 (tag skill-pad); ansible-wifi items tagged by component (ansible-wifi 20, local-knowledge 7, skill-smc 1).
 
 ## 20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)
 
@@ -183,15 +193,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 - `scripts/pad_item_check.py` (`just item-check`, test `tests/test_pad_item_check.py`): read-only check of labels, closing comment, update on work in progress, log named but not attached.
 - The checker retries a rate-limited pad call (up to five times, growing pause): its first run over 16 items was refused by the server's limit; three tests. First real run after the fix: 16 items of
   the smc-resiliency bench run, 0 findings, 3.0 s (before the tickets were rewritten: 7 findings on 3 items).
-
-## 20261118_2200 — A run planned and recorded in Pad with fields set at create
-
-- `references/cli-reference.md`: Learned 2026-11-18 (v0.21.0): plan, tasks and bugs created with `--fields-json`, `--parent` and `--tags` in one call each; `item update --parent` moves a task under a
-  plan; `--workspace` reads another workspace; the ticket practice the operator asked for. From the smc-resiliency bench run.
-
-## 20261118_2149 — pad_decisions.py and a Decisions schema
-
-- `scripts/pad_decisions.py` (`just decisions`, test `tests/test_pad_decisions.py`): mirrors a project's curator ledger and decision log into a `decisions` collection, one item per decision with every
-  version; matched on `decision_ref`, changed bodies rewritten. `conventions/collection-schemas/decisions.json`. From continuum (operator, 2026-11-18: decisions out of versions.toml into a dedicated
-  Pad section).
-- references/cli-reference.md trap: `pad item list` hides closed statuses (accepted is closed in this schema); pass `--all` to see them.

@@ -75,8 +75,16 @@ class FindingsTests(unittest.TestCase):
         """A request whose body is its title needs no labels; a longer body does."""
         one = dict(item("submitted", "link test for PtP\n", "feature-requests"), title="link test for PtP")
         self.assertEqual(pic.findings(one, [], 0), [])
+        cut = dict(item("submitted", "a long request " * 10, "feature-requests"), title=("a long request " * 10)[:100])
+        self.assertEqual(pic.findings(cut, [], 0), [])
         long = dict(item("submitted", "link test for PtP\nmore detail here", "feature-requests"), title="link test for PtP")
         self.assertTrue(any(line.startswith("labels:") for line in pic.findings(long, [], 0)))
+
+    def test_a_source_ledger_is_not_a_log(self) -> None:
+        """A decision naming its .jsonl ledger needs no attachment; a task naming a log does (2026-11-20: 102 false findings in continuum)."""
+        dec = item("accepted", "**Serves:** .kc/decisions.jsonl (cf-1)\n\n**Decision:** d", "decisions")
+        self.assertEqual(pic.findings(dec, [], 0), [])
+        self.assertTrue(any(x.startswith("logs:") for x in pic.findings(item("open", GOOD_TASK + " run.log"), [], 0)))
 
     def test_closing_comment_only_on_work(self) -> None:
         """A closed tech-debt item needs a DONE comment; an accepted decision and a shipped request do not."""

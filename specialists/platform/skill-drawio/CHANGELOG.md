@@ -16,6 +16,7 @@ Last rotated: 20261119_1659
 
 ## Unreleased
 
+- 2026-11-20: data-first-diagrams.md Learned (output path, code list, colon); skill-pad consumer.
 - 2026-11-19: contact sheets (export ref).
 - 2026-11-18: data-first-diagrams.md: quote tier names with commas (Continuum).
 

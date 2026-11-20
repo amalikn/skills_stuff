@@ -14,6 +14,8 @@ set dotenv-load := false
 wc := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-pad"
 py := wc + "/.venv/bin/python"
 ai_it := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-ai-it"
+drawio := "/Volumes/Data/_ai/_skills/skills_stuff/specialists/platform/skill-drawio"
+drawio_py := "/Volumes/Data/_ai/_skills/skills-working-cache/skill-drawio/.venv/bin/python"   # the engine runs in its own skill's env (PyYAML)
 
 # List the tasks.
 default:
@@ -49,7 +51,7 @@ governance *ARGS: _require-venv
     @cd scripts && {{py}} check_governance.py {{ARGS}}
 
 # Must exit 0 before durable work is called complete. Fix the project when it fails, never the check.
-check: test lint governance
+check: test lint governance flows-check
     @{{py}} "{{ai_it}}/scripts/checks/doc_freshness.py" --project-root . --window-days 90 --check
     @{{py}} "{{ai_it}}/scripts/checks/role_check.py" --project-root . --check
 
@@ -198,6 +200,11 @@ outline *ARGS: _require-venv
 section *ARGS: _require-venv
     @{{py}} "{{ai_it}}/scripts/markdown/md_sections.py" --project-root . section "$@"
 
+# [read-only] Before `just rewrite --apply`: every body in a spec keeps every word of the item's current body (labels may be added): just spec-words spec.json [--allow cause]
+[no-cd]
+spec-words SPEC *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_spec_words.py" "{{SPEC}}" {{ARGS}}
+
 # Apply a reviewed rewrite spec (bodies, titles, tags, comment types, notes, decisions) to the current folder's workspace: plan by default, --apply to write.
 [no-cd]
 rewrite SPEC *ARGS: _require-venv
@@ -213,3 +220,15 @@ format-spec OUT *ARGS: _require-venv
 [no-cd]
 tracker CMD FILE *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_tracker.py" {{CMD}} "{{FILE}}" {{ARGS}}
+
+# [docs] Assemble docs/flows/flows.yaml from its parts and render docs/flows/drawio/skill-pad-flows.drawio with skill-drawio's engine (operator, 2026-11-20).
+# Edit docs/flows/parts/ only; pass --audit or --list instead of writing.
+flows *ARGS:
+    @{{drawio_py}} "{{drawio}}/scripts/assemble_flowmap.py" --master docs/flows/parts/master.yaml --out docs/flows/flows.yaml --command "just flows" --write
+    @{{drawio_py}} "{{drawio}}/scripts/render_flowmap.py" --map docs/flows/flows.yaml {{ if ARGS == "" { "--write" } else { ARGS } }}
+
+# [read-only] The flow map is assembled and rendered in step with its parts, and the drawing passes every layout audit.
+flows-check:
+    @{{drawio_py}} "{{drawio}}/scripts/assemble_flowmap.py" --master docs/flows/parts/master.yaml --out docs/flows/flows.yaml --command "just flows"
+    @{{drawio_py}} "{{drawio}}/scripts/render_flowmap.py" --map docs/flows/flows.yaml
+    @{{drawio_py}} "{{drawio}}/scripts/render_flowmap.py" --map docs/flows/flows.yaml --audit

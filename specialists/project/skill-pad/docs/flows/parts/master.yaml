@@ -1,0 +1,43 @@
+# skill-pad flow map (operator, 2026-11-20: "add flows to skill-pad", draw.io flows). Data first, skill-drawio's standard layout: this master and
+# the parts beside it are the source; `just flows` assembles ../flows.yaml (assemble_flowmap.py) and renders ../drawio/skill-pad-flows.drawio (output path from the skill root)
+# (render_flowmap.py). Edit the parts, never the two generated files. `just check` runs the assembly and render drift checks and the layout audits.
+schema_version: 1
+title: "skill-pad: how Pad work moves between the agent, the pad CLI and the project repo"
+updated: "2026-11-20"
+
+drawing:
+  output: docs/flows/drawio/skill-pad-flows.drawio
+  command: just flows
+  kinds:
+    person: ["#ffffff", "#000000"]
+    cli: ["#dae8fc", "#6c8ebf"]
+    service: ["#d5e8d4", "#82b366"]
+    script: ["#ffe6cc", "#d79b00"]
+    timer: ["#fff2cc", "#d6b656"]
+    store: ["#e6e6e6", "#4d4d4d"]
+    external: ["#dfe7f3", "#3d5a80"]
+  tiers:
+    - {name: People, groups: [People]}
+    - {name: Pad, groups: [Pad]}
+    - {name: skill-pad scripts, groups: [skill-pad scripts]}
+    - {name: Outside, groups: [Outside]}
+  below: {groups: [Project repo]}
+  band_title: Project repo
+  families:
+    - {id: work, name: Work items, colour: "#1f4e9c", flows: [work-item, ask, bug]}
+    - {id: records, name: Records, colour: "#1b7a3a", flows: [tracker-export, decision-mirror, focus-export]}
+    - {id: standard, name: Writing standard, colour: "#6a3fa0", flows: [conventions-apply, layout-pass, links-pass]}
+    - {id: operations, name: Operations, colour: "#9c4a1f", flows: [nightly-backup, live-feed]}
+
+components:
+  #@include components-people.yaml
+  #@include components-pad.yaml
+  #@include components-scripts.yaml
+  #@include components-outside.yaml
+  #@include components-repo.yaml
+
+flows:
+  #@include flows-work.yaml
+  #@include flows-records.yaml
+  #@include flows-standard.yaml
+  #@include flows-operations.yaml

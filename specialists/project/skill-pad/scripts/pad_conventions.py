@@ -46,8 +46,12 @@ def load_baseline(path: Path, project: str, trackers: str) -> list[dict]:
     return [{**c, "title": fill(c["title"]), "content": fill(c["content"])} for c in tomllib.loads(path.read_text(encoding="utf-8"))["convention"]]
 
 
+RETRIES = 5
+BACKOFF_S = 1.5
+
+
 def pad(args: list[str], timeout: int, binary: str = "pad") -> str:
-    """Run one pad command and return its stdout.
+    """Run one pad command and return its stdout, retrying a rate-limited call with a growing pause.
 
     Args:
         args: the arguments after `pad`.
@@ -60,13 +64,17 @@ def pad(args: list[str], timeout: int, binary: str = "pad") -> str:
     Raises:
         RuntimeError: pad failed or timed out.
     """
-    try:
-        p = subprocess.run([binary, *args], capture_output=True, text=True, timeout=timeout)
-    except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
-        raise RuntimeError(f"pad {' '.join(args[:3])}: {exc}") from exc
-    if p.returncode != 0:
-        raise RuntimeError(f"pad {' '.join(args[:3])} exited {p.returncode}: {p.stderr.strip()[-300:]}")
-    return p.stdout
+    for attempt in range(RETRIES):
+        try:
+            p = subprocess.run([binary, *args], capture_output=True, text=True, timeout=timeout)
+        except (subprocess.TimeoutExpired, FileNotFoundError) as exc:
+            raise RuntimeError(f"pad {' '.join(args[:3])}: {exc}") from exc
+        if p.returncode == 0:
+            return p.stdout
+        if "rate_limited" not in p.stderr + p.stdout or attempt == RETRIES - 1:
+            break
+        time.sleep(BACKOFF_S * (attempt + 1))  # 2026-11-20: three of four applies stopped on a rate limit while another script read Pad
+    raise RuntimeError(f"pad {' '.join(args[:3])} exited {p.returncode}: {(p.stderr or p.stdout).strip()[-300:]}")
 
 
 def plan(baseline: list[dict], existing: list[dict]) -> list[tuple[str, dict, dict | None, list[str]]]:

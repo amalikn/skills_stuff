@@ -1,0 +1,16 @@
+#% Part: components, people
+#% Lands under: components
+- id: operator
+  name: Operator
+  kind: person
+  group: People
+  host: the Mac and the Pad web UI
+  health: answers asks; ticks shipped feature requests
+  depends_on: [pad-web]
+- id: agent
+  name: Agent session
+  kind: person
+  group: People
+  host: Claude Code or Codex on the Mac
+  health: loads skill-pad and runs pad bootstrap before the first Pad action
+  depends_on: [pad-cli, pad-toml]

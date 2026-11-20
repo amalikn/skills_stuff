@@ -122,6 +122,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-76 | Refuse a repeated key when loading YAML | Any hand-edited YAML a program reads as data (contracts, catalogues, configs) |
 | P-77 | Exact-commit pre-push gate | A local CI gate that passes on the working folder, not on the commit being pushed |
 | P-78 | Offline image overlay as data, each edit point matched exactly once | A golden disk image needs a small, listed, repeatable change per copy, without booting or mounting it |
+| P-79 | Delegated rewrite proved word-preserving before it is applied | Many texts restructured by helpers or agents told to keep every word, before a write |
 
 ## Patterns
 
@@ -1959,6 +1960,31 @@ for r in replaces:
 # lab/logic/fieldprep.py _write: keep the replaced file's mode and owner
 cmds += [f"rm {path}"] if path != MARKER else []
 cmds += [f"write {local} {path}", f"sif {path} mode 0100{m['mode'][-3:]}", f"sif {path} uid {m['uid']}", f"sif {path} gid {m['gid']}"]
+```
+
+### P-79 Delegated rewrite proved word-preserving before it is applied
+
+> **Learned 2026-11-20** · skill-pad (unc Pad workspace) · CANDIDATE (one project) · Source: skill-pad `scripts/pad_spec_words.py` (CHANGELOG 20261120_1827 and the session's close) · Falsifier: a rewrite that keeps every word yet changes the meaning a reader takes (a negation moved between sentences)
+
+Problem:      many stored texts must be restructured (new section labels, reordered sentences) by helpers that were told to keep every word; a reviewer cannot read them all, and a dropped sentence is invisible in a diff of moved text
+Solution:     the helpers write a spec (ref, guard version, new text); before any write, a checker compares each new text with the current stored text as a multiset of lowercased words and lists every word that is missing; additions (labels, a fixed filler) are allowed; the write runs only when the list is empty, each write guarded by the version read
+Why it works: moving text never changes the multiset, while dropping or rewording does; the check is mechanical, so it scales to any number of texts and does not trust the helper's own self-check
+Reuse:        re-laying tickets or wiki pages to a template; reflowing documents; translating a format (bullets to sections) in bulk; any agent output that must be a rearrangement
+Pitfalls:     the stored text can move on between spec and write (links added since), so the check reads the current text, not the one the spec was made from; repeated small words count (dropping a sentence also drops one "a"); a word legitimately folded into a label ("Cause:" becoming a bold label) is allowed only when named
+Realised in:  Python -> skill-pad scripts/pad_spec_words.py (`just spec-words SPEC`); 83 bug bodies restructured by three agents passed with 0 lost before the write
+Evidence:     CANDIDATE: one project; smoke run on a fresh 4-item spec, 0 lost; the same check caught words added to stored bodies after an older spec was made
+
+```python
+WORD = re.compile(r"[a-z0-9]+")
+
+def words(text: str) -> Counter:
+  return Counter(WORD.findall(text.lower()))
+
+def lost(old: str, new: str, allow: set[str]) -> Counter:
+  missing = words(old) - words(new)
+  for w in allow:
+    missing.pop(w, None)
+  return missing
 ```
 
 ## Language realisations

@@ -52,18 +52,17 @@ The opposite case is a drawing an operator has edited in draw.io themselves. Tha
 +--------------------+                   +------------------+
 ```
 
-| Part            | UNC file                                          | Skill module                                         | Role                                                        |
-| --------------- | ------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------- |
-| Map             | `docs/flows/flows.yaml`                           | none                                                 | Source of truth: components, flows, steps, dependencies     |
-| Schema          | `docs/flows/flows.schema.json`                    | `scripts/schema_lite.py`                             | Shape of the map; a stdlib subset of JSON Schema 2020-12    |
-| Reference check | inside the renderer                               | `scripts/code_refs.py`                               | Every `path[:symbol]` a step cites exists in the repository |
-| Renderer        | `render_flowmap.py` + the map's `drawing:` block    | `scripts/flowmap/`, `scripts/drawio/mxfile.py` | Map to uncompressed `.drawio`, deterministic                |
-| Audits          | inside the renderer                               | `scripts/drawio/audit.py`                            | Layout faults a reviewer must never see ([layout-audits.md](layout-audits.md)) |
-| Drift check     | `check_flow_map` in `scripts/check_governance.py` | the renderer's `evaluate()`                          | Fails when the file on disk differs from a fresh render     |
+| Part            | UNC file                                          | Skill module                                   | Role                                                        |
+| --------------- | ------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------- |
+| Map             | `docs/flows/flows.yaml`                           | none                                           | Source of truth: components, flows, steps, dependencies     |
+| Schema          | `docs/flows/flows.schema.json`                    | `scripts/schema_lite.py`                       | Shape of the map; a stdlib subset of JSON Schema 2020-12    |
+| Reference check | inside the renderer                               | `scripts/code_refs.py`                         | Every `path[:symbol]` a step cites exists in the repository |
+| Renderer        | `render_flowmap.py` + the map's `drawing:` block  | `scripts/flowmap/`, `scripts/drawio/mxfile.py` | Map to uncompressed `.drawio`, deterministic                |
+| Audits          | inside the renderer                               | `scripts/drawio/audit.py`                      | Layout faults a reviewer must never see ([layout-audits.md](layout-audits.md)) |
+| Drift check     | `check_flow_map` in `scripts/check_governance.py` | the renderer's `evaluate()`                    | Fails when the file on disk differs from a fresh render     |
 
 The skill's modules are being refactored while this is written; module names may change, and the table names what was present on 2026-10-19. The map is now written in parts
-(`docs/flows/parts/master.yaml` and its parts,
-assembled into `docs/flows/flows.yaml` by `scripts/assemble_flowmap.py`; Learned 2026-10-27 below).
+(`docs/flows/parts/master.yaml` and its parts, assembled into `docs/flows/flows.yaml` by `scripts/assemble_flowmap.py`; Learned 2026-10-27 below).
 
 ## The map
 
@@ -100,17 +99,16 @@ map does, and a byte-for-byte comparison is a valid drift check.
 - Route every edge yourself with explicit waypoints; static export does not route around shapes ([layout-and-routing.md](layout-and-routing.md)).
 - Run the layout audits on every routed page in the renderer's tests and assert every list is empty ([layout-audits.md](layout-audits.md)).
 - Give the command line three modes, as UNC does: no flag validates and reports drift (exit 1 on a problem or stale file); `--write` renders; `--list` prints one line per flow and writes nothing. The
-  pack's `render_flowmap.py` adds `--audit`, which runs the layout audits on the
-  rendered pages.
+  pack's `render_flowmap.py` adds `--audit`, which runs the layout audits on the rendered pages.
 
 > **Learned 2026-11-18** · decision pages and proposed flows · VERIFIED_PRIMARY · Source: unified-network-controller `docs/flows/parts/decisions-access-assets-api.yaml` before and after its closeout commit of
-> 2026-11-18 (one project: a decision was recorded in its register through four commits while the map's decision page still said "evaluate"; the
-> project's check passed every time) · Falsifier: a project whose check compares each decision page's `decision` and option statuses with its decision register.
+> 2026-11-18 (one project: a decision was recorded in its register through four commits while the map's decision page still said "evaluate"; the project's check passed every time) · Falsifier: a
+> project whose check compares each decision page's `decision` and option statuses with its decision register.
 >
 > A decision page is data about decisions, and nothing holds it to the register that owns them: the drift check compares the drawing with the map, and the trace holds flows to code. So a decision
-> taken in the register must be carried into the map in the same pass: the page's `decisions` line, the group's `decision`, each option's `status` (the chosen one, and the others to `rejected`,
-> not left `open`), any proposed component that named a dropped option, and each proposed flow that used it. `reusable_candidate`: a check that reads the register's status line per layer and fails
-> when a decision page for that layer has no `chosen` option.
+> taken in the register must be carried into the map in the same pass: the page's `decisions` line, the group's `decision`, each option's `status` (the chosen one, and the others to `rejected`, not
+> left `open`), any proposed component that named a dropped option, and each proposed flow that used it. `reusable_candidate`: a check that reads the register's status line per layer and fails when a
+> decision page for that layer has no `chosen` option.
 >
 > ```yaml
 > # docs/flows/parts/decisions-access-assets-api.yaml after the change (excerpt)
@@ -124,11 +122,10 @@ map does, and a byte-for-byte comparison is a valid drift check.
 > Screenshot: `references/screenshots/20261118-decision-page-after-a-register-decision/`.
 
 > **Learned 2026-10-21** · Options page · VERIFIED_PRIMARY · Source: `scripts/flowmap/options.py`, `tests/test_options_page.py` · Falsifier: a map without `options` whose drawing changes, or an Options page audit fault
-> A map may carry an optional `options` block (schema `$defs/options`): groups (one question each, an optional `decision`) of options (status
-> `chosen`, `evaluate`, `open` or `rejected`; `steps`, `pros`, `cons`) plus free `decisions`. It renders as the page after the Overview: a colour legend, a decision column chained
-> top to bottom beside one row per group, a green arrow from each decision to its chosen option, each option's steps as a routed chain, pros and
-> cons aligned across the row. Maps without the block render byte-identical. Asked for by smc-resiliency's operator (update and recovery choices,
-> trade-offs and decisions on one page). Screenshot: `references/screenshots/20261021-options-page/`.
+> A map may carry an optional `options` block (schema `$defs/options`): groups (one question each, an optional `decision`) of options (status `chosen`, `evaluate`, `open` or `rejected`; `steps`,
+> `pros`, `cons`) plus free `decisions`. It renders as the page after the Overview: a colour legend, a decision column chained top to bottom beside one row per group, a green arrow from each decision
+> to its chosen option, each option's steps as a routed chain, pros and cons aligned across the row. Maps without the block render byte-identical. Asked for by smc-resiliency's operator (update and
+> recovery choices, trade-offs and decisions on one page). Screenshot: `references/screenshots/20261021-options-page/`.
 >
 > ```python
 > # scripts/flowmap/options.py (_group_row), skill-drawio, 2026-10-21
@@ -146,10 +143,9 @@ map does, and a byte-for-byte comparison is a valid drift check.
 
 
 > **Learned 2026-10-21** · option pages by subject · VERIFIED_PRIMARY · Source: `scripts/flowmap/model.py` (`option_blocks`, `option_groups`), `scripts/flowmap/pages.py`, `tests/test_options_page.py` · Falsifier: a map with `options` whose drawing changes, or two option pages sharing an id passing validation
-> One Options page grew to nine questions; smc-resiliency's operator asked for it split by subject with no "Options" in the tab. A map may now carry
-> `option_pages` (schema `$defs/option_page`): a list of blocks shaped like `options` plus an `id`; each draws as page `options-<id>` named by its
-> title, linked from the Overview's index in map order. Group and page ids are unique across all pages. The single `options` block still draws as
-> "Options: <title>" byte-identical (smc-resiliency and unified-network-controller re-checked without `--write`). Screenshot:
+> One Options page grew to nine questions; smc-resiliency's operator asked for it split by subject with no "Options" in the tab. A map may now carry `option_pages` (schema `$defs/option_page`): a list
+> of blocks shaped like `options` plus an `id`; each draws as page `options-<id>` named by its title, linked from the Overview's index in map order. Group and page ids are unique across all pages. The
+> single `options` block still draws as "Options: <title>" byte-identical (smc-resiliency and unified-network-controller re-checked without `--write`). Screenshot:
 > `references/screenshots/20261021-option-pages/`.
 >
 > ```python
@@ -160,10 +156,9 @@ map does, and a byte-for-byte comparison is a valid drift check.
 > ```
 
 > **Learned 2026-10-21** · map parts and status · VERIFIED_PRIMARY · Source: `scripts/flowmap/model.py` (`expand_includes`, `stray_parts`, `status_text`, `status_style`), `tests/test_map_parts.py`, `tests/test_status.py` · Falsifier: a split map whose drawing differs from the unsplit one, or a stray part not reported
-> A long map splits into parts (asked by smc-resiliency's operator on 2026-10-21, after unified-network-controller split its catalog): the master
-> keeps the `drawing:` block and `#@include parts/<file>.yaml` lines, each part written without its parent's indentation. Proof that a split is
-> safe: run the drift check without `--write` after splitting; smc-resiliency's drawing stayed byte-identical. Every component, flow and step may
-> carry `status: {state, since, evidence}` so a reader tells an idea from a proven or built thing: proposed and designed draw dashed.
+> A long map splits into parts (asked by smc-resiliency's operator on 2026-10-21, after unified-network-controller split its catalog): the master keeps the `drawing:` block and `#@include
+> parts/<file>.yaml` lines, each part written without its parent's indentation. Proof that a split is safe: run the drift check without `--write` after splitting; smc-resiliency's drawing stayed
+> byte-identical. Every component, flow and step may carry `status: {state, since, evidence}` so a reader tells an idea from a proven or built thing: proposed and designed draw dashed.
 >
 > ```python
 > # scripts/flowmap/model.py (expand_includes), skill-drawio, 2026-10-21
@@ -181,11 +176,10 @@ map does, and a byte-for-byte comparison is a valid drift check.
 > ```
 
 > **Learned 2026-10-27** · parts are the standard · USER_STATED · Source: skill-goal-guard operator, 2026-10-27 ("can the flow be divided into smaller parts and then combined. like for unc?"; "then make it as a standard for skill-drawio"); `scripts/split_flowmap.py` (`split_families`), `examples/shop/parts/` · Falsifier: a new map rendered from a hand-edited flows.yaml, or a split whose drawing differs from the unsplit one
-> Every flow map is written in parts, not only a long one: `parts/master.yaml` plus one part per component group and per flow family (or
-> section); `flows.yaml` and the drawing are both generated. `split_flowmap.py` now cuts flows by `drawing.families` when a map has no section
-> comments, falling back to one part when a family's flows are not contiguous, so a split never reorders data. Proven on the shop example
-> (drawing byte-identical before and after) and on skill-goal-guard (same 721 elements; its hand split moved one component, so the XML order of two
-> End-to-end boxes changed: use the tool, which refuses a reordering split, rather than splitting by hand).
+> Every flow map is written in parts, not only a long one: `parts/master.yaml` plus one part per component group and per flow family (or section); `flows.yaml` and the drawing are both generated.
+> `split_flowmap.py` now cuts flows by `drawing.families` when a map has no section comments, falling back to one part when a family's flows are not contiguous, so a split never reorders data. Proven
+> on the shop example (drawing byte-identical before and after) and on skill-goal-guard (same 721 elements; its hand split moved one component, so the XML order of two End-to-end boxes changed: use
+> the tool, which refuses a reordering split, rather than splitting by hand).
 >
 > ```python
 > # scripts/split_flowmap.py, plan() (2026-10-27, uncommitted)
@@ -196,19 +190,16 @@ map does, and a byte-for-byte comparison is a valid drift check.
 > ```
 
 > **Learned 2026-10-21** · assembled maps and the look block · USER_STATED · Source: smc-resiliency operator, 2026-10-21 ("for catalog.yaml it was being built by the individual files, it was not using pointers"; "have the capability on the YAML file to define these things"); `scripts/assemble_flowmap.py`, `scripts/flowmap/profile.py` (`DEFAULT_LOOK`) · Falsifier: a project reading parts through pointers, or a look choice that cannot be set in the map
-> A split map keeps its source in `parts/` (`master.yaml` with the `drawing:` block and `#@include` lines, one file per component group and
-> flow section; part headers are `#%` lines) and `flows.yaml` is **generated** from them, complete, with a banner and no pointers
-> (`assemble_flowmap.py`; `just flows` assembles, then renders; the project check fails on a hand edit or a stray part). Every aesthetic
-> choice is a `drawing.look` key with the reviewed choice as its default: `group_fill`, `shapes`, `step_width`, `decision_width`,
-> `step_chars`, `back_arrows`, `action_bullets`. A project lists them **commented** under `look: {}` in its master, so they are seen in the
-> YAML yet keep following the skill's defaults; an uncommented line is a deliberate pin (a side agent, accepted by the operator, 2026-10-21).
-> `render_flowmap.py --write` prints what is pinned and warns about a pin equal to today's default.
+> A split map keeps its source in `parts/` (`master.yaml` with the `drawing:` block and `#@include` lines, one file per component group and flow section; part headers are `#%` lines) and `flows.yaml`
+> is **generated** from them, complete, with a banner and no pointers (`assemble_flowmap.py`; `just flows` assembles, then renders; the project check fails on a hand edit or a stray part). Every
+> aesthetic choice is a `drawing.look` key with the reviewed choice as its default: `group_fill`, `shapes`, `step_width`, `decision_width`, `step_chars`, `back_arrows`, `action_bullets`. A project
+> lists them **commented** under `look: {}` in its master, so they are seen in the YAML yet keep following the skill's defaults; an uncommented line is a deliberate pin (a side agent, accepted by the
+> operator, 2026-10-21). `render_flowmap.py --write` prints what is pinned and warns about a pin equal to today's default.
 
 ## The banner and the drift check
 
 `drawio.mxfile.banner()` writes an XML comment between the declaration and `<mxfile>` naming the generator, the source map, the command that regenerates the file and the check that fails when it is
-out
-of step [C-D02]:
+out of step [C-D02]:
 
 ```xml
 <!-- GENERATED by <generator> from <map>; do not edit by hand. Change the map and run `<command>`; `<check>` fails when this file is out of step. -->
@@ -220,10 +211,9 @@ changed without a render (run the render) or someone edited the drawing (move th
 > **Learned 2026-11-06** · drift checks with this engine · VERIFIED_PRIMARY · Source: `scripts/flowmap/render_cache.py`, `scripts/flowmap/pages.py`
 > `evaluate(need_text=False)` (skills_stuff 1a11ce2) · Falsifier: a cached drift answer that differs from a full render of the same inputs.
 
-A drift check that only needs the answer passes `need_text=False`: when the map, profile, engine source and Python are unchanged since a render
-on this machine, the file on disk is compared with the recorded hash instead of rendering again (unified-network-controller: 110 s to 0.3 s). A
-changed or missing drawing is still drift. `--write` and `--audit` always render. When a render gets slow, `just profile-render --map <map>`
-names the function before anything is changed.
+A drift check that only needs the answer passes `need_text=False`: when the map, profile, engine source and Python are unchanged since a render on this machine, the file on disk is compared with the
+recorded hash instead of rendering again (unified-network-controller: 110 s to 0.3 s). A changed or missing drawing is still drift. `--write` and `--audit` always render. When a render gets slow,
+`just profile-render --map <map>` names the function before anything is changed.
 
 ## Hand-edited drawings are source
 
@@ -283,27 +273,22 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 - [ ] The project's AGENTS.md (or equivalent) says the drawing is generated and names the command.
 
 > **Learned 2026-10-21** · a gate's `next` order carries its meaning · VERIFIED_PRIMARY · Source: `scripts/flowmap/routing.py` (`branch_label`), `schemas/flowmap.schema.json` (`next`) · Falsifier: a two-way gate whose first `next` target is its failure path, drawn as a green Yes
-> Since branch labels arrived, a two-way gate's first `next` is drawn as Yes (green) and its second as No (red); a map written before then may list
-> them the other way. On adoption every two-way gate was checked against its gate text: smc-resiliency's six are right, unified-network-controller has
-> none. Write the passing branch first, or name each case with `when`.
+> Since branch labels arrived, a two-way gate's first `next` is drawn as Yes (green) and its second as No (red); a map written before then may list them the other way. On adoption every two-way gate
+> was checked against its gate text: smc-resiliency's six are right, unified-network-controller has none. Write the passing branch first, or name each case with `when`.
 
 > **Learned 2026-10-22** · status dates · VERIFIED_PRIMARY · Source: unified-network-controller flow map (a side agent's note accepted by the operator, 2026-10-22); `schemas/flowmap.schema.json` (`$defs.status.since`) · Falsifier: a reader who takes a `since` date for a verification date, or a map whose live items all share the audit day
-> `status.since` is the day the item reached its state: for `live`, when it went into service (its first deploy, unit or commit date from the
-> project's records), never the day an agent checked it. Stamping every live item with the audit day made month-old services read as new on a
-> drawing meant for the team and management. Keep the check in `evidence` ("... ; verified live <date>"); an item that predates the project says
-> so and uses the project's start date. Proposed and designed items keep the day they were recorded.
+> `status.since` is the day the item reached its state: for `live`, when it went into service (its first deploy, unit or commit date from the project's records), never the day an agent checked it.
+> Stamping every live item with the audit day made month-old services read as new on a drawing meant for the team and management. Keep the check in `evidence` ("... ; verified live <date>"); an item
+> that predates the project says so and uses the project's start date. Proposed and designed items keep the day they were recorded.
 
 > **Learned 2026-10-22** · decision pages, never options · USER_STATED · Source: unified-network-controller operator, 2026-10-22 ("Don't call it options ... it should be called decisions. And you can split decisions into multiple pages where it makes sense"); `scripts/flowmap/model.py` (`option_blocks`), `schemas/flowmap.schema.json` (`decision_pages`), `tests/test_options_page.py` (`test_decision_pages_never_called_options`) · Falsifier: a rendered tab, index line or legend that says "Options"
-> The pages that set a project's open questions beside their choices are **decision pages**. A map writes them as `decision_pages`, one page
-> per subject (page `decisions-<id>`, tab = its title), split where a page would hold unrelated questions; the single `options` block still
-> draws, its tab now "Decisions: <title>", and `option_pages` is still read (page `options-<id>`) so existing maps keep their links. The
-> Overview's index line and legend say "decision page". Inside a group the choices are still listed under `options` (the YAML key), which no
-> reader of the drawing sees.
+> The pages that set a project's open questions beside their choices are **decision pages**. A map writes them as `decision_pages`, one page per subject (page `decisions-<id>`, tab = its title), split
+> where a page would hold unrelated questions; the single `options` block still draws, its tab now "Decisions: <title>", and `option_pages` is still read (page `options-<id>`) so existing maps keep
+> their links. The Overview's index line and legend say "decision page". Inside a group the choices are still listed under `options` (the YAML key), which no reader of the drawing sees.
 
 > **Learned 2026-10-22** · a reject branch in the middle of a flow · VERIFIED_PRIMARY · Source: smc-resiliency `docs/flows/parts/flows-release.yaml` (commit ffa84a0), page 12; screenshot `references/screenshots/20261022-midflow-reject/` · Falsifier: a mid-flow gate whose terminal step, listed after it, is drawn after the continuing steps or crosses the Yes branch
-> A gate that stops the flow on failure but continues on success needs no special layout: list the terminal step straight after the gate with
-> `next: []`, and name both targets in the gate's `next` (pass first). The renderer puts the terminal beside the gate in its lane and routes the
-> Yes branch below it to the continuing step; the audit stays clean.
+> A gate that stops the flow on failure but continues on success needs no special layout: list the terminal step straight after the gate with `next: []`, and name both targets in the gate's `next`
+> (pass first). The renderer puts the terminal beside the gate in its lane and routes the Yes branch below it to the continuing step; the audit stays clean.
 >
 > ```yaml
 > - id: package-gate
@@ -316,9 +301,9 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 > ```
 
 > **Learned 2026-10-23** · banner command · VERIFIED_PRIMARY · Source: draw.io 32.5.5 "Export failed" on every page; scripts/drawio/mxfile.py:banner,
-> scripts/flowmap/pages.py:evaluate · Falsifier: a drawing whose banner holds "--" that draw.io opens and exports
-> The generated banner is an XML comment, and "--" is illegal inside one: a `drawing.command` such as `render_flowmap.py --root . --write` made the file
-> unparseable and draw.io refused every page. `evaluate()` now reports it as a map problem and `banner()` raises; name a recipe (`just ...`) instead.
+> scripts/flowmap/pages.py:evaluate · Falsifier: a drawing whose banner holds "--" that draw.io opens and exports The generated banner is an XML comment, and "--" is illegal inside one: a
+> `drawing.command` such as `render_flowmap.py --root . --write` made the file unparseable and draw.io refused every page. `evaluate()` now reports it as a map problem and `banner()` raises; name a
+> recipe (`just ...`) instead.
 >
 > ```python
 > problems += [f"drawing.{k}: {v!r} contains '--', which an XML comment cannot hold; name a recipe (just ...) instead"
@@ -326,10 +311,10 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 > ```
 
 > **Learned 2026-10-23** · a narrowed schema copy lags new look keys · VERIFIED_PRIMARY · Source: smc-resiliency `just flows` (commit 602c73c),
-> `docs/flows/flows.schema.json`; schemas/flowmap.schema.json `$defs.drawing.look` · Falsifier: a project with its own schema copy that renders a new look key unchanged
-> A project that calls `render_flowmap.py --schema <its copy>` validates `drawing.look` against that copy, which is `additionalProperties: false`: the
-> skill's new keys (`uncross` 2026-10-22, `e2e_layers` and `connector_width` 2026-10-23) failed with `unknown key` until copied in. When a release adds a
-> look key, say so in its CHANGELOG line; a consumer copies the key's subtree from the skill's schema, leaving its own narrowing alone.
+> `docs/flows/flows.schema.json`; schemas/flowmap.schema.json `$defs.drawing.look` · Falsifier: a project with its own schema copy that renders a new look key unchanged A project that calls
+> `render_flowmap.py --schema <its copy>` validates `drawing.look` against that copy, which is `additionalProperties: false`: the skill's new keys (`uncross` 2026-10-22, `e2e_layers` and
+> `connector_width` 2026-10-23) failed with `unknown key` until copied in. When a release adds a look key, say so in its CHANGELOG line; a consumer copies the key's subtree from the skill's schema,
+> leaving its own narrowing alone.
 >
 > ```python
 > # how smc-resiliency took the keys (one-off, 2026-10-23): only look keys the copy lacks
@@ -338,10 +323,9 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 > ```
 
 > **Learned 2026-10-26** · decision branch labels are strings · VERIFIED_PRIMARY · Source: local-knowledge-ansible `76b0f86`
-> `ansible-wifi/roles/smc_change/drawio/parts/flows-role.yaml` (step `decide`), `just smc_change_flows` (skill-smc) · Falsifier: a map with
-> `when: {next-step: yes}` that validates
-> YAML 1.1 reads a bare `yes`/`no` as a boolean, and the flow map schema wants a string for each `when` label, so the render stops with
-> "problem: $.flows[1].steps[5].when.flush: expected string, got bool". Quote yes/no branch labels:
+> `ansible-wifi/roles/smc_change/drawio/parts/flows-role.yaml` (step `decide`), `just smc_change_flows` (skill-smc) · Falsifier: a map with `when: {next-step: yes}` that validates YAML 1.1 reads a
+> bare `yes`/`no` as a boolean, and the flow map schema wants a string for each `when` label, so the render stops with "problem: $.flows[1].steps[5].when.flush: expected string, got bool". Quote
+> yes/no branch labels:
 >
 > ```yaml
 >     - id: decide
@@ -351,17 +335,15 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 > ```
 
 > **Learned 2026-11-09** · engine changes and their consumers · VERIFIED_PRIMARY · Source: skills_stuff commit 2c713d2 (step page `‹ E2E page` button) against
-> unified-network-controller commit 42a7645a (`just flows` re-render: 32 back buttons added, `flows.yaml` unchanged) · Falsifier: an engine commit that changes a consumer's
-> drawing names that consumer in its message.
-> The 2026-11-06 rule held for three of four engine commits on 2026-11-07 (each listed its consumers), but the one that added a button to every
-> step page named none; one consumer's `just check` failed on flow drift for two days and its commit gate refused an unrelated commit until a
-> re-render. Run `just consumer-check` for every engine commit that touches page building, not only routing ones, and list each changed
-> consumer in the message and to its hub.
+> unified-network-controller commit 42a7645a (`just flows` re-render: 32 back buttons added, `flows.yaml` unchanged) · Falsifier: an engine commit that changes a consumer's drawing names that consumer
+> in its message. The 2026-11-06 rule held for three of four engine commits on 2026-11-07 (each listed its consumers), but the one that added a button to every step page named none; one consumer's
+> `just check` failed on flow drift for two days and its commit gate refused an unrelated commit until a re-render. Run `just consumer-check` for every engine commit that touches page building, not
+> only routing ones, and list each changed consumer in the message and to its hub.
 
 > **Learned 2026-11-09** · assembling a parted map · VERIFIED_PRIMARY · Source: skill-vagrant `docs/vagrant-flows/` (first assembly 2026-11-09), justfile `flows`/`flows-check`; screenshot `references/screenshots/20261109-vagrant-flows-assembly-path/` · Falsifier: an assembly run from the map folder that the root-run `flows-check` accepts
-> The assembled map records the `--master` path as it was given, so a first assembly run from inside the map folder (`--master parts/master.yaml`)
-> wrote a file that the project's `flows-check`, run from the project root, reported as drift. Assemble through the project's `flows` recipe
-> from its root, the same way the check runs; a new consumer copies skill-goal-guard's two recipes and adds `@just flows-check` to `check`.
+> The assembled map records the `--master` path as it was given, so a first assembly run from inside the map folder (`--master parts/master.yaml`) wrote a file that the project's `flows-check`, run
+> from the project root, reported as drift. Assemble through the project's `flows` recipe from its root, the same way the check runs; a new consumer copies skill-goal-guard's two recipes and adds
+> `@just flows-check` to `check`.
 >
 > ```make
 > flows:
@@ -370,23 +352,39 @@ return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just 
 > ```
 
 > **Learned 2026-11-18** · flow-style YAML in a map's `drawing:` block · VERIFIED_PRIMARY · Source: Continuum `docs/architecture/diagrams/first-slice/parts/master.yaml`, render output
-> `problem: $.drawing.tiers[1]: unknown key \`internet)\`` · Falsifier: a tier name with a comma that loads unquoted.
-> A tier name with a comma inside a flow mapping (`{name: Endpoints (macOS and Linux, internet), groups: [...]}`) is split by YAML at the comma, and the renderer reports an unknown key named after
-> the fragment, which does not say "quote it". Quote any name with a comma or colon: `{name: "Endpoints (macOS and Linux, internet)", ...}`. Screenshot of the rendered overview:
-> `references/screenshots/20261118-continuum-first-slice/`.
+> `problem: $.drawing.tiers[1]: unknown key \`internet)\`` · Falsifier: a tier name with a comma that loads unquoted. A tier name with a comma inside a flow mapping (`{name: Endpoints (macOS and
+> Linux, internet), groups: [...]}`) is split by YAML at the comma, and the renderer reports an unknown key named after the fragment, which does not say "quote it". Quote any name with a comma or
+> colon: `{name: "Endpoints (macOS and Linux, internet)", ...}`. Screenshot of the rendered overview: `references/screenshots/20261118-continuum-first-slice/`.
+
+> **Learned 2026-11-20** · render_flowmap.py and assemble_flowmap.py, a skill pack as consumer · VERIFIED_PRIMARY (observed) · Source: skill-pad `docs/flows/parts/`, first render wrote
+> `drawio/skill-pad-flows.drawio` at the pack root; render output `problem: $.flows[4].steps[2].code: expected array, got str` · Falsifier: an output path resolved from the map's folder. Three traps
+> met adopting the engine in skill-pad (consumer added to `consumers.yaml`):
+> - `drawing.output` resolves from the render's `--root` (default: the folder the recipe runs in), not from the map's folder. Run from the pack root with the map in `docs/flows/`, give the full
+> path (`output: docs/flows/drawio/<name>.drawio`), or pass `--root docs/flows` as the vagrant consumer does.
+> - A step's `code` is a list even for one path (`code: [scripts/x.py:fn]`); a bare string is refused per step.
+> - A flow-list item with a colon inside (`failures: [seq moved: someone changed it]`) is parsed as a mapping, reported as "expected string, got dict"; quote it.
+>
+> A pack's map runs in skill-drawio's own venv (`drawio_py := .../skills-working-cache/skill-drawio/.venv/bin/python`): the pack's venv has no PyYAML. The recipe pair skill-pad uses, from its
+> justfile:
+>
+> ```just
+> flows *ARGS:
+>     @{{drawio_py}} "{{drawio}}/scripts/assemble_flowmap.py" --master docs/flows/parts/master.yaml --out docs/flows/flows.yaml --command "just flows" --write
+>     @{{drawio_py}} "{{drawio}}/scripts/render_flowmap.py" --map docs/flows/flows.yaml {{ if ARGS == "" { "--write" } else { ARGS } }}
+> ```
+>
+> Screenshots: `references/screenshots/20261120-skill-pad-flows/` (overview and flow 1).
 
 ## ASCII diagrams in Markdown, first
 
 ASCII diagrams moved to **skill-ascii-diagrams** on 2026-11-17 (operator); the two entries below are kept as history, its references hold the current rules, and `scripts/ascii_flow_render.py` and
-`scripts/ascii_fix.py` (with `tests/test_ascii_fix.py`)
-named below now live in that pack.
+`scripts/ascii_fix.py` (with `tests/test_ascii_fix.py`) named below now live in that pack.
 
 > **Learned 2026-11-16** · ASCII flows for documents · VERIFIED_PRIMARY · Source: apn smc-resiliency remote conversion plan and OpenRemote assessment
-> (18 diagrams drawn, `ascii_box_check.py` clean) · Falsifier: a drawn chain whose `|` edges or arrows leave their column under the edge checker
-> A document's diagram is ASCII first (operator, 2026-11-16); a draw.io drawing only when explicitly asked. Hand-drawn ASCII flows drift by a column; drawing
-> them from a JSON spec with `scripts/ascii_flow_render.py` pads every box to its width and puts each arrow at the box centre (`indent + 1 + width // 2`), so the
-> edge checker stays clean. A grid renderer alone (UNC's `ascii_box_render.py`) cannot draw arrows or side exits; fan-out arrows over columns must be
-> computed from each column's start, not typed.
+> (18 diagrams drawn, `ascii_box_check.py` clean) · Falsifier: a drawn chain whose `|` edges or arrows leave their column under the edge checker A document's diagram is ASCII first (operator,
+> 2026-11-16); a draw.io drawing only when explicitly asked. Hand-drawn ASCII flows drift by a column; drawing them from a JSON spec with `scripts/ascii_flow_render.py` pads every box to its width and
+> puts each arrow at the box centre (`indent + 1 + width // 2`), so the edge checker stays clean. A grid renderer alone (UNC's `ascii_box_render.py`) cannot draw arrows or side exits; fan-out arrows
+> over columns must be computed from each column's start, not typed.
 
 ```python
 # skill-drawio scripts/ascii_flow_render.py (2026-11-16): a chain of boxes, arrows under the centre, an exit on the first text line
@@ -407,16 +405,13 @@ def chain(steps: list[dict], width: int, indent: int = 2) -> list[str]:
 ```
 
 > **Learned 2026-11-17** · fixing an existing ASCII diagram · VERIFIED_PRIMARY · Source: `scripts/ascii_fix.py`, `tests/test_ascii_fix.py` · Falsifier: a
-> diagram the edge checker passes that `ascii-fix` changes, or one it makes worse.
-> Evidence: 9 offline tests; four guards each turned a test red when removed; a dry run over 106 apn documents (243 diagrams, 0.09 s) fixed 3 diagrams,
-> left the rest unchanged and reported 16 findings that the edge checker also reports.
-> The operator asked that an existing diagram can be handed to the skill and fixed (2026-11-17). `just ascii-fix <file>` repairs faults only: a box's rows
-> and borders end in one column (the border's width, grown only where text runs past it, keeping a row's padding space); text after a box keeps its column
-> and a connector glued to the edge (`|--->`) stays glued; an arrow between chained boxes moves only when it points past them. It never restyles a correct
-> drawing: equal widths along a chain are opt-in (`--even-widths`), off-centre arrows drawn inside a box's width stay, and grids with shared edges or row
-> dividers are left alone. Two guards make every fix safe: the diagram's words in the same order, and no more edge findings than before; either failing
-> leaves the block as it was. First runs widened boxes chained across blank lines, re-centred deliberate arrows and broke a box with a grid divider; each
-> was a restyle or a misread, found by comparing the fixer with the edge checker over real documents.
+> diagram the edge checker passes that `ascii-fix` changes, or one it makes worse. Evidence: 9 offline tests; four guards each turned a test red when removed; a dry run over 106 apn documents (243
+> diagrams, 0.09 s) fixed 3 diagrams, left the rest unchanged and reported 16 findings that the edge checker also reports. The operator asked that an existing diagram can be handed to the skill and
+> fixed (2026-11-17). `just ascii-fix <file>` repairs faults only: a box's rows and borders end in one column (the border's width, grown only where text runs past it, keeping a row's padding space);
+> text after a box keeps its column and a connector glued to the edge (`|--->`) stays glued; an arrow between chained boxes moves only when it points past them. It never restyles a correct drawing:
+> equal widths along a chain are opt-in (`--even-widths`), off-centre arrows drawn inside a box's width stay, and grids with shared edges or row dividers are left alone. Two guards make every fix
+> safe: the diagram's words in the same order, and no more edge findings than before; either failing leaves the block as it was. First runs widened boxes chained across blank lines, re-centred
+> deliberate arrows and broke a box with a grid divider; each was a restyle or a misread, found by comparing the fixer with the edge checker over real documents.
 
 ```python
 # skill-drawio scripts/ascii_fix.py (2026-11-17): the two guards around every fix
@@ -431,6 +426,6 @@ No screenshot: the output is text in the document itself.
 
 
 > **Learned 2026-11-19** · consumer drawings after a renderer change · VERIFIED_PRIMARY · Source: skill-vagrant and skill-goal-guard `flows-check`, `scripts/compare_drawings.py` (2026-11-19) · Falsifier: a consumer whose committed drawing still matches its render after a renderer change
-> A renderer change (the base-layer lock default of 2026-11-11, renamed edge ids, layout and title changes) turns every consumer's `flows-check` red without any change to
-> its map. Before re-rendering over the committed drawing, run `just compare-drawings committed.drawio scratch.drawio` against a render into a scratch copy: exit 0 means
-> no label text changed; on exit 1 read the listed labels. Both consumers' only text changes were the renderer's own generated titles ("End-to-end flow" -> "E2E flow").
+> A renderer change (the base-layer lock default of 2026-11-11, renamed edge ids, layout and title changes) turns every consumer's `flows-check` red without any change to its map. Before re-rendering
+> over the committed drawing, run `just compare-drawings committed.drawio scratch.drawio` against a render into a scratch copy: exit 0 means no label text changed; on exit 1 read the listed labels.
+> Both consumers' only text changes were the renderer's own generated titles ("End-to-end flow" -> "E2E flow").

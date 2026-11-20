@@ -1,0 +1,81 @@
+#% Part: flows, records
+#% Lands under: flows
+- id: tracker-export
+  title: Bug and feature trackers generated from Pad
+  category: custom
+  purpose: bug-tracker.md and features-to-add.md stay readable in the repo while Pad holds the truth (operator, 2026-11-10).
+  trigger: {kind: manual, detail: "just commit-project runs the commit gate"}
+  runs_on: commit-gate
+  owner: tracker-script
+  budget: under 1 s per file
+  dependencies: {components: [pad-cli, tracker-files]}
+  steps:
+    - id: gate
+      actor: commit-gate
+      action: Runs just pad-trackers --apply.
+      via: [CLI]
+    - id: read
+      actor: tracker-script
+      action: Lists the collection (--all --full) and rebuilds each section's item tree; an item made in Pad renders its title, its body under it.
+      via: [CLI]
+      code: [scripts/pad_tracker.py:from_pad]
+    - id: write
+      actor: tracker-script
+      action: Rewrites each generated block, keeping the hand-written text around it.
+      via: [file]
+      writes: [docs/trackers/bug-tracker.md, docs/trackers/features-to-add.md]
+      gate: no generated block edited by hand
+      code: [scripts/pad_tracker.py:export_text]
+      failures: [a hand edit inside a block stops the gate (exit 1)]
+    - id: stored
+      actor: tracker-files
+      action: The generated files are committed with the work.
+      via: [file]
+- id: decision-mirror
+  title: Decisions mirrored read-only into Pad
+  category: custom
+  purpose: Every decision shows in Pad's Decisions collection while the repo record stays the truth.
+  trigger: {kind: manual, detail: "just pad-decisions --apply, also run by the commit gate"}
+  runs_on: commit-gate
+  owner: decisions-script
+  budget: about 60 s for 110 items; a re-run with nothing changed writes nothing
+  dependencies: {components: [pad-cli, decision-records]}
+  steps:
+    - id: read
+      actor: decisions-script
+      action: Reads the .kc ledger, the decision log's DL rows and, with --architecture, an architecture document's Key decisions bullets.
+      via: [file]
+      reads: [decision log, .kc/decisions.jsonl, ARCHITECTURE.md]
+      code: [scripts/pad_decisions.py:architecture_items]
+    - id: match
+      actor: decisions-script
+      action: Matches each to a Pad item by decision_ref; plans creates and body rewrites; lists orphans (a renamed bullet) without changing them.
+      via: [CLI]
+      code: [scripts/pad_decisions.py:orphans]
+      failures: [a renamed ARCH bullet leaves an orphaned item]
+    - id: write
+      actor: pad-cli
+      action: Creates or rewrites the items with bold labels (Serves, Decision, Reason or Detail, Source).
+      via: [CLI]
+      writes: [decisions collection]
+      code: [scripts/pad_decisions.py:apply]
+- id: focus-export
+  title: The operator's focus exported to the repo
+  category: custom
+  purpose: docs/trackers/pad-focus.md shows the open plans, tasks and asks in the repo.
+  trigger: {kind: manual, detail: "The commit gate runs pad_export.py --apply (non-fatal)"}
+  runs_on: commit-gate
+  owner: export-script
+  dependencies: {components: [pad-cli, tracker-files]}
+  steps:
+    - id: read
+      actor: export-script
+      action: Reads the workspace, skipping conventions, playbooks, bugs, feature requests, tech debt and decisions.
+      via: [CLI]
+      code: [scripts/pad_export.py:read_items]
+    - id: write
+      actor: export-script
+      action: Writes pad-focus.md only when an item changed; Pad stopped never blocks the gate.
+      via: [file]
+      writes: [docs/trackers/pad-focus.md]
+      code: [scripts/pad_export.py:render]

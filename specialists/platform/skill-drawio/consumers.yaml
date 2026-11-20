@@ -18,6 +18,10 @@ consumers:
     root: /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-goal-guard/docs/goal-guard-flows
     map: goal_guard_flows.yaml
     schema: ""
+  - name: skill-pad
+    root: /Volumes/Data/_ai/_skills/skills_stuff/specialists/project/skill-pad
+    map: docs/flows/flows.yaml
+    schema: ""
   - name: example-shop
     root: examples/shop
     map: flows.yaml

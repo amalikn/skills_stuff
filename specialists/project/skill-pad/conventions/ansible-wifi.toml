@@ -113,7 +113,8 @@ everything was done): what was done, the result against each done-when line, wha
 refs). The --comment on the status change is one line that points to it. Work that produced a log attaches it (`pad attachment upload <ref> <file>`) \
 and the comment names it.
 
-**Check:** skill-pad `just item-check <ref>` exits 0 before an item is called done. Tags: only prod-write, bench, hub, skill-writeback.
+**Check:** skill-pad `just item-check <ref>` exits 0 before an item is called done. Tags: only prod-write, bench, hub, skill-writeback, \
+and in a workspace shared by several projects or packs a component tag on every item (guidelines 3.4).
 
 **Source:** operator, 2026-11-18 (whole story) and 2026-11-20 (templates for every collection, links in comments); skill-pad \
 docs/pad-usage-guidelines-20261110_1628.md 3.3."""

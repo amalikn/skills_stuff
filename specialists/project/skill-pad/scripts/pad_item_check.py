@@ -101,16 +101,15 @@ def missing_labels(collection: str, body: str) -> list[str]:
 
 
 def one_line_request(item: dict) -> bool:
-    """Whether an item is a feature request that is only the operator's own line (body equal to its title), which keeps no labels.
+    """Whether an item is a feature request that is only the operator's own line, which keeps no labels (its title may be that line cut to 100 characters).
 
     Args:
-        item: the item (collection_slug, title, content).
+        item: the item (collection_slug, content).
 
     Returns:
-        True for a one-line feature request.
+        True for a feature request whose body is one line.
     """
-    body = " ".join((item.get("content") or "").split())
-    return item.get("collection_slug") == "feature-requests" and "\n" not in (item.get("content") or "").strip() and body == " ".join((item.get("title") or "").split())
+    return item.get("collection_slug") == "feature-requests" and "\n" not in (item.get("content") or "").strip()
 
 
 def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
@@ -136,7 +135,7 @@ def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
         out.append(f"done: status {status} with no closing comment (`YYYY-MM-DD HH:MM AEDT DONE:` and what was done, the result, evidence, what stays open)")
     if status == "in-progress" and not texts and not notes:
         out.append("update: in progress with no note or comment")
-    if attachments == 0 and any(LOG_NAME.search(t) for t in [body, *texts, *notes]):
+    if item.get("collection_slug") in WORK and attachments == 0 and any(LOG_NAME.search(t) for t in [body, *texts, *notes]):
         out.append("logs: a log file is named but nothing is attached (`pad attachment upload <ref> <file>`)")
     return out
 
@@ -159,7 +158,12 @@ def recent_refs(days: int, timeout: int, binary: str, extra: list[str]) -> list[
     since = datetime.now(timezone.utc) - timedelta(days=days)
     refs = []
     for coll in LABELS:
-        rows = json.loads(pad(["item", "list", coll, "--all", "--format", "json", *extra], timeout, binary) or "[]")
+        try:
+            rows = json.loads(pad(["item", "list", coll, "--all", "--format", "json", *extra], timeout, binary) or "[]")
+        except RuntimeError as error:
+            if "not found" in str(error):  # a workspace without this collection (2026-11-20: enterprise-strategy has no bugs, ansible-wifi no asks)
+                continue
+            raise
         rows = rows if isinstance(rows, list) else rows.get("items", [])
         for r in rows:
             when = datetime.fromisoformat(str(r.get("updated_at", "1970-01-01T00:00:00Z")).replace("Z", "+00:00"))

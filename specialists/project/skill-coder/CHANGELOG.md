@@ -31,6 +31,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-20: references/design-patterns.md, P-79 (Learned 2026-11-20): delegated rewrite proved word-preserving before it is applied (skill-pad pad_spec_words.py).
 - 2026-11-20: languages/ansible/learned-execution.md, Learned 2026-11-20: on ansible-core 2.18 reading a variable templates it whole and `default()` swallows an undefined error elsewhere in it.
 - 2026-11-20: languages/javascript-typescript.md, Learned 2026-11-20: isolating VS Code/VSCodium test editors (HOME for shared storage, mock keychain, stripped ELECTRON_/VSCODE_ variables, per-window extension sockets, SIGKILL after the save prompt); continuum BUG-271.
 - 2026-11-20: languages/ansible/learned-execution.md, Learned 2026-11-20: a skipped task under --check registers rc 0 and empty stdout (default() never applies); `until` is evaluated on a skipped result, `changed_when`/`failed_when` are not; a `check_mode: no` reboot runs for real under --check.

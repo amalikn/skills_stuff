@@ -288,6 +288,17 @@ Tracker IDs are not tags: the first line already carries them, and a second copy
 
 A new tag is added here first; `pad tag list` shows drift.
 
+**Component tags in a shared workspace** (operator, 2026-11-20: "Any workspace which is shared by multiple projects ... you need to make sure that you're using proper tags"). A workspace that serves
+more than one project, pack or folder tags every item with the one it belongs to, so its items can be filtered apart. The tag is the folder or pack name, exactly:
+
+| Workspace      | Serves                                                                        | Component tags                                               |
+| -------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `skills`       | every pack under skills_stuff (all skill work goes here, operator 2026-11-20) | the pack name: `skill-pad`, `skill-smc`, `skill-drawio`, ... |
+| `ansible-wifi` | ansible-wifi, local-knowledge-ansible/ansible-wifi, skill-smc                 | `ansible-wifi`, `local-knowledge`, `skill-smc`               |
+
+A single-project workspace (unc, smc-resiliency, continuum, enterprise-strategy) needs no component tag. An item that spans two components takes both. Component tags are the one exception to "tags
+mark only what cuts across plans".
+
 ### 3.5 Notes, decisions, reminders, watches
 
 - `note`: at the end of each session on an item, what was done and the commit.

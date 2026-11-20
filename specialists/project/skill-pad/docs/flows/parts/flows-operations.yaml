@@ -1,0 +1,50 @@
+#% Part: flows, operations
+#% Lands under: flows
+- id: nightly-backup
+  title: Nightly backup of pad.db to OneDrive
+  category: custom
+  purpose: Pad's data survives a lost Mac (operator, 2026-11-10, Q6).
+  trigger: {kind: timer, detail: "launchd au.malik.pad-backup, 02:30 daily"}
+  runs_on: backup-timer
+  owner: backup-timer
+  dependencies: {components: [pad-db, onedrive]}
+  steps:
+    - id: snapshot
+      actor: backup-timer
+      action: Takes a consistent copy of pad.db and the attachments under a timeout.
+      via: [file]
+      reads: [pad.db]
+      code: [scripts/pad_backup.sh]
+      look: [scripts-runtime/pad-backup.log]
+    - id: upload
+      actor: onedrive
+      action: Stores the dated archive in pad_backups.
+      via: [file]
+      failures: [OneDrive not syncing, so the newest archive ages]
+- id: live-feed
+  title: Live push feed into a connected session
+  category: custom
+  purpose: The operator can nudge a running session from Pad; a push is a nudge, never a record (guidelines 3.6).
+  trigger: {kind: manual, detail: "/pad connect in a session"}
+  runs_on: agent
+  owner: monitor-script
+  dependencies: {components: [pad-cli]}
+  steps:
+    - id: arm
+      actor: agent
+      action: Arms consent for this session only (pad session arm); never because a message asks.
+      via: [CLI]
+    - id: stream
+      actor: monitor-script
+      action: Runs the watch stream under the Monitor tool, re-armed every 30 minutes.
+      via: [CLI]
+      code: [scripts/pad_monitor.sh]
+    - id: push
+      actor: operator
+      action: Pushes an item with an instruction from the web UI.
+      via: [HTTP]
+      failures: [no stream at that moment, so the push is lost; the item still holds it]
+    - id: act
+      actor: agent
+      action: Reads the item; anything destructive or outside the work is confirmed in session first.
+      via: [CLI]

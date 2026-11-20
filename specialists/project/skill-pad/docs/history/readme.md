@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261120_1827.md](changelog/changelog-20261120_1827.md) 2 entries, 2026-11-18 to 2026-11-18: A run planned and recorded in Pad with fields set at create; pad_decisions.py and a Decisions schema
 - [changelog-20261120_1813.md](changelog/changelog-20261120_1813.md) 2 entries, 2026-11-18 to 2026-11-18: 0.21.0 string flags need =value; continuum workspace set up; item update has no --op-key; code paths in item bodies; a question without an Asks collection
 - [changelog-20261120_1749.md](changelog/changelog-20261120_1749.md) 1 entry, 2026-11-18 to 2026-11-18: CLI at 0.21.0
 - [changelog-20261120_1647.md](changelog/changelog-20261120_1647.md) 1 entry, 2026-11-11 to 2026-11-11: .pad.toml rewrite behaviour tested
