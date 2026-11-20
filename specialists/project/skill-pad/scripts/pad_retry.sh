@@ -7,7 +7,7 @@
 #
 # Run: pad_retry.sh <pad arguments...>          e.g. pad_retry.sh item comment TASK-5 --stdin < note.md
 #      just -f <skill-pad>/justfile pad <args>   (the same, through the pack's recipe)
-# Stdin, when given, is read once and replayed on every attempt. Output and exit code are those of the last attempt.
+# Stdin is read once, only when the arguments include --stdin, and replayed on every attempt. Output and exit code are those of the last attempt.
 # Retries: up to PAD_RETRY_TRIES attempts (default 6), waiting 1, 2, 4, 8, 16 s (or the server's retry_after_seconds when larger); each call
 # is cut at PAD_RETRY_TIMEOUT seconds (default 60). PAD_BIN overrides the pad binary (tests).
 # Safety: writes exactly what the wrapped pad command writes; a write that failed with 429 was refused by the server, so a retry does not
@@ -44,10 +44,15 @@ main() {
   case "$1" in -h|--help) usage; return 0 ;; esac
   case "$tries" in ''|*[!0-9]*|0) echo "PAD_RETRY_TRIES must be a positive whole number" >&2; return 2 ;; esac
   local input="" have_input=0 out rc wait attempt=1 hint
-  if [ ! -t 0 ]; then
-    input="$(cat; printf x)"; input="${input%x}"
-    have_input=1
-  fi
+  # Read stdin only when the pad command takes it (--stdin): an open pipe with no data would otherwise block forever (20 Nov 2026).
+  local arg
+  for arg in "$@"; do
+    if [ "$arg" = "--stdin" ]; then
+      input="$(cat; printf x)"; input="${input%x}"
+      have_input=1
+      break
+    fi
+  done
   while :; do
     if [ "$have_input" -eq 1 ]; then
       out="$(printf '%s' "$input" | timeout "$call_timeout" "$pad_bin" "$@" 2>&1)"; rc=$?

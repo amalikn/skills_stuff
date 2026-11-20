@@ -90,6 +90,22 @@ class PadRetryTest(unittest.TestCase):
       self.assertEqual(proc.returncode, 0, proc.stderr)
       self.assertIn("argc=4", proc.stdout)
 
+  def test_open_stdin_without_flag_does_not_block(self) -> None:
+    """A call without --stdin returns even when stdin is an open pipe that never closes (it once blocked in cat)."""
+    with tempfile.TemporaryDirectory() as d:
+      fake = Path(d) / "pad"
+      fake.write_text("#!/usr/bin/env bash\necho ok\n")
+      fake.chmod(0o755)
+      env = dict(os.environ, PAD_BIN=str(fake))
+      proc = subprocess.Popen(["bash", str(SCRIPT), "item", "show", "TASK-1"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
+      try:
+        out = proc.stdout.readline()
+        proc.wait(timeout=20)
+      finally:
+        proc.stdin.close()
+      self.assertEqual(out.strip(), "ok")
+      self.assertEqual(proc.returncode, 0)
+
   def test_bad_usage(self) -> None:
     """No arguments is bad usage (exit 2)."""
     proc = subprocess.run(["bash", str(SCRIPT)], capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)
