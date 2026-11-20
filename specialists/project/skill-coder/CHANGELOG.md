@@ -31,6 +31,9 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-20: references/design-patterns.md, P-80 (work order withdrawn at its deadline) and P-81 (approval marked per item from an evidence file, with a check), from continuum.
+- 2026-11-20: languages/shell/learned-processes-and-timeouts.md, Learned 2026-11-20: never edit a running script (a git hook edited mid-push failed with unexpected EOF); exec a separate body file.
+- 2026-11-20: languages/rust/learned-async-and-tests.md, Learned 2026-11-20: Temporal Rust SDK 1.2.0 (self: Arc<Self> activities, serde_json errors, data vs infrastructure errors, workflow_time); clippy result_large_err with axum Response -> Box<Response>.
 - 2026-11-20: languages/ansible/learned-execution.md, Learned 2026-11-20: on ansible-core 2.18 a self-referencing variable fails with a recursive loop; 2.19+ resolves it.
 - 2026-11-20: references/design-patterns.md, P-79 (Learned 2026-11-20): delegated rewrite proved word-preserving before it is applied (skill-pad pad_spec_words.py).
 - 2026-11-20: languages/ansible/learned-execution.md, Learned 2026-11-20: on ansible-core 2.18 reading a variable templates it whole and `default()` swallows an undefined error elsewhere in it.

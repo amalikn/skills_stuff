@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261120_2330 — An edge path allowlist silently drops new device routes (v2.3.8 -> v2.3.9)
+
+- `references/security-and-segmentation.md` (Trust-boundary pass): Learned 2026-11-20 from the continuum P4 gate, with the Caddy excerpt.
+
 ## 20261120_1815 — WAN: roaming laptops dial out to a relay when there is no overlay (v2.3.7 -> v2.3.8)
 
 - references/wan-and-remote-access.md: Learned 2026-11-20 (Continuum DL-065): host-to-host rsync or scp needs an inbound listener on the receiving end; with no overlay, both ends dial out to an authenticated relay and the direct tool stays a measured baseline.

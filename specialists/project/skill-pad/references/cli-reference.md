@@ -80,6 +80,11 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > (it does not advertise item_scoped_comment_writes); upgrade the server, or use the web UI
 > ```
 
+> **Disputed 2026-11-20** · `pad item comment-edit` on the Continuum workspace · VERIFIED_PRIMARY (observed four times) · Source: Continuum session 2026-11-20 night,
+> `pad item comment-edit TASK-283 <id> "..."` (also TASK-288, TASK-25, FR-237) answered "Comment <id> on <ref> updated" · Falsifier: the refusal above returning on
+> the same server and CLI · Conflicts: Learned 2026-11-19 (comment edits refused). On CLI 0.21.1 against the same local server, comment edits worked all evening. The
+> server's advertisement can change between restarts, so try `comment-edit` first and keep the add-a-new-comment fallback for a refusal.
+
 ## Traps
 
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed) · Source: `pad workspace --help` (no rename command); the operator renamed unified-network-controller in the web UI
@@ -226,4 +231,13 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > **Learned 2026-11-20** · Pad server (local, v0.21.x) · VERIFIED_PRIMARY · Source: ~/.pad/logs/server.log, 18:00 to 18:07 AEDT: 3,315 requests (unified-network-controller 1,594, continuum 457, smc-resiliency 11), 305 answered 429; `msg="rate limited" key=user:<id> limiter=api` · Falsifier: a 429 keyed by client address or workspace
 > The API limiter is keyed by the Pad user, so all sessions on the Mac share it: one session sweeping a workspace (item show plus comments for every item) starves the others. `pad server start` has no
 > rate-limit option. Retry single calls (`scripts/pad_retry.sh`) and run sweeps one at a time.
+
+> **Learned 2026-11-20** · Pad CLI 0.21.1 statuses and listing · VERIFIED_PRIMARY (observed) · Source: Continuum workspace, `pad item update FR-237 --status in-progress`
+> · Falsifier: a collection that accepts `in-progress` without it in its options.
+> - Status options belong to the collection. Tasks take `in-progress`; Feature Requests refuse it ("value \"in-progress\" is not in allowed options [submitted
+>   under-review planned building shipped declined]") and use `building` for work under way. When a rule says "set the item in-progress", use the collection's
+>   working state and say which one.
+> - `pad item list <collection> --format json` returned only part of a collection (6 of 48 tasks, 1 of 197 decisions) even with `--limit 1000`, so it cannot be used to
+>   look up a ref by title. To link a decision-log row, read its ref from `pad item show DECIS-<n>` (the mirror creates refs in DL order) before writing the link;
+>   never write a placeholder such as `[[DECIS-?|DL-106]]` (written and fixed three times that night).
 

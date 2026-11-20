@@ -107,6 +107,30 @@ Platform layers: a failure at any layer takes down every layer above it on that 
 > after a rebuild, not a normal restart (300 s here), and add `start_interval` so a fast start still reports quickly. Before rolling back, read the
 > service's process list and its health log: a running process with no heartbeat yet is a timing fault, not a broken release.
 
+> **Learned 2026-11-20** · Temporal dev server state across restarts · VERIFIED_PRIMARY (pinned image help; restart test) · Source: continuum-app `compose.yaml`,
+> `scripts/temporal_restart_check.sh` (2639889); `docker run temporalio/temporal:1.10.1 server start-dev --help` · Falsifier: a workflow lost after `docker compose restart temporal` with the flag set.
+> `temporal server start-dev` keeps everything in memory unless `--db-filename` names a SQLite file; a restart then loses every workflow, so a test of "restart
+> mid-operation" proves nothing. Put the file on a named volume mounted at a folder the image's user owns (`/home/temporal`, uid 1000): a new named volume copies
+> that folder's ownership, a path the image lacks becomes root-owned. Prove it with a worker-less workflow that must still be Running after the restart, and run
+> the same check once against an in-memory override to see it fail.
+>
+> ```yaml
+> command: ["server", "start-dev", "--ip", "0.0.0.0", "--namespace", "continuum", "--headless", "--db-filename", "/home/temporal/temporal.db"]
+> volumes: ["temporal-data:/home/temporal"]
+> ```
+
+> **Learned 2026-11-20** · A JVM SIGBUS with memory free points at the disk · PARTIAL (inference from coincident failures; no log at the moment) · Source: continuum-app
+> `.githooks/pre-push` (90cef7c); Keycloak hs_err report · Falsifier: the same SIGBUS on a host with ample disk.
+> A Java service in a container died with SIGBUS in `PerfLongVariant::sample` (the JVM reading its memory-mapped perf file) while 19.9 GB of RAM was free; in the
+> same minute a CI build in the same Docker VM failed with only "could not compile". A memory-mapped file whose disk fills or is truncated raises SIGBUS on access.
+> On a shared Docker VM (OrbStack, Docker Desktop) check its disk (`docker run --rm alpine df -h /`), not the host's, and guard heavy jobs: refuse to start below a
+> measured minimum instead of failing obscurely.
+>
+> ```sh
+> free_gib=$(docker run --rm alpine df -Pk / 2>/dev/null | awk 'NR==2 {print int($4 / 1048576)}')
+> [ -n "$free_gib" ] && [ "$free_gib" -ge "${MIN_FREE_GIB:-10}" ] || { echo "Docker VM has ${free_gib:-unknown} GiB free" >&2; exit 1; }
+> ```
+
 ## Kubernetes essentials
 
 - etcd needs a majority: quorum = (n/2)+1. Run 3 or 5 members; an even count adds no tolerance. VERIFIED_PRIMARY, [etcd-faq], checked 2026-10-29.

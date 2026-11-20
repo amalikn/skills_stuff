@@ -106,6 +106,23 @@ E4: dedicated management VRF, OOB where possible
 - Never claim a "cannot" without the test that proves it. An untested control is a capability.
 - Keep severity honest: an abuse path that needs a capability the attacker lacks drops in rank.
 
+> **Learned 2026-11-20** · An edge path allowlist silently drops new device routes · VERIFIED_PRIMARY (P4 gate run 1, 7 of 8 cases failed; fixed run 3 11/11) ·
+> Source: continuum-app `caddy/Caddyfile` (42cf8d4) · Falsifier: an edge that forwards unknown paths to the backend.
+> A TLS edge that forwards only named paths on the device port (heartbeats, artefacts) answers 404 to any route added later. In-process tests call the backend
+> directly and pass; only an end-to-end run through the edge shows that agents never receive their work. When a device-facing route is added, add it to the edge in
+> the same change, exactly (path pattern and methods, a body limit), and keep one end-to-end test through the edge per route family.
+>
+> ```caddy
+> @orders {
+> 	path_regexp ^/v1/devices/[A-Za-z0-9._-]+/orders(/[A-Za-z0-9._-]+/result)?$
+> 	method GET POST
+> }
+> handle @orders {
+> 	request_body { max_size 1MiB }
+> 	reverse_proxy {$COORDINATOR_UPSTREAM} { header_up X-Continuum-Client-Cert-Sha256 {tls_client_fingerprint} }
+> }
+> ```
+
 ## Zone matrix
 
 Fill one per site type with real flows. Every allow names an owner and a test; every deny has a test too.

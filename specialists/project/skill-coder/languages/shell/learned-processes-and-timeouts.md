@@ -139,3 +139,17 @@ The alarm-then-exec form above does not stop a program that catches SIGALRM (Go 
 >
 > Recurrence 2026-11-10 of the 2026-11-06 entry above (editing a script a job is running): editing the probe while a survey batch ran it made bash fail with `unexpected EOF` after the last box (exit
 > 2, every result already written).
+
+> **Learned 2026-11-20** · sh and bash read a script as they run it · VERIFIED_PRIMARY (one incident: `.githooks/pre-push: line 57: unexpected EOF while looking for
+> matching '"'` after a passing CI run) · Source: continuum-app `.githooks/pre-push` (90cef7c), push log 2026-11-20 · Falsifier: a shell that loads the whole file before
+> running it. A shell reads a script file incrementally, by byte offset, while executing it. Editing a running script (a git hook during a long push, a deploy script
+> during its run) shifts the text under the reader: the run continues from the old offset into the new text and fails, or runs a mix of both. Never edit a hook or
+> script while it may be running; finish or wait for the run, then edit. For hooks that must stay editable, keep the body in a separate file and `exec` it, so the
+> running copy is a fresh read each time.
+>
+> ```sh
+> # .githooks/pre-push: a two-line stub; edits to the body take effect at the next push, never mid-run
+> #!/bin/sh
+> exec sh "$(git rev-parse --show-toplevel)/scripts/pre_push.sh" "$@"
+> ```
+

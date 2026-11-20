@@ -16,6 +16,7 @@ Last rotated: 20261120_2218
 
 ## Contents
 
+- [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
@@ -42,6 +43,11 @@ Last rotated: 20261120_2218
 - [20261119_1136 — Decision-log process rows mirrored to Pad](#20261119_1136--decision-log-process-rows-mirrored-to-pad)
 
 ---
+
+## 20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial
+
+- references/cli-reference.md: Disputed 2026-11-20 beside the 2026-11-19 refusal (comment-edit worked four times on 0.21.1); Learned 2026-11-20: Feature Requests use
+  `building`, not `in-progress`; `item list --format json` returns part of a collection, so read refs with `item show` and never write placeholder links.
 
 ## 20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)
 

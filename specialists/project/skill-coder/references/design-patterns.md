@@ -123,6 +123,8 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-77 | Exact-commit pre-push gate | A local CI gate that passes on the working folder, not on the commit being pushed |
 | P-78 | Offline image overlay as data, each edit point matched exactly once | A golden disk image needs a small, listed, repeatable change per copy, without booting or mounting it |
 | P-79 | Delegated rewrite proved word-preserving before it is applied | Many texts restructured by helpers or agents told to keep every word, before a write |
+| P-80 | Work order withdrawn at its deadline | A queue of remote steps waited on with a deadline, where workers can be late or restart |
+| P-81 | Approval marked per item from an evidence file, with a check | A partly tested catalogue whose status must follow evidence, item by item |
 
 ## Patterns
 
@@ -1986,6 +1988,39 @@ def lost(old: str, new: str, allow: set[str]) -> Counter:
     missing.pop(w, None)
   return missing
 ```
+
+### P-80 Work order withdrawn at its deadline
+
+> **Learned 2026-11-20** · continuum handoff orders · CANDIDATE (one project) · Source: continuum-app `apps/coordinator/src/handoff/orders.rs` `withdraw` (42cf8d4); P4 gate run 2
+> · Falsifier: a late worker still executing a withdrawn step, or a deadline write overriding an answer that arrived first.
+
+Problem:      a coordinator hands steps to remote workers through a queue and waits with a deadline; after the deadline the job moves on, but the unanswered step stays queued, so a late or restarted worker later executes a step of a job that has already stopped
+Solution:     at the deadline the waiter writes the step's result itself, atomically and only if none exists (`UPDATE ... SET result = withdrawn WHERE id = $1 AND result IS NULL`); if the update changed nothing, the worker's answer arrived first and is used; listing returns only steps with no result; a late answer that differs from the recorded one is refused (409)
+Why it works: one conditional write decides the race between "worker answered" and "deadline passed"; afterwards there is exactly one outcome and nothing left to pick up
+Reuse:        job queues with timeouts; device command queues; approval requests that expire; any poll-for-work API where workers can restart with stale state
+Pitfalls:     the withdrawn record must satisfy the same schema as a real answer (a missing timestamp was caught only by schema validation in tests); workers should also be scoped to their own resource, since a fresh worker otherwise drains every leftover step (the gate saw a stale fence step land in another job's folder)
+Realised in:  Rust/SQL -> continuum-app orders.rs `withdraw`, called from the wait activity at its deadline
+Evidence:     CANDIDATE: one project; P4 gate 11/11 after the fix; a test asserts the order is unlisted and a late answer gets 409, and fails without the fix
+
+```rust
+let n = sqlx::query("UPDATE device_order SET result = $2 || jsonb_build_object('finished_at', ...), finished_at = now()
+     WHERE order_id = $1 AND result IS NULL").bind(order).bind(&withdrawn).execute(pool).await?.rows_affected();
+if n == 1 { return Ok(None); }          // withdrawn: the waiter reports a timeout
+result_of(pool, order).await            // the worker answered first: use its result
+```
+
+### P-81 Approval marked per item from an evidence file, with a check
+
+> **Learned 2026-11-20** · continuum contracts 1.0.0 · CANDIDATE (one project) · Source: continuum `scripts/contract_approve.py`, `contracts/approvals.json` (7236f18)
+> · Falsifier: `--check` passing while a listed item is unmarked, or an item marked that the file does not list.
+
+Problem:      a set of machine contracts (API operations, schemas, events, state transitions) is partly exercised by tests; approving the whole set approves untested parts, waiting approves nothing
+Solution:     a versioned data file lists each approved item with the test or gate that exercised it; a script marks exactly those items in the contract files by text edits (`x-status: APPROVED`, `x-evidence: ...`), plan by default and `--apply` to write; `--check` exits 1 when a listed item is missing or unmarked; everything else stays PROPOSED
+Why it works: approval becomes reviewable data with its evidence beside it, the files keep their formatting, and the check makes a forgotten or renamed item visible
+Reuse:        feature flags graduating from beta; API endpoints moving to stable; runbook steps verified one by one; any catalogue where status must follow evidence
+Pitfalls:     editing JSON by load-and-dump reformats every file (use a targeted text edit on the one status line); the check must be shown to fail before the apply (it did: rc 1 before, 0 after)
+Realised in:  Python -> continuum scripts/contract_approve.py (`just contract-approve --check`)
+Evidence:     CANDIDATE: one project; 18 operations, 12 schemas, 3 events, 18 transitions marked; --check failed before and passed after
 
 ## Language realisations
 
