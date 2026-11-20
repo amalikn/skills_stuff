@@ -170,6 +170,18 @@ RTO budget: the clock starts at the agreed disruption point (example timeline)
   Every segment is measured in a drill; none is assumed.
 ```
 
+> **Learned 2026-11-20** · restic 0.19.1 on SeaweedFS 4.54 (S3) · VERIFIED_PRIMARY (run against the live store) · Source: continuum-app
+> `crates/continuum-store/src/restic/mod.rs` (dffcd68), `.github/workflows/ci.yml` (7aedc0d) · Falsifier: a restic release with other exit codes.
+> restic exits 10 when the repository does not exist and 12 on a wrong password, so "create on first use" can tell the cases apart without parsing text;
+> a comma in `--tag a,b` makes two tags and filters on both. Run it with a cleared environment and `--no-cache` (no cache under the home folder) and pin
+> `--host` (snapshots otherwise record the machine name). A single-host CI that also runs another service on 8080 must give `weed server` its own
+> `-volume.port`: the default volume port is 8080 and the S3 gateway then never answers.
+>
+> ```sh
+> restic -r s3:http://127.0.0.1:8333/bucket/p-<hash> --no-cache cat config   # exit 10: no repository yet -> restic init
+> weed server -dir=data -ip=127.0.0.1 -volume.port=8380 -s3 -s3.port=8333 -s3.config=s3.json
+> ```
+
 ## Implementation notes: PostgreSQL and PBS
 
 PostgreSQL PITR (current docs 18.x, VERIFIED_PRIMARY, [pg-archiving] and [pg-basebackup], checked 2026-10-29):

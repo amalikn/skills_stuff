@@ -140,6 +140,18 @@ keepalive interval < carrier mapping timeout (measure it)
 | Per-class tunnel decision on satellite  | PEP-accelerated carrier              | Tunnel everything              | TCP loses PEP acceleration                    |
 | Verified physical diversity             | "Redundant" carriers                 | Trust two circuit IDs          | Shared pole, duct or gateway                  |
 
+> **Learned 2026-11-20** · moving data between roaming laptops and lab VMs · UNVERIFIED (design review, operator decision; nothing deployed) · Source:
+> Continuum DL-065 (decision log, 2026-11-20) · Falsifier: a host-to-host transfer that needs no inbound listener on either end.
+> Host-to-host tools (rsync over SSH, scp) need an inbound listener on whichever end receives: for a Mac that means turning on Remote Login, and on a
+> laptop that roams behind NAT or CGNAT the far side often cannot reach it at all. When there is no overlay (WireGuard, NetBird) yet, have both ends
+> dial out to a relay that already has a public, authenticated edge and keep the direct tool for a measured baseline only; reopen the choice when the
+> overlay exists.
+>
+> ```text
+> Mac --TLS (device cert)--> edge --> coordinator --> object store   <-- TLS (device cert) -- Linux
+> (no inbound port on either endpoint; rsync over SSH kept as a timing baseline only)
+> ```
+
 ## Failure modes and tests
 
 | Failure                          | Symptom                              | Blast radius                   | Test that proves the design handles it                        |

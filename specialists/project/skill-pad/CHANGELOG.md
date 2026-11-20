@@ -16,6 +16,7 @@ Last rotated: 20261120_1647
 
 ## Contents
 
+- [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
 - [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
 - [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
@@ -42,6 +43,10 @@ Last rotated: 20261120_1647
 - [20261118_1742 — CLI at 0.21.0](#20261118_1742--cli-at-0210)
 
 ---
+
+## 20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits
+
+- references/cli-reference.md: Learned 2026-11-20 from the continuum workspace (pad item list hides done-like items without --all; comment bodies starting with '- ' need --stdin; rate_limited bursts).
 
 ## 20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)
 

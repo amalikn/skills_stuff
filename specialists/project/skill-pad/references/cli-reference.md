@@ -192,3 +192,16 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > `pad item list --format json` returns a list with `content_preview`, not `content`: a body check must call `item show` per item (a count of `Serves:` lines from `list` came back 0 while TASK-24 has one).
 > There is no `pad collection show`. Undo: `pad item history --full` keeps body versions only and restoring one is web-UI only; `pad item patch --undo <patch-id>` inverts one patch (refused if the
 > text moved); `pad item restore` only un-archives a soft-deleted item. Fields, status and comments have no CLI undo, so a sync keeps its own before-image journal ([pad-markdown-sync-plan](../docs/pad-markdown-sync-plan-20261119_1845.md) 3.4).
+
+> **Learned 2026-11-20** · Pad CLI v0.21.0 · VERIFIED_PRIMARY (continuum workspace, 2026-11-20) · Source: `pad item list decisions` printed one item while
+> `pad item list decisions --all --format json` returned 174 · Falsifier: a Pad version whose list shows terminal statuses by default.
+> `pad item list` hides items in a done-like status (done, accepted, answered, fixed) unless `--all` is given, so a count of a decisions collection without
+> `--all` looks like a broken mirror. A comment or note body that starts with `- ` is parsed as a flag ("unknown shorthand flag"): pass bodies with
+> `--stdin`. Bursts of writes get `rate_limited` (retry after 1 s): space them or retry with the same `--op-key`.
+>
+> ```sh
+> pad item list decisions --all --format json | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))'
+> pad item comment TASK-264 --stdin <<'EOF2'
+> - **What:** ...
+> EOF2
+> ```
