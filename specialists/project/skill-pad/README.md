@@ -87,6 +87,8 @@ Learned in unified-network-controller, 2026-11-10:
 2. Delete the `.claude/skills/pad/` and `.agents/skills/pad/` copies Pad writes into the project; this folder serves every project. Keep `.pad.toml` and give it a `#` comment header (governance
    freshness checks refuse a file without a summary). `pad workspace switch` deletes that comment: [references/workspace-context.md](references/workspace-context.md), Learned 2026-11-11.
 3. Apply the conventions baseline (above). The startup template's commit conventions contradict a single-branch repo with its own commit recipe.
+   A project with no bug, feature or tech-debt trackers (the apn hub, enterprise-strategy, 2026-11-20) applies it with `--only` and leaves `pad-owned-trackers` out;
+   start such a workspace with the Asks collection (docs/pad-usage-guidelines, 3.1; create flags in the `=` form on 0.21.1).
 4. Seed plans and tasks that each name their tracker entry; pass `--op-key` on every create so a rerun does not duplicate.
 5. Keep a readable copy in Git: a `pad-export` recipe calling `scripts/pad_export.py --out <trackers>/pad-focus.md --apply`, run non-fatally in the project's commit gate (`-@` in just) so it never
    blocks a commit when Pad is stopped or its disk is absent.

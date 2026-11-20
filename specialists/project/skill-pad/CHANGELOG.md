@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1334
+Last rotated: 20261120_1355
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
 - [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
@@ -39,9 +40,13 @@ Last rotated: 20261120_1334
 - [20261111_1213 — links step in a commit gate](#20261111_1213--links-step-in-a-commit-gate)
 - [20261111_1135 — workspace sharing noted](#20261111_1135--workspace-sharing-noted)
 - [20261111_1054 — Pad link opener: repo links in Pad open in VS Code](#20261111_1054--pad-link-opener-repo-links-in-pad-open-in-vs-code)
-- [20261110_2055 — tracker import spike noted for the trial review](#20261110_2055--tracker-import-spike-noted-for-the-trial-review)
 
 ---
+
+## 20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first
+
+README.md, Setting Pad up in a project, step 3: a project without bug, feature or tech-debt trackers applies the baseline with --only (pad-owned-trackers
+left out) and starts with the Asks collection; learned setting up the enterprise-strategy hub workspace (20 Nov 2026: six conventions, Asks with ASK-11 to ASK-15).
 
 ## 20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs
 
@@ -187,10 +192,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
   `export` always turns them back into links relative to the tracker file, so the repo file is unchanged. Applied to smc-resiliency Bugs (7 items, 8 links); the operator confirmed a click in BUG-41
   opens VS Code.
 - `references/items-and-edits.md`: Learned 2026-11-11, Pad strips vscode:// and relative links go nowhere; write opener links.
-
-## 20261110_2055 — tracker import spike noted for the trial review
-
-### Changed
-
-- Side agent: imported closed bugs and features count as done on 10 Nov. Checked in UNC: `next`, `stale` and the dashboard are not flooded; today's changelog lists 43 imported closures. Operator: keep
-  both collections as work and discount the spike; noted on UNC TASK-20 and in guidelines section 6 step 6.

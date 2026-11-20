@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261120_1355.md](changelog/changelog-20261120_1355.md) 1 entry, 2026-11-10 to 2026-11-10: tracker import spike noted for the trial review
 - [changelog-20261120_1334.md](changelog/changelog-20261120_1334.md) 1 entry, 2026-11-10 to 2026-11-10: slurp close: session record, write-backs, collection schemas
 - [changelog-20261120_0250.md](changelog/changelog-20261120_0250.md) 1 entry, 2026-11-10 to 2026-11-10: UNC moved: bugs, feature requests and tech debt in Pad in both workspaces
 - [changelog-20261119_1850.md](changelog/changelog-20261119_1850.md) 1 entry, 2026-11-10 to 2026-11-10: bugs, feature requests and tech debt in Pad (smc-resiliency done)
