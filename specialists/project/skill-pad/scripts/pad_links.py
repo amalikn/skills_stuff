@@ -9,7 +9,8 @@ keeps typed relations (blocks, implements, split-from, supersedes) as the depend
 What it does, for the items named (or every item updated since a date):
   1. Bodies: a bare reference to an existing item (`TASK-12`, `ASK-251`, `DECIS-148`, any collection prefix in the workspace) becomes `[[REF]]`;
      a decision-log id (`DL-058`) or a conflict id (`cf-0e7a848021`) that a decisions-collection item mirrors (field `decision_ref`) becomes
-     `[[DECIS-n|DL-058]]`, shown as the id. Text already inside `[[...]]`, inline code or a fenced block, and the item's own ref, are left alone.
+     `[[DECIS-n|DL-058]]`, shown as the id. Text already inside `[[...]]`, inline code or a fenced block, and the item's own ref, are left alone; decision
+     mirrors, playbooks and conventions are skipped (generated, or library text whose sample refs like TASK-5 would link to real items).
      Writes are guarded by the item's `seq` (`--expected-seq`): a conflict means someone changed it; re-run, never force.
   2. Relations, from an optional JSON spec: [{"type": "blocks" | "implements" | "split-from" | "supersedes", "from": "TASK-1", "to": "PLAN-2"}]
      (`blocks`: from blocks to; `implements`: from implements to; `split-from`: from was split from to; `supersedes`: from supersedes to).
@@ -145,8 +146,8 @@ def main(argv: list[str] | None = None) -> int:
   targets = [r for r in a.refs.split(",") if r] + [it["ref"] for it in items if a.since and str(it.get("updated_at", "")) >= a.since]
   failed = 0
   for ref in dict.fromkeys(targets):
-    if ref.startswith("DECIS-"):
-      continue  # mirrors are generated (pad_decisions.py); never edited here
+    if ref.startswith(("DECIS-", "PLAYB-", "CONVE-")):
+      continue  # decision mirrors are generated (pad_decisions.py); playbooks and conventions come from Pad's library with sample refs
     it = json.loads(pad(a.pad, a.timeout, "item", "show", ref, "--format", "json"))
     new = linked(it.get("content") or "", ref, refs, decisions)
     if new == (it.get("content") or ""):
