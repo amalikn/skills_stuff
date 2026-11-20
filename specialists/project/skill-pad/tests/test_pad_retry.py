@@ -72,6 +72,24 @@ class PadRetryTest(unittest.TestCase):
     self.assertEqual(proc.returncode, 0)
     self.assertEqual(calls, 1)
 
+  def test_just_recipe_keeps_quoted_arguments(self) -> None:
+    """`just pad` passes a multi-word title as one argument (the recipe once split it: "accepts 2 arg(s), received 12")."""
+    with tempfile.TemporaryDirectory() as d:
+      fake = Path(d) / "pad"
+      fake.write_text('#!/usr/bin/env bash\necho "argc=$#"\n')
+      fake.chmod(0o755)
+      env = dict(os.environ, PAD_BIN=str(fake))
+      proc = subprocess.run(
+        ["just", "-f", str(SCRIPT.parent.parent / "justfile"), "pad", "item", "create", "task", "a title with words"],
+        capture_output=True,
+        text=True,
+        env=env,
+        timeout=60,
+        stdin=subprocess.DEVNULL,
+      )
+      self.assertEqual(proc.returncode, 0, proc.stderr)
+      self.assertIn("argc=4", proc.stdout)
+
   def test_bad_usage(self) -> None:
     """No arguments is bad usage (exit 2)."""
     proc = subprocess.run(["bash", str(SCRIPT)], capture_output=True, text=True, timeout=30, stdin=subprocess.DEVNULL)

@@ -78,8 +78,9 @@ decisions *ARGS: _require-venv
 # [project writes: whatever the pad command writes] One pad CLI call, retried with backoff while the shared local server rate-limits (stdin replayed):
 # just -f <skill-pad>/justfile pad item comment TASK-5 --stdin < note.md
 [no-cd]
+[positional-arguments]
 pad *ARGS:
-    @bash "{{justfile_directory()}}/scripts/pad_retry.sh" {{ARGS}}
+    @bash "{{justfile_directory()}}/scripts/pad_retry.sh" "$@"
 
 # Item refs and decision ids in bodies as [[wiki-links]], plus typed relations from a JSON spec: plan by default, `--apply` writes to Pad
 [no-cd]
