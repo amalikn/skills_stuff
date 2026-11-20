@@ -33,7 +33,11 @@ help item <command> --format md`.
 3. Read an item before updating it; send only changed fields; confirm the mutation from the returned object before saying it succeeded.
 4. Every status change carries `--comment` saying why; same for priority, role and assignee changes. The audit trail is the point.
 5. Everything goes through `pad`; never touch `~/.pad/pad.db` or `~/.pad/attachments/` directly.
-6. Link related items with `[[Item Title]]` in content (`[[workspace::REF]]` across workspaces). Size an item as one meaningful unit of work (one branch or PR for code); follow the workspace's sizing
+6. Every reference to another item is a link and every dependency is a typed relation (operator, 2026-11-20: "why are these references not links ... you should be utilizing
+   the relationship section for each item"). In bodies write `[[REF]]` (`[[TASK-245]]`), or `[[REF|label]]` to show a label (`[[DECIS-221|DL-058]]` shows DL-058 and opens
+   the decision's mirror); `[[Item Title]]` and `[[workspace::REF]]` also resolve. Add the relation the link stands for: `pad item block`, `implements`, `split-from`,
+   `supersedes` (`pad item related <ref>` shows them; wiki-links show as backlinks). `scripts/pad_links.py` rewrites bare refs and decision ids into links and applies a
+   relations spec, plan by default. Size an item as one meaningful unit of work (one branch or PR for code); follow the workspace's sizing
    conventions.
 7. Prefer summary reads and bounded lists (`--limit`); fetch bodies (`--full`, `--agent`) only when needed.
 

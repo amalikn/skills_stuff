@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1426
+Last rotated: 20261120_1647
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
 - [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
 - [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
@@ -39,9 +40,13 @@ Last rotated: 20261120_1426
 - [20261118_2129 — 0.21.0 string flags need =value; continuum workspace set up](#20261118_2129--0210-string-flags-need-value-continuum-workspace-set-up)
 - [20261118_2106 — item update has no --op-key; code paths in item bodies; a question without an Asks collection](#20261118_2106--item-update-has-no---op-key-code-paths-in-item-bodies-a-question-without-an-asks-collection)
 - [20261118_1742 — CLI at 0.21.0](#20261118_1742--cli-at-0210)
-- [20261111_1223 — .pad.toml rewrite behaviour tested](#20261111_1223--padtoml-rewrite-behaviour-tested)
 
 ---
+
+## 20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)
+
+- scripts/pad_links.py and `just links`: bare item refs and decision ids in bodies become `[[REF]]` / `[[DECIS-n|DL-058]]` wiki-links; a JSON spec adds typed relations (blocks, implements, split-from, supersedes); plan by default, idempotent. Operator, 2026-11-20 (continuum ASK-251): references must be clickable and dependencies recorded in the relationship section.
+- references/items-and-edits.md rule 6 rewritten to require both. First run in continuum: 13 bodies and 13 relations.
 
 ## 20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions
 
@@ -189,8 +194,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 
 - `references/cli-reference.md`: Learned 2026-11-18, the installed pad is 0.21.0 (map is v0.19.2); create flags unchanged; a new bug section renders as its own generated heading. Map refresh per
   `references/upgrade.md` still to do.
-
-## 20261111_1223 — .pad.toml rewrite behaviour tested
-
-- `references/workspace-context.md`: Learned 2026-11-11, `pad workspace link` refuses a linked folder; `switch` rewrites `.pad.toml`, keeping unknown tables but deleting comments; both write skill
-  copies into the project. Project settings belong in a file Pad never writes.

@@ -75,6 +75,11 @@ export *ARGS: _require-venv
 decisions *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_decisions.py" {{ARGS}}
 
+# Item refs and decision ids in bodies as [[wiki-links]], plus typed relations from a JSON spec: plan by default, `--apply` writes to Pad
+[no-cd]
+links *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_links.py" {{ARGS}}
+
 # [read-only for projects] Pad upgrade test: rewrite a scratch .pad.toml through `pad workspace switch` and report what Pad kept (run before a new Pad version is used): just pad-toml-probe <slug> <other-slug>
 [positional-arguments]
 pad-toml-probe *ARGS: _require-venv

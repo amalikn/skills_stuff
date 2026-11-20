@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261120_1647.md](changelog/changelog-20261120_1647.md) 1 entry, 2026-11-11 to 2026-11-11: .pad.toml rewrite behaviour tested
 - [changelog-20261120_1426.md](changelog/changelog-20261120_1426.md) 1 entry, 2026-11-11 to 2026-11-11: links step in a commit gate
 - [changelog-20261120_1421.md](changelog/changelog-20261120_1421.md) 1 entry, 2026-11-11 to 2026-11-11: workspace sharing noted
 - [changelog-20261120_1408.md](changelog/changelog-20261120_1408.md) 1 entry, 2026-11-11 to 2026-11-11: Pad link opener: repo links in Pad open in VS Code
