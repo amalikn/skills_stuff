@@ -112,7 +112,7 @@ Asks must be created with `--schema`, not `--fields`: the DSL cannot declare whi
 false` keeps answered asks out of changelog, standup and progress counts.
 
 ```bash
-pad collection create "Asks" --awaits-human true --tracks-work false --schema @asks-schema.json
+pad collection create "Asks" --awaits-human=true --tracks-work=false --schema @asks-schema.json   # 0.21.1: the "=" form; with a space, "true" is read as a second argument
 pad collection update asks --prefix ASK          # create has no --prefix flag
 ```
 

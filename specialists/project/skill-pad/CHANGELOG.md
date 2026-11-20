@@ -16,6 +16,7 @@ Last rotated: 20261120_1334
 
 ## Contents
 
+- [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 - [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
@@ -41,6 +42,12 @@ Last rotated: 20261120_1334
 - [20261110_2055 — tracker import spike noted for the trial review](#20261110_2055--tracker-import-spike-noted-for-the-trial-review)
 
 ---
+
+## 20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs
+
+references/cli-reference.md (Traps), Learned 2026-11-20: on 0.21.1 --awaits-human and --tracks-work need the = form (the space form fails
+with "accepts 1 arg(s), received 2"); refs number across the workspace (ASK-105 after TASK-104); no collection get. docs/pad-usage-guidelines:
+the Asks create command corrected. The smc-resiliency workspace now has its Asks collection (operator decision Q1 A, 10 Nov), with ASK-105 and ASK-106.
 
 ## 20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen
 

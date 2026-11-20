@@ -82,6 +82,13 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 
 ## Traps
 
+> **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed) · Source: `pad collection create "Asks" --awaits-human true --tracks-work false --schema @file` in
+> smc-resiliency; `pad collection list --format json` settings · Falsifier: the space form creating the collection on a later version
+> - `--awaits-human` and `--tracks-work` take their value only in the `=` form: with a space the command fails with "accepts 1 arg(s), received 2" and creates nothing.
+>   `--awaits-human=true --tracks-work=false` worked; the settings show `"awaits_human":true`, `"tracks_work":false`; the schema's terminal options were kept.
+> - Item refs number across the workspace, not per collection: the first ask after TASK-104 was ASK-105. Read the ref from the create output; never guess it.
+> - There is no `pad collection get`; read a collection's schema and settings from `pad collection list --format json`.
+
 > **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: continuum workspace (TASK-164, TASK-171, TD-191); `pad attachment --help` · Falsifier: a later release with
 > an attachment delete, comments in `item show --format json`, or a declared priority on Tech Debt. Three traps met closing work: (1) `pad attachment` has no delete or replace (attach, download, list,
 > show, upload, view): a wrong file attached stays, so check a log's content before `upload` and, if one slips through, upload the right file and add a `CORRECTION:` comment naming both. (2) `pad item
