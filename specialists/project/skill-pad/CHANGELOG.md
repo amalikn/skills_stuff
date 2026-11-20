@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1827
+Last rotated: 20261120_2218
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
@@ -39,9 +40,12 @@ Last rotated: 20261120_1827
 - [20261119_1434 — Body layout for every collection: pad_format_spec.py](#20261119_1434--body-layout-for-every-collection-pad_format_specpy)
 - [20261119_1325 — Comment edits can be refused by the server](#20261119_1325--comment-edits-can-be-refused-by-the-server)
 - [20261119_1136 — Decision-log process rows mirrored to Pad](#20261119_1136--decision-log-process-rows-mirrored-to-pad)
-- [20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check](#20261118_2212--tickets-tell-the-whole-story-bold-labels-updates-a-closing-statement-logs-attached-item-check)
 
 ---
+
+## 20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)
+
+- scripts/pad_item_check.py: `stale` rule: an in-progress item with no item update, comment or note for `--stale-hours` (default 24); the recent list always includes every in-progress item, however old. 2 tests (79 OK). SKILL.md rule "No item left in the wrong state": at session start run item-check and resume each stale item or set it back to open with a comment saying why. First runs: smc-resiliency 217 items clean (three idle items had been reset by hand the same evening: TASK-14, TASK-96, TASK-98); ansible-wifi 3 comments with bullets on one line, split. Operator, 2026-11-20.
 
 ## 20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)
 
@@ -188,13 +192,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 
 - `scripts/pad_decisions.py`: `process` rows of a decision log are mirrored as well as `architecture` rows (category `decision-log-process`); the operator wants every decision in Pad (Continuum,
   2026-11-19). `tests/test_pad_decisions.py` updated; it fails without the change.
-
-## 20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check
-
-- Operator, 2026-11-18 (smc-resiliency bench session, on a closed task with a one-line comment): every item carries proper updates, a proper statement when it moves to done, the log files of the work,
-  bold section labels with spacing, and bullets in comments; "add this in the skill pad so that when the skill is used it will enforce that rule", for all projects.
-- `SKILL.md` Rules: "Tickets tell the whole story". `docs/pad-usage-guidelines-20261110_1628.md` 3.3: bold bodies, the bug body, the three duties with an example, DONE and CLOSED types.
-- `conventions/apn-baseline.toml` `writing-standard` rewritten and raised to must; applied to the smc-resiliency and unified-network-controller workspaces (`just conventions`).
-- `scripts/pad_item_check.py` (`just item-check`, test `tests/test_pad_item_check.py`): read-only check of labels, closing comment, update on work in progress, log named but not attached.
-- The checker retries a rate-limited pad call (up to five times, growing pause): its first run over 16 items was refused by the server's limit; three tests. First real run after the fix: 16 items of
-  the smc-resiliency bench run, 0 findings, 3.0 s (before the tickets were rewritten: 7 findings on 3 items).

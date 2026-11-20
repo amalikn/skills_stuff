@@ -117,6 +117,11 @@ into that session.
 The project work they record keeps its own item (a decision recorded at close goes on the item it affects). When a request mixes both, only the project work gets an item.
 - **Consult Pad at session start (operator, 2026-11-20):** in any folder whose tree has a `.pad.toml`, run the `status` mode (`pad project dashboard`) before planning, and say which item the session
   works on. project_stuff/AGENTS.md names this skill as required for those projects.
+- **No item left in the wrong state (operator, 2026-11-20: "check if there are any old or incorrectly tasks left in the wrong state especially in the
+  progress state"):** at session start, after the dashboard, run `just -f <skill-pad>/justfile item-check --days 30`: it lists every in-progress item
+  idle past `--stale-hours` (default 24) as `stale`, however old. Handle each before new work: resume it (claim, comment), or set it back to `open`
+  with a comment saying why (who stopped, what it waits on, with its blocking [[ask]] or [[task]] linked); a finished one gets its DONE comment and
+  `done`. Also the rest of item-check's findings (labels, DONE comments, logs, comment form, references as links). Housekeeping, so no new item.
 - **Through the CLI only**: never read `~/.pad/pad.db` or `~/.pad/attachments/` directly.
 - Under Codex or another harness set `PAD_AGENT=<name>`, or writes are attributed to the human whose credentials are used.
 - **Repo trackers are the truth** (convention `trackers-truth`): a Pad item links to its tracker entry; a fact recorded only in Pad is not recorded.

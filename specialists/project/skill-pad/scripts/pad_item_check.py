@@ -11,6 +11,8 @@ the last --days days) it reads the item, its comments and its attachments throug
     update   an item in progress with no note and no comment at all
     logs     an item whose body, notes or comments name a log file while the item has no attachment
     comments a comment from 2026-11-18 on, longer than 200 characters, with no `- **Label:**` bullet line (the update form)
+    stale    an item in progress with no activity (item update, comment or note) for --stale-hours (default 24): resume it, or set it back to
+             open with a comment saying why (operator, 2026-11-20: "check if there are any old or incorrectly tasks left in the wrong state")
     refs     an item ref (TASK-12) or decision id (DL-058) as plain text, not a `[[...]]` link, in the body or in a comment from 2026-11-20 on
              (operator, 2026-11-20: "why are these references not links"); `just links` fixes bodies
 
@@ -55,7 +57,9 @@ PROTECTED = re.compile(r"```.*?```|`[^`\n]*`|\[\[[^\]]*\]\]", re.S)
 BULLET = re.compile(r"^- \*\*[^*]+:\*\*", re.M)
 COMMENT_FORM_SINCE = "2026-11-18"  # the update form (bold-label bullets) is required from here
 LINKS_SINCE = "2026-11-20"  # references as [[links]] are required from here
-SKIP_REFS = {"decisions", "playbooks", "conventions"}  # generated or library text (pad_links skips them too)
+SKIP_REFS = {"decisions", "playbooks", "conventions"}
+STALE_HOURS = 24  # an in-progress item idle this long is stale
+  # generated or library text (pad_links skips them too)
 
 
 def pad(args: list[str], timeout: int, binary: str = "pad") -> str:
@@ -141,7 +145,23 @@ def bare_refs(text: str, own: str = "", decision_ids: bool = True) -> list[str]:
     return seen
 
 
-def findings(item: dict, comments: list[dict], attachments: int, decision_ids: bool = True, known: set[str] | None = None) -> list[str]:
+def last_activity(item: dict, comments: list[dict]) -> datetime | None:
+    """The newest of the item's update time, its comments' times and its notes' times.
+
+    Args:
+        item: the item (updated_at, implementation_notes).
+        comments: its comments, each with created_at.
+
+    Returns:
+        That time (UTC), or None when none is given.
+    """
+    stamps = [item.get("updated_at"), *[c.get("created_at") for c in comments]]
+    stamps += [n.get("created_at") for n in item.get("implementation_notes") or [] if isinstance(n, dict)]
+    times = [datetime.fromisoformat(str(s).replace("Z", "+00:00")) for s in stamps if s]
+    return max(times) if times else None
+
+
+def findings(item: dict, comments: list[dict], attachments: int, decision_ids: bool = True, known: set[str] | None = None, now: datetime | None = None, stale_hours: int = STALE_HOURS) -> list[str]:
     """What one item breaks of the writing standard.
 
     Args:
@@ -150,6 +170,8 @@ def findings(item: dict, comments: list[dict], attachments: int, decision_ids: b
         attachments: how many files are attached to it.
         decision_ids: report plain DL-nnn ids too (the workspace has a Decisions collection).
         known: the workspace's item refs; a plain ref not among them (another workspace's item, a typo) cannot be linked and is not reported.
+        now: the current time (UTC; default now), for the stale rule.
+        stale_hours: idle hours after which an in-progress item is stale.
 
     Returns:
         One line per finding; empty when the item meets the standard.
@@ -166,6 +188,11 @@ def findings(item: dict, comments: list[dict], attachments: int, decision_ids: b
         out.append(f"done: status {status} with no closing comment (`YYYY-MM-DD HH:MM AEDT DONE:` and what was done, the result, evidence, what stays open)")
     if status == "in-progress" and not texts and not notes:
         out.append("update: in progress with no note or comment")
+    last = last_activity(item, comments)
+    if status == "in-progress" and last is not None:
+        idle = ((now or datetime.now(timezone.utc)) - last).total_seconds() / 3600
+        if idle > stale_hours:
+            out.append(f"stale: in progress with no activity for {idle:.0f} h (since {last:%Y-%m-%d %H:%M} UTC): resume it, or set it back to open with a comment saying why")
     if item.get("collection_slug") in WORK and attachments == 0 and any(LOG_NAME.search(t) for t in [body, *texts, *notes]):
         out.append("logs: a log file is named but nothing is attached (`pad attachment upload <ref> <file>`)")
     unformed = [c for c in comments if str(c.get("created_at", "")) >= COMMENT_FORM_SINCE and len(c.get("body") or "") > 200 and not BULLET.search(c.get("body") or "")]
@@ -211,7 +238,8 @@ def recent_refs(days: int, timeout: int, binary: str, extra: list[str]) -> list[
         rows = rows if isinstance(rows, list) else rows.get("items", [])
         for r in rows:
             when = datetime.fromisoformat(str(r.get("updated_at", "1970-01-01T00:00:00Z")).replace("Z", "+00:00"))
-            if when >= since:
+            status = str(fields_of(r).get("status", "")).lower()
+            if when >= since or status == "in-progress":  # an idle in-progress item is exactly what the stale rule looks for
                 refs.append(r["ref"])
     return refs
 
@@ -231,6 +259,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--workspace", default=None)
     ap.add_argument("--pad", default="pad")
     ap.add_argument("--timeout", type=int, default=30)
+    ap.add_argument("--stale-hours", type=int, default=STALE_HOURS, help="idle hours after which an in-progress item is stale (default 24)")
     a = ap.parse_args(argv)
     extra = ["--workspace", a.workspace] if a.workspace else []
     started = time.monotonic()
@@ -245,7 +274,7 @@ def main(argv: list[str] | None = None) -> int:
             item = json.loads(pad(["item", "show", ref, "--format", "json", *extra], a.timeout, a.pad))
             comments = json.loads(pad(["item", "comments", ref, "--format", "json", *extra], a.timeout, a.pad) or "[]")
             att = json.loads(pad(["attachment", "list", "--item", ref, "--format", "json", *extra], a.timeout, a.pad) or "{}")
-            for line in findings(item, comments or [], int(att.get("total", 0)), has_decisions, known):
+            for line in findings(item, comments or [], int(att.get("total", 0)), has_decisions, known, stale_hours=a.stale_hours):
                 bad += 1
                 print(f"{ref}: {line}")
     except (RuntimeError, json.JSONDecodeError) as exc:

@@ -183,5 +183,26 @@ class CommentFormAndRefsTests(unittest.TestCase):
         self.assertTrue(any(line.startswith("refs: TASK-5") for line in out), out)
         self.assertFalse(any("DL-107" in line for line in out), out)
 
+
+class StaleTests(unittest.TestCase):
+    """In-progress items left idle (operator, 2026-11-20)."""
+
+    NOW = pic.datetime(2026, 11, 20, 12, 0, tzinfo=pic.timezone.utc)
+
+    def test_an_idle_in_progress_item_is_stale(self) -> None:
+        """No update, comment or note for two days: reported with its idle hours."""
+        it = dict(item("in-progress"), updated_at="2026-11-18T10:00:00Z")
+        c = [{"created_at": "2026-11-18T10:00:00Z", "body": "- **What:** started"}]
+        out = pic.findings(it, c, 0, now=self.NOW)
+        self.assertTrue(any(line.startswith("stale: in progress with no activity for 50 h") for line in out), out)
+
+    def test_a_recent_comment_keeps_it_fresh_and_open_items_are_not_judged(self) -> None:
+        """A comment an hour ago means work is going on; an open item is never stale."""
+        it = dict(item("in-progress"), updated_at="2026-11-18T10:00:00Z")
+        c = [{"created_at": "2026-11-20T11:00:00Z", "body": "- **What:** progress"}]
+        self.assertFalse(any(line.startswith("stale:") for line in pic.findings(it, c, 0, now=self.NOW)))
+        idle_open = dict(item("open"), updated_at="2026-11-01T10:00:00Z")
+        self.assertFalse(any(line.startswith("stale:") for line in pic.findings(idle_open, [], 0, now=self.NOW)))
+
 if __name__ == "__main__":
     unittest.main()
