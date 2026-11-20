@@ -2227,3 +2227,10 @@ risk.
 > reboot the box (now `when: not ansible_check_mode` on the rise branch). smc_prometheus downloads and extracts its tarball to /root even under `--check`
 > (`check_mode: false`, an existing write). Iridium's overlay reboot handlers use the `reboot` module, which `--check` skips.
 
+> **Learned 2026-11-20** · ansible-wifi on Ubuntu 24.04 (image build) · VERIFIED_PRIMARY · Source: smc-resiliency role builds rb-20261120-d and -e (spike/out/role-build), ansible-wifi local/rise-2404 d3eee642, 8588b53e, 380169e8, 1094d3e5 (local, unpushed) · Falsifier: a stock 24.04 box with an `sshd.service` alias, or `linux-modules-extra-raspi` in the noble archive
+> - Passing two playbooks to one `ansible-playbook` call breaks the second when it is a relative path: ansible-wifi's topology vars plugin moves the folder
+>   relative names resolve from ("Could not find or access .../inventories/rct/topology_vars/<playbook>"). Pass playbooks by absolute path.
+> - 24.04 differences the roles meet: the SSH unit is `ssh` (no `sshd` alias on a stock install); `linux-modules-extra-raspi` is gone (ifb, htb, mirred
+>   and u32 ship in `linux-modules-<ver>-raspi`); pip into the system Python is refused (PEP 668: use a venv; smc_tstiklatlon and
+>   smc_speedtest_exporter); the package retry loops are literal `retries: 60`, `delay: 60` on rise (now variables on the local branch).
+

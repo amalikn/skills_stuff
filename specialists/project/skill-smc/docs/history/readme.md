@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261120_2140.md](changelog-20261120_2140.md) 1 entry, 2026-11-17 to 2026-11-17: Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)
 - [changelog-20261120_2119.md](changelog-20261120_2119.md) 1 entry, 2026-11-16 to 2026-11-16: Solutions to platforms (no version change)
 - [changelog-20261120_1725.md](changelog-20261120_1725.md) 1 entry, 2026-11-16 to 2026-11-16: fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)
 - [changelog-20261120_1702.md](changelog-20261120_1702.md) 1 entry, 2026-11-11 to 2026-11-11: smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)

@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_2119
+Last rotated: 20261120_2140
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_2140 — 24.04 role differences and the relative-playbook trap from the role builds (v0.16.8 -> v0.16.9)](#20261120_2140--2404-role-differences-and-the-relative-playbook-trap-from-the-role-builds-v0168---v0169)
 - [20261120_2119 — smc_change render check and lint mode; variables_files on ansible-core 2.18 (v0.16.7 -> v0.16.8)](#20261120_2119--smc_change-render-check-and-lint-mode-variables_files-on-ansible-core-218-v0167---v0168)
 - [20261120_1724 — --check previews of the bases and rise playbooks: what they need and the reboot-handler hazard (v0.16.6 -> v0.16.7)](#20261120_1724----check-previews-of-the-bases-and-rise-playbooks-what-they-need-and-the-reboot-handler-hazard-v0166---v0167)
 - [20261120_1702 — smc_writers_probe reads installed timers, cron dirs, logrotate, freshclam; fleet facts of 20 Nov (v0.16.5 -> v0.16.6)](#20261120_1702--smc_writers_probe-reads-installed-timers-cron-dirs-logrotate-freshclam-fleet-facts-of-20-nov-v0165---v0166)
@@ -38,9 +39,12 @@ Last reviewed: 2026-10-27
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
 - [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
 - [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
-- [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
 
 ---
+
+## 20261120_2140 — 24.04 role differences and the relative-playbook trap from the role builds (v0.16.8 -> v0.16.9)
+
+- references/08_ansible-authoring.md: Learned entry (smc-resiliency role builds of 20 Nov).
 
 ## 20261120_2119 — smc_change render check and lint mode; variables_files on ansible-core 2.18 (v0.16.7 -> v0.16.8)
 
@@ -189,8 +193,3 @@ set (operator; side-agent note on later plays).
 2026-11-17: 4 passed, 6 failed on AVR 2.14, 13 never started); what `6/11 ACTIONS` means and why the AVR version check fails instead of skipping. `references/13_known-issues.md`: the vars guard also
 blocks non-printing edits of inventory host files (use `just smc_mark_iridium`); the lint delta gate brings old findings of a rewritten file in as new; pipefail needs bash (ansible-wifi chat
 f516e57d).
-
-## 20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)
-
-`references/03_communication-flows.md` "Teleport self-upgrade cron": `/upgrade_teleport.sh` daily at 00:00 on all flavours (ansible-wifi 906ee778), and why an image-based root drops it; cross-link to
-the C6 `pkill -9 python3` entry (from apn smc-resiliency scheduled-writer inventory, 17 Nov 2026).
