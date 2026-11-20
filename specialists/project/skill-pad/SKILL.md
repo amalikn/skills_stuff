@@ -83,6 +83,9 @@ into that session.
 - **Tickets tell the whole story (operator, 2026-11-18; applies in every project).** A reader who opens one item must learn what happened without the chat:
   - **Body:** every section label is bold and starts its own paragraph (`**Serves:**`, `**Why:**`, `**Do:**`, `**Done when:**`, `**Writes:**`, `**Refs:**`; a bug: `**Seen:**`, `**Evidence:**`,
     `**Cause:**`, `**Effect:**`, `**Options:**`, `**Not verified:**`, `**Closure:**`), with a blank line between sections.
+  - **Links and relations (operator, 2026-11-20; every project):** every item, decision or record named in a body is a clickable `[[REF]]` link (`[[DECIS-221|DL-058]]` for a
+    decision id), and every dependency is a typed relation (`pad item block`, `implements`, `split-from`, `supersedes`), set when the item is created; `just links`
+    (`scripts/pad_links.py`) fixes bodies written without them ([items-and-edits rule 6](references/items-and-edits.md)).
   - **Updates as the work runs:** a comment or note at the start, at each result and at each blocker, written as bullets (`- **What:**`, `- **Result:**`, `- **Evidence:**`, `- **Not verified:**`,
     `- **Next:**`), complete before short.
   - **Closing statement:** before an item moves to done (or fixed, cancelled, wont-fix) it gets a `YYYY-MM-DD HH:MM AEDT DONE:` comment (`CLOSED:` when not all was done) with bullets: what was done,

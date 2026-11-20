@@ -47,6 +47,7 @@ Last rotated: 20261120_1647
 
 - scripts/pad_links.py and `just links`: bare item refs and decision ids in bodies become `[[REF]]` / `[[DECIS-n|DL-058]]` wiki-links; a JSON spec adds typed relations (blocks, implements, split-from, supersedes); plan by default, idempotent. Operator, 2026-11-20 (continuum ASK-251): references must be clickable and dependencies recorded in the relationship section.
 - references/items-and-edits.md rule 6 rewritten to require both. First run in continuum: 13 bodies and 13 relations.
+- SKILL.md "Tickets tell the whole story" gains the links-and-relations bullet, so every project loads the rule, not only items-and-edits readers.
 
 ## 20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions
 
