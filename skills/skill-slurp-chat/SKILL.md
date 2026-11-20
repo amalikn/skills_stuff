@@ -109,7 +109,10 @@ For each existing entry, ask only: does the conversation hold specific detail (c
 - Pad (operator, 2026-11-20: "are you capturing decision in pad?"): when the project has a `.pad.toml`, each operator decision also gets `pad item decide <ref>` on the
   item it affects, pointing at the repo record (session record or decision surface), and each decision the operator still owes becomes an ask in its Asks
   collection (skill-pad, docs/pad-usage-guidelines 3.1 and 3.5). An ask that blocks a task goes in that task's workspace: Pad's block links do not cross
-  workspaces. A decision with no open item to attach to stays in the repo only; say so in the coverage table. Refresh the project's Pad export after.
+  workspaces. Every decision, existing and new, is also a row of the project's `docs/decision-log.md` (`| DL-nnn | date | architecture or process |
+  decision | reason | status |`), mirrored into its Decisions collection with skill-pad `pad_decisions.py` (`just pad-decisions --apply`); a reversal sets the
+  earlier row to `superseded by DL-nnn`, never rewrites it (operator, 2026-11-20: "decision all existing and new to be added.. this will be standard").
+  A project with Pad but no log yet gets one (skill-pad README, setup step 6). Refresh the project's Pad export after.
 
 ## Step 5a — Persistent scripts (every slurp, unprompted; operator, 2026-10-09: "when slurp is called, scripts should be handled in it as well")
 List every script the session wrote or ran ad hoc: scratchpad files, heredoc programs, one-off probes and measurements. Judge each by how likely it is to be needed again (operator, 2026-10-09: "only
