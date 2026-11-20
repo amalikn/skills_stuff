@@ -139,6 +139,8 @@ Module._load = function (request, ...rest) {
   can reach the person's running editor: strip both prefixes.
 - Every window runs its own extension host: a single fixed socket name lets the newest window hide the others; name it per process (`vscode-<pid>.sock`).
 - A test editor holding unsaved buffers ignores SIGTERM (save prompt): kill its process group after a short grace period.
+- VS Code puts its own IPC socket in `--user-data-dir` (`1.14-main.sock`): keep that folder's path short, since a Unix socket path must stay under 104 bytes on
+  macOS (a longer run folder failed with `listen EINVAL`).
 
 ```python
 env = {k: v for k, v in os.environ.items() if not k.startswith(("ELECTRON_", "VSCODE_"))}
