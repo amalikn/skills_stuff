@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_2155 — pre-push hook lints the pushing worktree (v0.16.9 -> v0.16.10)](#20261120_2155--pre-push-hook-lints-the-pushing-worktree-v0169---v01610)
 - [20261120_2140 — 24.04 role differences and the relative-playbook trap from the role builds (v0.16.8 -> v0.16.9)](#20261120_2140--2404-role-differences-and-the-relative-playbook-trap-from-the-role-builds-v0168---v0169)
 - [20261120_2119 — smc_change render check and lint mode; variables_files on ansible-core 2.18 (v0.16.7 -> v0.16.8)](#20261120_2119--smc_change-render-check-and-lint-mode-variables_files-on-ansible-core-218-v0167---v0168)
 - [20261120_1724 — --check previews of the bases and rise playbooks: what they need and the reboot-handler hazard (v0.16.6 -> v0.16.7)](#20261120_1724----check-previews-of-the-bases-and-rise-playbooks-what-they-need-and-the-reboot-handler-hazard-v0166---v0167)
@@ -41,6 +42,10 @@ Last reviewed: 2026-10-27
 - [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
 
 ---
+
+## 20261120_2155 — pre-push hook lints the pushing worktree (v0.16.9 -> v0.16.10)
+
+- references/08_ansible-authoring.md: Learned entry on the pre-push hook and linked worktrees (smc-resiliency 20261120, operator DL-106).
 
 ## 20261120_2140 — 24.04 role differences and the relative-playbook trap from the role builds (v0.16.8 -> v0.16.9)
 

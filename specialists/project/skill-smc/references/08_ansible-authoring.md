@@ -2234,3 +2234,9 @@ risk.
 >   and u32 ship in `linux-modules-<ver>-raspi`); pip into the system Python is refused (PEP 668: use a venv; smc_tstiklatlon and
 >   smc_speedtest_exporter); the package retry loops are literal `retries: 60`, `delay: 60` on rise (now variables on the local branch).
 
+> **Learned 2026-11-20** · ansible-wifi pre-push hook · VERIFIED_PRIMARY · Source: `.git/hooks/pre-push` of the operator's ansible-wifi clone (untracked; backup pre-push.bak-20261120); pushes of local/bases-check-mode and local/rise-reboot-check-guard on 20 Nov · Falsifier: a push from a linked worktree failing on lines its branch never touched
+> The hook took `repo_root` from its own folder (the main checkout), so a push from a linked `git worktree` linted the main checkout's files, whatever
+> branch that was on, and failed on findings the branch never touched. Fixed: lint root = the pushing worktree (`git rev-parse --show-toplevel`), while
+> knowledge capture and snapshot naming keep the main checkout (the capture helper needs a real `.git` folder). The hook has no tracked source: a
+> fresh clone needs it re-applied. Push branches from their own worktree; never switch the shared main checkout to push.
+
