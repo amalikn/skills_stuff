@@ -150,3 +150,8 @@ Part of [ansible.md](../ansible.md).
 >   until: ansible_check_mode or ss.rc == 1   # was: ss.rc | default(1) == 1 (never defaulted: skipped => rc 0)
 > ```
 
+> **Learned 2026-11-20** · ansible-core 2.18 templating · VERIFIED_PRIMARY · Source: reproduced on 2.18.8 and 2.21.6 (local-knowledge-ansible roles/smc_change, commit 45055e7; smc-resiliency session) · Falsifier: on 2.18, `big_var.subkey | default([])` loading the subkey while another key of big_var is undefined
+> On 2.18 reading a variable templates it whole, so `spec.files | default([])` fails on any undefined reference elsewhere in `spec`, and `default()`
+> swallows that error: the expression silently becomes `[]`. 2.19+ templates lazily and is not affected. To read one field of a templated dict on 2.18,
+> read it from the source as written (`lookup('file', path) | from_yaml`), and render fields one by one in an action plugin when the error must name the field.
+

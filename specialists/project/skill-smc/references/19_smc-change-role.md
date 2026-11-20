@@ -43,6 +43,7 @@ Summary: >-
 - [Self-repair of cut-off runs, success means every goal, applies_when (2026-11-04 evening)](#self-repair-of-cut-off-runs-success-means-every-goal-applies_when-2026-11-04-evening)
 - [Export to a company role: a spec as a plain task file (2026-11-06)](#export-to-a-company-role-a-spec-as-a-plain-task-file-2026-11-06)
 - [A rollback over a failed-verify apply, and the Jinja line break in a value file (2026-11-09)](#a-rollback-over-a-failed-verify-apply-and-the-jinja-line-break-in-a-value-file-2026-11-09)
+- [Render check and lint mode; variables_files on ansible-core 2.18 (2026-11-20)](#render-check-and-lint-mode-variables_files-on-ansible-core-218-2026-11-20)
 
 ## When to use it
 
@@ -66,6 +67,7 @@ rest of that folder: `18_local-knowledge-ansible.md`.
 ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec>                        # check: read only
 ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec> -e smc_change_mode=apply
 ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <host> -e smc_change=<spec> -e smc_change_mode=verify
+ansible-playbook -i inventories/<flavor>/<env> smc_change.yml -l <hosts> -e smc_change=<spec> -e smc_change_mode=lint   # controller only, no SMC
 ```
 
 Main options: `smc_change_serial` (default 1), `smc_change_on_refusal` (`skip` default: a refused host is recorded and skipped), `smc_change_rollback` (`repack` default), `smc_change_soak_minutes`
@@ -1191,3 +1193,33 @@ export.
 
 - **bitbucket-ssh-hostname canary passed** (alkngarrija-smc01, 2026-11-09 13:22): three 3-field `ssh.bitbucket.org` lines live and in the lower dir; `ssh -o StrictHostKeyChecking=yes -T
   git@ssh.bitbucket.org` from the SMC authenticates. Fleet batches handed to the operator.
+
+## Render check and lint mode; variables_files on ansible-core 2.18 (2026-11-20)
+
+- **Every run renders the spec field by field first (D1).** load_spec.yml includes `tasks/render_spec.yml`, whose action plugin
+  `action_plugins/smc_change_render.py` reads the spec file as written and templates each string holding Jinja on its own with the host's variables, so a
+  missing key fails at stage 1 as `UNRENDERABLE spec <name> for <host>: missing env in 22 field(s): facts.avr_version, ...`, not as one opaque error at
+  `Check the change spec`. It runs only where the spec's flavor applies (a host a run skips is never refused). Plugin, not Jinja: on 2.18 reading
+  `smc_change_spec` templates the whole spec, so no per-field loop can name the field.
+
+  ```python
+  # roles/smc_change/action_plugins/smc_change_render.py, local-knowledge-ansible 45055e7
+  for field, text in fields:
+    try:
+      self._templar.template(trust_as_template(text) if trust_as_template else text)  # 2.19+ needs trust; 2.18 renders any safe string
+    except AnsibleError as error:
+      message = to_text(error.message if hasattr(error, "message") else error).splitlines()[0][:300]
+      problems.append({"field": field, "missing": missing_key(message), "error": message})
+  ```
+
+- **Lint mode (D2), controller only:** `-e smc_change_mode=lint` runs only the lint play of smc_change.yml (play var `ansible_connection: local`, which
+  outranks the inventory's; gather_facts false): the spec rendered per SMC of `-l`, each action's fate (runs, skipped by a host condition, or decided on the
+  box by a fact), an SMC whose spec does not render failed with the key named. No tsh login, no prepare (so no `smc_change_todo_` group), no summary, no
+  record. `main` leaves `lint` out of its argument_specs choices, so the role's main refuses it. Measured: 16 rct stage hosts in 8.1 s on the Mac.
+  `just test_lint` proves no SMC is reached (stand-ins at 192.0.2.1 with a nonexistent Python: any module run or connection fails the test).
+- **Cause of the 20 Nov failure (`VERIFIED_PRIMARY`, reproduced with ansible-core 2.18.8, the controller ansible-apn's version):** 2.18 templates a
+  variable whole when it is read, so `smc_change_spec.variables_files | default([])` fails on the spec's own `smc_change_vars.env` references,
+  `default([])` swallows the error, the values file is never loaded and "Load no values" runs. Every spec with `variables_files`
+  (rct-tstik-iridium-update, rct-avr-smsc) cannot run from a 2.18 controller; 2.21 templates lazily and is not affected. Fix proposed, not made: read
+  `variables_files` from the spec file as written (`lookup('file', ...) | from_yaml`). Falsifier: the rise deploy of rct-tstik passes from ansible-apn
+  on 2.18 with no change to load_spec.yml.
