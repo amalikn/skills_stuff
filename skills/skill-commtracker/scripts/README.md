@@ -144,6 +144,17 @@ then run `extract.py` on each untracked file.
 `~/.agents/scripts/commtracker/` — global, available to all projects.
 No project-local copies needed.
 
+## teams_docx.py — Teams transcript (.docx) to Markdown
+
+```bash
+python ~/.agents/scripts/commtracker/teams_docx.py <transcript.docx> [--tz Australia/Sydney]                      # preview (prints the Markdown)
+python ~/.agents/scripts/commtracker/teams_docx.py <transcript.docx> --tz Australia/Sydney --out <file.md> --apply  # write
+```
+
+Reads a Microsoft Teams transcript export and writes the Markdown transcript: front matter, date (UTC in the export, converted with `--tz`), duration, speakers,
+source link, then `## Full transcript` with one `**Name (m:ss):**` block per turn. Wording as exported. Refuses to replace an existing file without `--force`.
+Exit 0 ok, 1 refused, 2 not a Teams transcript. Tests: `tests/test_teams_docx.py`.
+
 ## compact_turns.py — One block per speaker turn
 
 ```bash

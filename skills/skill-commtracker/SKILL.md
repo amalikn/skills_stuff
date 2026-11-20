@@ -53,6 +53,7 @@ Invoke for any of:
 | User says "teams", "chat", or text from a Teams notification                 | Teams message (direct)                                                                                                |
 | User provides a phone-call transcript/recording writeup                      | Call                                                                                                                  |
 | User provides an in-person/meeting transcript or notes                       | Meeting                                                                                                               |
+| A Microsoft Teams transcript export (`.docx`, "Download as .docx")           | Meeting: convert it with `scripts/teams_docx.py` first (no `.vtt`; operator, 2026-11-20)                              |
 | Anything else                                                                | Other — ask user for fields interactively                                                                             |
 
 If the source type is ambiguous, ask the user before proceeding.
@@ -479,6 +480,25 @@ block in the entry (an email body reproduced exactly) verbatim. Run it after fil
 > Two ways a faithful extract fails: an ellipsis inside the quote marks (`*"I'm not going to be here later…"*`) is text the speaker did not say, so
 > cut the quote at a word boundary or put `…` between two quotes; and a phrase the source italicises (`*cleaned*`) used to fail when typed plain,
 > so the script now ignores Markdown emphasis on both sides. Run it before filing, not after: it caught both before the entry was committed.
+
+### teams_docx.py — Teams transcript (.docx) to Markdown
+
+```bash
+python ~/.agents/scripts/commtracker/teams_docx.py <transcript.docx> --tz Australia/Sydney                     # preview
+python ~/.agents/scripts/commtracker/teams_docx.py <transcript.docx> --tz Australia/Sydney --out <file.md> --apply
+```
+
+For a Teams meeting transcript downloaded as `.docx` (operator, 2026-11-20: use the `.docx`, not the `.vtt`). File the `.docx` in `communications/transcripts/` under a slug
+name, then write the Markdown transcript beside it: front matter (complete its `Summary`), date from the recording title converted with `--tz` (the export's own date
+line is UTC), duration, speakers, a link to the `.docx`, and `## Full transcript` in the turn layout, one speaker's consecutive paragraphs joined. Wording is copied as
+exported; add the meeting's own facts to the header (who was present without speaking, what was on screen, misheard terms) by hand. Refuses to replace a file without
+`--force`.
+
+> **Learned 2026-11-20** · Teams transcript .docx layout · VERIFIED_PRIMARY (observed) · Source: a 47-minute Teams export read with `zipfile` · Falsifier: an export
+> whose turn paragraphs do not start with "Name   m:ss"
+> Each turn is one `w:p`: a speaker avatar drawing, then a run "Name   " and a run "m:ss" (no break between them), then one run per caption segment, each after a
+> `w:br`. The first paragraphs are the title ("<meeting>-YYYYMMDD_HHMMSSUTC-Meeting Recording"), the date in UTC ("20 November 2026, 12:30am"), the duration
+> ("47m 6s") and "started transcription". The avatars are `word/media/*.png`; they are not kept.
 
 ### toc.py — regenerate Contents TOC
 
