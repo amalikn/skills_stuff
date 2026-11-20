@@ -93,6 +93,15 @@ ONE MEDIUM, A/B LAYOUT (one SD card, eMMC or disk)
   >   commit, panic, retry bound, hang) passed on both versions here, and the older bootloader also read the padded selection file on GPT.
   > - A selection file the firmware reads is fixed-length and overwritten in place, and the image ships it at that length (crash-safe on FAT,
   >   where rename is not); a boot-time check repairs a missing or torn file from the running slot.
+  > **Learned 2026-11-20** · A/B with a firmware one-shot trial: the gap after commit · VERIFIED_SECONDARY (design review against the platform docs above) ·
+  > Source: smc-resiliency Pi design, section 9.2 and risk R22 (apn, docs/pi/pi-immutable-smc-image-design-20261014_0850.md); engineers' questions on
+  > 20 Nov 2026 · Falsifier: a one-shot scheme whose firmware keeps counting failed boots of the committed slot.
+  > - A one-shot trial (Pi `reboot "0 tryboot"`, UEFI `BootNext`) is a counter of one held by the firmware, not a file on the read-only boot partition: any
+  >   reboot before the health check passes returns to the committed slot, and the only boot-partition write is the selector rewrite at commit.
+  > - It guards the trial only. Once committed, nothing counts boots: a release that later starts a reboot loop keeps the watchdog resetting it into the
+  >   same slot. Say so in the design and in slides ("the boot counter runs out" overclaims), and add a post-commit guard: a persistent reset history that
+  >   tells a watchdog reset from a power cut, falling back after N watchdog resets; confirm where the platform records the reset reason first.
+  > - RAUC's boot-attempts counter (bootchooser) is the alternative where the boot loader supports it; a firmware one-shot has no such counter.
 - One disk with no second-disk fallback: move rollback into the image layout. A writable root edited in place cannot be its own known-good copy.
 - Anti-rollback: accept only a manifest with a higher monotonic number than the last accepted; a downgrade is a new, higher-numbered manifest that carries the older release. Upgrade and rollback are
   then one path ([TUF] describes rollback attacks).

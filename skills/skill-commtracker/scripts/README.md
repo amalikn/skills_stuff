@@ -144,6 +144,15 @@ then run `extract.py` on each untracked file.
 `~/.agents/scripts/commtracker/` — global, available to all projects.
 No project-local copies needed.
 
+## check_tracker.py — Evidence for a tracker review
+
+```bash
+python ~/.agents/scripts/commtracker/check_tracker.py <communications-folder> [--no-index]
+```
+
+Read-only checks: anchors, linked files, date order, numbering per entry type, a rule glued to a heading; the folder index's links and every file in
+`emails/`, `teams/`, `transcripts/`, `attachments/` listed. Exit 0 clean, 1 findings, 2 no tracker. Tests: `tests/test_check_tracker.py`.
+
 ## teams_docx.py — Teams transcript (.docx) to Markdown
 
 ```bash

@@ -481,6 +481,13 @@ block in the entry (an email body reproduced exactly) verbatim. Run it after fil
 > cut the quote at a word boundary or put `…` between two quotes; and a phrase the source italicises (`*cleaned*`) used to fail when typed plain,
 > so the script now ignores Markdown emphasis on both sides. Run it before filing, not after: it caught both before the entry was committed.
 
+> **Learned 2026-11-20** · compact_turns.py and older Teams entries · VERIFIED_PRIMARY (observed) · Source: `scripts/compact_turns.py` `LABEL` on a tracker
+> whose Teams 1 to 3 (filed 2026-10) put the first message on the label line (`**Name (2:36 PM):**\ sure.`) and join later messages with a mid-line `\ ` ·
+> Falsifier: such a turn rewritten by `--apply`
+> `LABEL` matches a label alone on its line, so these turns are left as written; only blank lines after a lone label (reported accounts) were removed. In
+> CommonMark a backslash before a space is not an escape, so those `\ ` show as literal backslashes. Converting them is a separate, wording-preserving edit for
+> the operator to ask for; the script does not do it.
+
 ### teams_docx.py — Teams transcript (.docx) to Markdown
 
 ```bash
@@ -499,6 +506,17 @@ exported; add the meeting's own facts to the header (who was present without spe
 > Each turn is one `w:p`: a speaker avatar drawing, then a run "Name   " and a run "m:ss" (no break between them), then one run per caption segment, each after a
 > `w:br`. The first paragraphs are the title ("<meeting>-YYYYMMDD_HHMMSSUTC-Meeting Recording"), the date in UTC ("20 November 2026, 12:30am"), the duration
 > ("47m 6s") and "started transcription". The avatars are `word/media/*.png`; they are not kept.
+
+### check_tracker.py — evidence for a tracker review
+
+```bash
+python ~/.agents/scripts/commtracker/check_tracker.py <communications-folder>            # tracker and folder index
+python ~/.agents/scripts/commtracker/check_tracker.py <communications-folder> --no-index
+```
+
+Read-only. Run it before a tracker's `Last reviewed` changes (operator, 2026-11-20): every in-file anchor resolves, every linked file exists, entries are in
+date order, each entry type is numbered 1, 2, 3 without gaps, no `---` is glued to the next heading; and the folder index links resolve and list every file
+in `emails/`, `teams/`, `transcripts/` and `attachments/`. A clean run is evidence, not the review: the full re-read is still owed. Exit 0 clean, 1 findings.
 
 ### toc.py — regenerate Contents TOC
 
@@ -549,6 +567,7 @@ Before writing to the thread file, verify:
 - [ ] Key extracts pass `scripts/verify_quotes.py` (verbatim, right speaker); re-run it after any speaker-label correction to the transcript
 - [ ] Email entries: `scripts/verify_quotes.py` against the `.eml` passes for each entry's text block
 - [ ] Any date/name in the source conflicts with an already-tracked fact? — confirmed with the user, not assumed
+- [ ] Before a tracker's or index's `Last reviewed` changes: `scripts/check_tracker.py` clean, and the file re-read in full
 
 If any check fails, fix it before writing.
 

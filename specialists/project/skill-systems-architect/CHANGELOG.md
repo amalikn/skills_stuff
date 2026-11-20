@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-20: edge-appliances.md (Image layout and updates), Learned 2026-11-20: a firmware one-shot A/B trial guards only the trial; a committed release that loops needs a post-commit guard (reset history, N watchdog resets).
 - 2026-11-20: edge-appliances.md (Hangs, watchdogs and power): a 15 s hardware watchdog resets a box whose card stalls on DISCARD; prove kernel.panic and the watchdog separately; sync before a fault test (smc-resiliency lab test record 27).
 - 2026-11-19: linux-unix.md (watchdog open_timeout gap, Ubuntu panic and lockup defaults, cloud-init 22.2 chpasswd, Launchpad +files), macos-and-endpoints.md (TCC raw-disk writes, automount read-back), edge-appliances.md (bench link versus field, media identity); from smc-resiliency.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
