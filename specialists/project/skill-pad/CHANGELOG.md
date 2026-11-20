@@ -58,6 +58,7 @@ check fails on a KEEP decision with no log row (negative test: rc 1 with a row r
 - SKILL.md Rules: new rule after "Claim before working an item": work found in Pad is claimed and set `in-progress` before it starts; work not in Pad gets an item created first, then kept current and
   closed with the closing statement (operator, 20 Nov 2026, from the enterprise-strategy hub session; hub items TASK-19, TASK-144, TASK-145 were run this way).
 - references/cli-reference.md Traps: a comment message starting with `-` is read as a flag and refused (v0.21.1); use `--stdin`.
+- Duplicate removed: a parallel session committed this rule and its own fuller "Work is visible in Pad" rule together (a0fea8bb); this rule's text is dropped and its "a relay, a write-back or a side task counts as work" clause joins the kept rule.
 
 ## 20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
 

@@ -91,13 +91,10 @@ into that session.
     comment names the attachment.
   - **Check before done:** `just -f <skill-pad>/justfile item-check <ref>` (or `--days 1` at closeout) must exit 0. Standard and examples: [docs/pad-usage-guidelines-20261110_1628.md](docs/pad-usage-guidelines-20261110_1628.md) 3.3.
 - **Claim before working an item** (`pad item claim <ref>`); on `lease_held` pick other work, never loop.
-- **Work in Pad shows as active (operator, 2026-11-20; every project with a Pad workspace).** Before starting work, find its item: claim it and set it `in-progress` with a `--comment`
-  saying what starts. Work with no item gets one created first (the user's instruction is the opt-in; follow the writing standard), then claimed and kept current with comments as the
-  work runs; close it with the closing statement when done. A relay, a write-back or a side task counts as work.
 - **Work is visible in Pad (operator, 2026-11-20; every project with a `.pad.toml`):** before starting any piece of work, find its item (`pad item list`,
   `pad item search`); when there is none, create it (a task to the writing standard, 3.3), since the operator's request for the work is the
   confirmation. Claim it, set it `in-progress` with `--comment`, comment at the start, at each result and at each blocker, and close it with the
-  `DONE:` comment. No work in a Pad project runs without an active item the operator can see.
+  `DONE:` comment. No work in a Pad project runs without an active item the operator can see; a relay, a write-back or a side task counts as work.
 - **Consult Pad at session start (operator, 2026-11-20):** in any folder whose tree has a `.pad.toml`, run the `status` mode (`pad project dashboard`)
   before planning, and say which item the session works on. project_stuff/AGENTS.md names this skill as required for those projects.
 - **Through the CLI only**: never read `~/.pad/pad.db` or `~/.pad/attachments/` directly.

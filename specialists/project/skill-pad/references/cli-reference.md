@@ -82,6 +82,10 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 
 ## Traps
 
+> **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED (three refused comments, one session) · Source: `pad item comment TASK-145 "- **What:** ..."` → `Error: unknown shorthand flag: ' '` · Falsifier: a message argument starting with `-` saved as a comment
+> A message argument that starts with `-` (a bullet list) is parsed as a flag and refused; the usage text goes to stdout, so `| tail -1` hides the error. Pass bullet comments with
+> `--stdin` and a heredoc, and check for `Comment added` in the output.
+
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed) · Source: `pad collection create "Asks" --awaits-human true --tracks-work false --schema @file` in
 > smc-resiliency; `pad collection list --format json` settings · Falsifier: the space form creating the collection on a later version
 > - `--awaits-human` and `--tracks-work` take their value only in the `=` form: with a space the command fails with "accepts 1 arg(s), received 2" and creates nothing.
