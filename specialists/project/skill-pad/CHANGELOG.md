@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_0250
+Last rotated: 20261120_1334
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 - [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
 - [20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders](#20261119_1820--ansible-wifi-workspace-adapted-conventions-file-one-workspace-for-three-folders)
@@ -38,9 +39,14 @@ Last rotated: 20261120_0250
 - [20261111_1135 — workspace sharing noted](#20261111_1135--workspace-sharing-noted)
 - [20261111_1054 — Pad link opener: repo links in Pad open in VS Code](#20261111_1054--pad-link-opener-repo-links-in-pad-open-in-vs-code)
 - [20261110_2055 — tracker import spike noted for the trial review](#20261110_2055--tracker-import-spike-noted-for-the-trial-review)
-- [20261110_2031 — slurp close: session record, write-backs, collection schemas](#20261110_2031--slurp-close-session-record-write-backs-collection-schemas)
 
 ---
+
+## 20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen
+
+SKILL.md: the installed Pad CLI is 0.21.1 (pad --version, 2026-11-20, build 0d76fda of 2026-11-18). Used from smc-resiliency with no change in behaviour
+seen: bootstrap, item create with --op-key, and the pack's item-check (TASK-103 and TASK-104, 0 findings) all worked as on 0.21.0. Learned from the
+enterprise-strategy slurp close of 20 Nov 2026.
 
 ## 20261120_0300 — Tracker export: an item made in Pad renders its title
 
@@ -181,16 +187,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 
 - Side agent: imported closed bugs and features count as done on 10 Nov. Checked in UNC: `next`, `stale` and the dashboard are not flooded; today's changelog lists 43 imported closures. Operator: keep
   both collections as work and discount the spike; noted on UNC TASK-20 and in guidelines section 6 step 6.
-
-## 20261110_2031 — slurp close: session record, write-backs, collection schemas
-
-### Added
-
-- `docs/session-record-20261110_2029.md`: all 56 operator messages with destinations, side effects outside the repos, open work by owner.
-- `conventions/collection-schemas/` (asks, bugs, feature-requests, tech-debt) with a readme; cli-reference Traps: web collection templates.
-- Write-backs: skill-coder `references/tooling-and-runtime.md` (dataclass loaded by path, flushed progress lines); skill-ai-it `references/pitfalls.md` (generation-policy table rows; markdown hook
-  re-wraps whole files).
-
-### Notes
-
-- Flows: smc-resiliency and UNC rendered and traced; nothing of this session's changes is described there; UNC's 157 unstamped steps are its own.

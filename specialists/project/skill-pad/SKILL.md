@@ -18,7 +18,7 @@ export into the repo, nightly backup). Use whenever the user says /pad, $pad, "p
 docs, or sets Pad up in a project. Not for a project's repo trackers themselves (those stay the truth) and not for Pad's Claude Code plugin, which
 the operator does not use.
 
-The operator's own Pad skill (operator, 2026-11-10: "develop our own skill and not rely on the plugin"). It drives the `pad` CLI (0.21.0 installed per `pad --version` on 2026-11-19; references mapped
+The operator's own Pad skill (operator, 2026-11-10: "develop our own skill and not rely on the plugin"). It drives the `pad` CLI (0.21.1 installed per `pad --version` on 2026-11-20, build 2026-11-18; 0.21.0 on 2026-11-19; references mapped
 from v0.19.2; Homebrew `perpetualsoftware/tap/pad`) for Claude Code and, through the same file, Codex, Cursor, Windsurf and OpenCode. It carries what Pad's own skill and plugin teach, rewritten into
 this pack's references, plus the operator's rules; it depends on no Pad-shipped skill file.
 
