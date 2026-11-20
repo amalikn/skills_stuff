@@ -53,7 +53,7 @@ class Build(unittest.TestCase):
         a = items["cf-aaaaaaaaaa"]
         self.assertEqual((a["status"], a["recommendation"], a["category"]), ("accepted", "not-followed", "contracts.api"))
         self.assertIn("| v1 |", a["body"])
-        self.assertIn("Current: v2", a["body"])
+        self.assertIn("**Decision:** v2", a["body"])
         self.assertEqual(items["cf-bbbbbbbbbb"]["status"], "deferred")
         self.assertEqual(items["DL-011"]["recommendation"], "followed")
 
@@ -78,10 +78,41 @@ class WrappedAndStatus(unittest.TestCase):
             path.write_text(log)
             items = {i["ref"]: i for i in pdm.log_items(path)}
         self.assertEqual(sorted(items), ["DL-001", "DL-002", "DL-003"])
-        self.assertIn("Decision: Chris is out of scope.", items["DL-001"]["body"])
-        self.assertIn("Reason: Retail work; no enterprise role.", items["DL-001"]["body"])
-        self.assertIn("Superseded by: DL-003", items["DL-001"]["body"])
+        self.assertIn("**Decision:** Chris is out of scope.", items["DL-001"]["body"])
+        self.assertIn("**Reason:** Retail work; no enterprise role.", items["DL-001"]["body"])
+        self.assertIn("**Superseded by:** DL-003", items["DL-001"]["body"])
         self.assertEqual([items[k]["status"] for k in ("DL-001", "DL-002", "DL-003")], ["superseded", "deferred", "accepted"])
+
+
+class Architecture(unittest.TestCase):
+    """architecture_items() reads the decision bullets of a Key decisions section."""
+
+    def test_bullets(self):
+        """Register ids, slugs, open decisions, wrapped lines, skipped status notes and the Superseded list.
+
+        Returns:
+            None.
+        """
+        doc = ("# Arch\n\n## Key decisions\n\nIntro line.\n\n"
+               "- **D1 — shape: DECIDED 2026-09-21.** Central collector;\n  edge kept as fallback.\n"
+               "- **D7 — provisioning: still open** (CONTESTED); built on D7.1 2026-09-30.\n"
+               "- **Real-hardware verification status.** Polled once.\n"
+               "- **WAN uplinks and their carriers (operator, 2026-10-08):** each uplink is a Circuit.\n"
+               "- **A very long decision title that runs well past the forty eight character slug cap: DECIDED 2026-10-01.** Text.\n\n"
+               "### Superseded (kept as history)\n\n- **Custom controller: DECIDED 2026-09-01.** Old.\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ARCHITECTURE.md"
+            path.write_text(doc)
+            items, skipped = pdm.architecture_items(path)
+        by = {i["ref"]: i for i in items}
+        self.assertEqual(skipped, ["Real-hardware verification status"])
+        self.assertEqual(by["D1"]["title"], "D1: shape")
+        self.assertIn("**Detail:** Central collector; edge kept as fallback.", by["D1"]["body"])
+        self.assertEqual((by["D7"]["status"], by["D7"]["date"]), ("deferred", "2026-09-30"))
+        self.assertEqual(by["ARCH-wan-uplinks-and-their-carriers"]["title"], "WAN uplinks and their carriers")
+        self.assertIn("ARCH-a-very-long-decision-title-that-runs-well-past", by)
+        self.assertNotIn("ARCH-custom-controller", by)
+        self.assertEqual(len(items), 4)
 
 
 class Split(unittest.TestCase):
@@ -97,6 +128,14 @@ class Split(unittest.TestCase):
         creates, updates = pdm.plan(want, {"b": "DECIS-1", "c": "DECIS-2"}, {"DECIS-1": "old", "DECIS-2": "z\n"}.get)
         self.assertEqual([w["ref"] for w in creates], ["a"])
         self.assertEqual([w["ref"] for w in updates], ["b"])
+
+    def test_orphans(self):
+        """A Pad item whose ref left the source is listed; present refs are not.
+
+        Returns:
+            None.
+        """
+        self.assertEqual(pdm.orphans([{"ref": "D1"}], {"D1": "DECIS-1", "ARCH-old-name": "DECIS-2"}), [("ARCH-old-name", "DECIS-2")])
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 # apn-baseline.toml — the seven Pad conventions every apn project workspace carries (operator, 2026-11-10: "capture the conventions centrally so
 # that other projects can copy the same"). Agreed in unified-network-controller and smc-resiliency on 2026-11-10;
 # writing-standard added the same day (operator: "yes" to the writing standard).
+# 2026-11-20 (operator, "Extend and enforce"): every content is laid out as the Conventions template, **Rule:** then **Source:** (guidelines 3.3,
+# Templates by collection); writing-standard names every collection's template; pad-owned-trackers drops the old bug first-line form.
 #
 # Applied by scripts/pad_conventions.py: it rewrites the startup template's four conventions in place (matched by `replaces`, their template
 # titles) and creates the rest, so a workspace ends with exactly these. `{project}` is the project folder name and `{trackers}` its tracker list,
@@ -20,9 +22,11 @@ trigger = "on-commit"
 scope = "all"
 priority = "should"
 category = "git"
-content = """Commit with `just commit-project -m "{project}: <what changed, plain words>" --apply` from the project folder. It runs the commit gate \
-(`just check`), commits only this project's folder in the shared apn repo and pushes. Do not use feat:/fix: prefixes. No apostrophes or contractions in \
-the message (shell quoting). Source: AGENTS.md Cross-project exchange; ../scripts/README.md Agent rules."""
+content = """**Rule:** commit with `just commit-project -m "{project}: <what changed, plain words>" --apply` from the project folder. It runs the commit \
+gate (`just check`), commits only this project's folder in the shared apn repo and pushes. Do not use feat:/fix: prefixes. No apostrophes or \
+contractions in the message (shell quoting).
+
+**Source:** AGENTS.md Cross-project exchange; ../scripts/README.md Agent rules."""
 
 [[convention]]
 id = "one-branch"
@@ -32,9 +36,11 @@ trigger = "on-commit"
 scope = "all"
 priority = "must"
 category = "git"
-content = """The apn repo has one branch, main (operator, 2026-10-21, option 1). Every commit of this project goes through `just commit-project ... \
---apply`, which commits only this folder under the shared git lock and pushes main. Never `git add -A`, `git commit -a` or a commit spanning another \
-project's folder; never open a branch or PR for this project unless the operator asks."""
+content = """**Rule:** the apn repo has one branch, main. Every commit of this project goes through `just commit-project ... --apply`, which commits \
+only this folder under the shared git lock and pushes main. Never `git add -A`, `git commit -a` or a commit spanning another project's folder; never \
+open a branch or PR for this project unless the operator asks.
+
+**Source:** operator, 2026-10-21, option 1."""
 
 [[convention]]
 id = "just-check"
@@ -45,9 +51,10 @@ scope = "all"
 priority = "must"
 category = "quality"
 commands = ["just check"]
-content = """Before marking a task done, run `just check` in the project folder (governance checks, tests and linters; `just commit-project` runs \
-it as its gate) and fix the project, not the check, when it fails. Say what was validated and what was not. Source: AGENTS.md (Governance coherence \
-checks; fix the project, not the check)."""
+content = """**Rule:** before marking a task done, run `just check` in the project folder (governance checks, tests and linters; `just commit-project` \
+runs it as its gate) and fix the project, not the check, when it fails. Say what was validated and what was not.
+
+**Source:** AGENTS.md (Governance coherence checks; fix the project, not the check)."""
 
 [[convention]]
 id = "review-diff"
@@ -57,9 +64,11 @@ trigger = "on-commit"
 scope = "all"
 priority = "should"
 category = "quality"
-content = """This project commits straight to main through `just commit-project`; there are no pull requests, so the review happens before the \
-commit. Read your own `git diff` for the project folder first: debug code left behind, missing error handling, unclear names, unintended changes, \
-files another session is editing. Then let the commit gate run `just check`."""
+content = """**Rule:** this project commits straight to main through `just commit-project`; there are no pull requests, so the review happens before \
+the commit. Read your own `git diff` for the project folder first: debug code left behind, missing error handling, unclear names, unintended changes, \
+files another session is editing. Then let the commit gate run `just check`.
+
+**Source:** apn baseline, 2026-11-10 (replaces the startup template's PR review rule)."""
 
 [[convention]]
 id = "trackers-truth"
@@ -67,8 +76,11 @@ title = "Repo trackers are the truth; Pad items link to them"
 trigger = "always"
 scope = "all"
 priority = "must"
-content = """Pad is the operator's personal layer over {project}'s trackers ({trackers}). Never copy tracker items into Pad wholesale; a Pad item \
-names the tracker ID it serves. Status changes are made in the tracker first. Exception: bugs, feature requests and tech debt live in Pad and their tracker files are generated from it (convention pad-owned-trackers, operator 2026-11-10)."""
+content = """**Rule:** Pad is the operator's personal layer over {project}'s trackers ({trackers}). Never copy tracker items into Pad wholesale; a Pad \
+item names the tracker ID it serves. Status changes are made in the tracker first. Exception: bugs, feature requests and tech debt live in Pad and \
+their tracker files are generated from it (convention pad-owned-trackers).
+
+**Source:** operator, 2026-11-10."""
 
 [[convention]]
 id = "writing-standard"
@@ -77,23 +89,35 @@ trigger = "always"
 scope = "all"
 priority = "must"
 category = "documentation"
-content = """Every item must tell its whole story to a reader who has not seen the chat (operator, 2026-11-18).
-Body: each section label bold at the start of its own paragraph, a blank line between sections. Plan: **Serves:** (tracker entries), **Goal:** (one \
-sentence), **Done when:** (2-4 checkable criteria), **Out of scope:**, **Waits on:**. Due date in `end_date`; title: the outcome and its date. \
-Task: **Serves:**, **Why:** (finding and evidence path), **Do:** (steps), **Done when:** (always: tracker updated, just check passes), **Writes:** \
-(none | repo | production; production needs an approval ask first), **Refs:**. Bug: **Seen:**, **Evidence:**, **Cause:**, **Effect:**, **Options:**, \
-**Not verified:**, **Closure:**. priority, due_date and parent are fields, never text. Title: verb and object, 70 characters or fewer.
-Updates: write one when work starts, at each result and at each blocker: `pad item note` for work done, `pad item decide` for a choice, `pad item \
-comment` for the rest, starting `YYYY-MM-DD HH:MM AEDT TYPE:` (FINDING, BLOCKED, RISK, CORRECTION, HANDOFF, NEXT, DONE, CLOSED) and then bullets \
-(- **What:**, - **Result:**, - **Evidence:**, - **Not verified:**, - **Next:**). Complete before short; one event per comment; a correction is a new \
-CORRECTION comment, never an edit. The time comes from `date`, never from memory.
-Done: before the status moves to done, fixed, cancelled or wont-fix, add a DONE: comment (CLOSED: when not everything was done) with bullets: what \
-was done, the result against each done-when line, what could not be done and why, the evidence (paths, commit), what stays open (item refs). The \
---comment on the status change is one line that points to it.
-Logs: work that produced a log, transcript or capture attaches it (`pad attachment upload <ref> <file>`; a cut of a large file, naming the full \
-path) and the comment names the attachment.
-Check: skill-pad `just item-check <ref>` exits 0 before an item is called done.
-Tags: only prod-write, bench, hub, skill-writeback; tracker IDs are never tags. A new tag is added to the skill-pad guidelines first."""
+content = """**Rule:** every item tells its whole story to a reader who has not seen the chat.
+
+**Bodies:** each section label bold at the start of its own paragraph, a blank line between sections; required labels in order, optional ones only \
+when there is material. Plans: **Serves:**, **Goal:**, **Done when:**, **Out of scope:**, **Waits on:** (date in `end_date`; title: the outcome and \
+its date). Tasks: **Serves:**, **Why:**, **Do:**, **Done when:** (always: tracker updated, just check passes), **Writes:** (none, repo or production; \
+production needs an approval ask first), **Refs:** (title: verb and object, 70 characters or fewer). Bugs: **Seen:**, **Evidence:**, **Effect:**, \
+**Closure:**, with **Cause:**, **Options:**, **Not verified:** before Closure when known; fixed only when fixed and live. Tech debt: **Serves:**, \
+**Why:**, **Do:**, **Done when:**. Ideas: **Serves:**, **Why:**, **Do:**. Asks: **Question:**, then **Options:** (the recommended one marked), \
+**Blocks:**, **Evidence:** when they apply. Feature requests: the operator's one line kept as written; a longer body takes **Serves:** and **Why:**. \
+Decisions: generated (**Serves:**, **Decision:**), never edited in Pad. Conventions: **Rule:**, **Source:**. priority, due_date and parent are \
+fields, never text.
+
+**Links:** every item, decision or record named in a body or a comment, the status change's one-line --comment included, is a `[[REF]]` link \
+(`[[DECIS-n|DL-058]]` for a decision id); every dependency is a typed relation (`pad item block`, `implements`, `split-from`, `supersedes`).
+
+**Updates:** one when work starts, at each result and at each blocker: `pad item note` for work done, `pad item decide` for a choice, \
+`pad item comment` for the rest, starting `YYYY-MM-DD HH:MM AEDT TYPE:` (FINDING, BLOCKED, RISK, CORRECTION, HANDOFF, NEXT, DONE, CLOSED) and then \
+bullets (- **What:**, - **Result:**, - **Evidence:**, - **Not verified:**, - **Next:**). Complete before short; one event per comment; a correction \
+is a new CORRECTION comment. The time comes from `date`, never from memory.
+
+**Done:** before a plan, task, bug or tech-debt item moves to done, fixed, resolved, cancelled or wont-fix, add a DONE: comment (CLOSED: when not \
+everything was done): what was done, the result against each done-when line, what could not be done and why, the evidence, what stays open (item \
+refs). The --comment on the status change is one line that points to it. Work that produced a log attaches it (`pad attachment upload <ref> <file>`) \
+and the comment names it.
+
+**Check:** skill-pad `just item-check <ref>` exits 0 before an item is called done. Tags: only prod-write, bench, hub, skill-writeback.
+
+**Source:** operator, 2026-11-18 (whole story) and 2026-11-20 (templates for every collection, links in comments); skill-pad \
+docs/pad-usage-guidelines-20261110_1628.md 3.3."""
 
 [[convention]]
 id = "pad-owned-trackers"
@@ -102,9 +126,10 @@ trigger = "always"
 scope = "all"
 priority = "must"
 category = "tracking"
-content = """Exception to trackers-truth (operator, 2026-11-10): bugs, feature requests and tech debt live in Pad, in the collections bugs (BUG-n), \
-feature-requests (FR-n) and tech-debt (TD-n). docs/trackers/bug-tracker.md and docs/trackers/features-to-add.md are generated from them by \
-`just pad-trackers`, which the commit gate runs. Add or change an item in Pad, never in a generated block of those files: a hand edit stops the \
-commit gate. A bug's first line keeps its form `**ID (Pn)** what is wrong`, with indented lines for cause, fix and evidence; a feature's text is the \
-operator's own and is not reworded. Link the task that does the work to its item with `pad item implements TASK-n BUG-n`."""
+content = """**Rule:** bugs, feature requests and tech debt live in Pad, in the collections bugs (BUG-n), feature-requests (FR-n) and tech-debt \
+(TD-n). docs/trackers/bug-tracker.md and docs/trackers/features-to-add.md are generated from them by `just pad-trackers`, which the commit gate runs. \
+Add or change an item in Pad, never in a generated block of those files: a hand edit stops the commit gate. A bug's body follows the bug template \
+(**Seen:**, **Evidence:**, **Effect:**, **Closure:**); a feature's text is the operator's own and is not reworded. Link the task that does the work to \
+its item with `pad item implements TASK-n BUG-n`.
 
+**Source:** operator, 2026-11-10 (exception to trackers-truth); bug template 2026-11-20."""

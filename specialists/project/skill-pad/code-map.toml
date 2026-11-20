@@ -109,3 +109,8 @@ reason = "Applies reviewed Pad item rewrites (writing standard migration 2026-11
 status = "promoted"
 skill = "skill-pad"
 reason = "Bug and feature trackers generated from Pad (operator, 2026-11-10: Pad is the truth for them)"
+
+[modules."scripts/pad_retry.sh"]
+status = "promoted"
+skill = "skill-pad"
+reason = "One pad CLI call retried with backoff while the shared local server rate-limits (operator, 2026-11-20: option 3 after a cross-session 429 flood)"

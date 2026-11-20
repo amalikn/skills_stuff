@@ -62,7 +62,30 @@ class FindingsTests(unittest.TestCase):
         """Bugs and plans have their own label sets; an unknown collection has none."""
         self.assertEqual(pic.missing_labels("bugs", "**Seen:** x\n**Evidence:** p\n**Effect:** e\n**Closure:** c"), [])
         self.assertEqual(pic.missing_labels("plans", "**Serves:** x\n**Goal:** g"), ["Done when", "Out of scope", "Waits on"])
-        self.assertEqual(pic.missing_labels("ideas", "anything"), [])
+        self.assertEqual(pic.missing_labels("playbooks", "anything"), [])
+
+    def test_templates_for_every_collection(self) -> None:
+        """Tech debt, ideas, asks, decisions and conventions have required labels (operator, 2026-11-20)."""
+        self.assertEqual(pic.missing_labels("ideas", "anything"), ["Serves", "Why", "Do"])
+        self.assertEqual(pic.missing_labels("asks", "**Question:** which?"), [])
+        self.assertEqual(pic.missing_labels("decisions", "**Serves:** log\n\n**Decision:** d"), [])
+        self.assertEqual(pic.missing_labels("conventions", "Commit with just commit-project."), ["Rule", "Source"])
+
+    def test_a_one_line_feature_request_keeps_the_operators_words(self) -> None:
+        """A request whose body is its title needs no labels; a longer body does."""
+        one = dict(item("submitted", "link test for PtP\n", "feature-requests"), title="link test for PtP")
+        self.assertEqual(pic.findings(one, [], 0), [])
+        long = dict(item("submitted", "link test for PtP\nmore detail here", "feature-requests"), title="link test for PtP")
+        self.assertTrue(any(line.startswith("labels:") for line in pic.findings(long, [], 0)))
+
+    def test_closing_comment_only_on_work(self) -> None:
+        """A closed tech-debt item needs a DONE comment; an accepted decision and a shipped request do not."""
+        td = item("resolved", "**Serves:** s\n\n**Why:** w\n\n**Do:** d\n\n**Done when:** x", "tech-debt")
+        self.assertTrue(any(line.startswith("done:") for line in pic.findings(td, [], 0)))
+        dec = item("accepted", "**Serves:** log\n\n**Decision:** d", "decisions")
+        self.assertEqual(pic.findings(dec, [], 0), [])
+        fr = dict(item("shipped", "ping devices", "feature-requests"), title="ping devices")
+        self.assertEqual(pic.findings(fr, [], 0), [])
 
 
 class RateLimitTests(unittest.TestCase):

@@ -41,7 +41,7 @@ test: _require-venv
 
 # Lint the shell scripts and, with ruff, Python (new files only; existing ones listed in ruff.toml).
 lint:
-    @shellcheck scripts/pad_backup.sh scripts/pad_monitor.sh scripts/pad_upstream_refresh.sh && echo "shellcheck clean"
+    @shellcheck scripts/pad_backup.sh scripts/pad_monitor.sh scripts/pad_upstream_refresh.sh scripts/pad_retry.sh && echo "shellcheck clean"
     @mise exec ruff -- ruff check . && mise exec ruff -- ruff format --check . && echo "ruff clean"
 
 # The pack's governance claims as assertions (read-only).
@@ -74,6 +74,12 @@ export *ARGS: _require-venv
 [no-cd]
 decisions *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_decisions.py" {{ARGS}}
+
+# [project writes: whatever the pad command writes] One pad CLI call, retried with backoff while the shared local server rate-limits (stdin replayed):
+# just -f <skill-pad>/justfile pad item comment TASK-5 --stdin < note.md
+[no-cd]
+pad *ARGS:
+    @bash "{{justfile_directory()}}/scripts/pad_retry.sh" {{ARGS}}
 
 # Item refs and decision ids in bodies as [[wiki-links]], plus typed relations from a JSON spec: plan by default, `--apply` writes to Pad
 [no-cd]

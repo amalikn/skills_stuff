@@ -7,8 +7,9 @@ established ... you should be utilizing the relationship section for each item s
 keeps typed relations (blocks, implements, split-from, supersedes) as the dependency graph.
 
 What it does, for the items named (or every item updated since a date):
-  1. Bodies: a bare reference to an existing item (`TASK-12`, `ASK-251`, `DECIS-148`, any collection prefix in the workspace) becomes `[[REF]]`;
-     a decision-log id (`DL-058`) or a conflict id (`cf-0e7a848021`) that a decisions-collection item mirrors (field `decision_ref`) becomes
+  1. Bodies, and comments an agent wrote (2026-11-20): a bare reference to an existing item (`TASK-12`, `ASK-251`, `DECIS-148`, any collection prefix in the workspace) becomes `[[REF]]`;
+     a decision-log id (`DL-058`), a conflict id (`cf-0e7a848021`) or a register id (`D17`, `S20`, `X2`; 2026-11-20, unc; never `D17-03` or `D3.6`)
+     that a decisions-collection item mirrors (field `decision_ref`) becomes
      `[[DECIS-n|DL-058]]`, shown as the id. Text already inside `[[...]]`, inline code or a fenced block, and the item's own ref, are left alone; decision
      mirrors, playbooks and conventions are skipped (generated, or library text whose sample refs like TASK-5 would link to real items).
      Writes are guarded by the item's `seq` (`--expected-seq`): a conflict means someone changed it; re-run, never force.
@@ -33,7 +34,7 @@ import sys
 import time
 
 REF = re.compile(r"\b([A-Z][A-Z0-9]{1,9}-\d+)\b")
-DECISION_ID = re.compile(r"\b(DL-\d{3}|cf-[0-9a-f]{10})\b")
+DECISION_ID = re.compile(r"\b(DL-\d{3}|cf-[0-9a-f]{10}|[DSX]\d{1,3})\b(?![.\-]\w)")
 PROTECTED = re.compile(r"```.*?```|`[^`\n]*`|\[\[[^\]]*\]\]", re.S)
 VERBS = {"blocks": "block", "implements": "implements", "split-from": "split-from", "supersedes": "supersedes"}
 
@@ -122,6 +123,39 @@ def relation_present(binary: str, timeout: int, rel: dict) -> bool:
   return re.search(rf"\b{re.escape(rel['to'])}\b", pad(binary, timeout, "item", "related", rel["from"])) is not None
 
 
+def link_comments(binary: str, timeout: int, ref: str, refs: set[str], decisions: dict[str, str], apply: bool) -> int:
+  """Link the references in an item's agent-written comments, as in bodies (2026-11-20, operator: a status comment read "Unblocked: ASK-237
+  answered" with no link). A comment written by a person is left as written; a comment's author is the only one who may edit it.
+
+  Args:
+    binary: the pad executable.
+    timeout: seconds per call.
+    ref: the item's ref.
+    refs: every existing item ref.
+    decisions: decision id -> mirror item ref.
+    apply: write when True, else print the plan.
+
+  Returns:
+    The number of failed writes.
+  """
+  data = json.loads(pad(binary, timeout, "item", "comments", ref, "--format", "json") or "[]")
+  failed = 0
+  for c in data.get("comments", data) if isinstance(data, dict) else data:
+    if c.get("created_by") != "agent" or c.get("deleted"):
+      continue
+    new = linked(c.get("body") or "", ref, refs, decisions)
+    if new == (c.get("body") or ""):
+      continue
+    print(f"{'write' if apply else 'plan'}: {ref} comment {c['id'][:8]}")
+    if apply:
+      try:
+        pad(binary, timeout, "item", "comment-edit", ref, c["id"], "--stdin", stdin=new)
+      except RuntimeError as e:
+        failed += 1
+        print(f"FAIL {ref} comment {c['id'][:8]}: {e}")
+  return failed
+
+
 def main(argv: list[str] | None = None) -> int:
   """Command line entry.
 
@@ -150,15 +184,15 @@ def main(argv: list[str] | None = None) -> int:
       continue  # decision mirrors are generated (pad_decisions.py); playbooks and conventions come from Pad's library with sample refs
     it = json.loads(pad(a.pad, a.timeout, "item", "show", ref, "--format", "json"))
     new = linked(it.get("content") or "", ref, refs, decisions)
-    if new == (it.get("content") or ""):
-      continue
-    print(f"{'write' if a.apply else 'plan'}: {ref} body ({len(REF.findall(new))} refs)")
-    if a.apply:
-      try:
-        pad(a.pad, a.timeout, "item", "update", ref, "--stdin", "--expected-seq", str(it["seq"]), stdin=new)
-      except RuntimeError as e:
-        failed += 1
-        print(f"FAIL {ref}: {e}")
+    if new != (it.get("content") or ""):
+      print(f"{'write' if a.apply else 'plan'}: {ref} body ({len(REF.findall(new))} refs)")
+      if a.apply:
+        try:
+          pad(a.pad, a.timeout, "item", "update", ref, "--stdin", "--expected-seq", str(it["seq"]), stdin=new)
+        except RuntimeError as e:
+          failed += 1
+          print(f"FAIL {ref}: {e}")
+    failed += link_comments(a.pad, a.timeout, ref, refs, decisions, a.apply)
   for rel in json.loads(open(a.relations).read()) if a.relations else []:
     if rel["type"] not in VERBS or relation_present(a.pad, a.timeout, rel):
       print(f"skip: {rel}")

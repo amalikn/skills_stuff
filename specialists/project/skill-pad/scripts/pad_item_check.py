@@ -28,11 +28,18 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 
-LABELS = {
+LABELS = {  # required labels per collection: docs/pad-usage-guidelines-20261110_1628.md 3.3, Templates by collection (operator, 2026-11-20)
     "plans": ("Serves", "Goal", "Done when", "Out of scope", "Waits on"),
     "tasks": ("Serves", "Why", "Do", "Done when", "Writes", "Refs"),
     "bugs": ("Seen", "Evidence", "Effect", "Closure"),
+    "tech-debt": ("Serves", "Why", "Do", "Done when"),
+    "ideas": ("Serves", "Why", "Do"),
+    "asks": ("Question",),
+    "feature-requests": ("Serves", "Why"),
+    "decisions": ("Serves", "Decision"),
+    "conventions": ("Rule", "Source"),
 }
+WORK = {"plans", "tasks", "bugs", "tech-debt"}  # collections whose closed items need a DONE: or CLOSED: comment
 CLOSED = {"done", "fixed", "resolved", "shipped", "cancelled", "wont-fix", "declined", "completed"}
 CLOSING = re.compile(r"\b(DONE|CLOSED):")
 RETRIES = 5
@@ -93,6 +100,19 @@ def missing_labels(collection: str, body: str) -> list[str]:
     return [lab for lab in LABELS.get(collection, ()) if not re.search(rf"^\*\*{re.escape(lab)}:\*\*", body, re.M)]
 
 
+def one_line_request(item: dict) -> bool:
+    """Whether an item is a feature request that is only the operator's own line (body equal to its title), which keeps no labels.
+
+    Args:
+        item: the item (collection_slug, title, content).
+
+    Returns:
+        True for a one-line feature request.
+    """
+    body = " ".join((item.get("content") or "").split())
+    return item.get("collection_slug") == "feature-requests" and "\n" not in (item.get("content") or "").strip() and body == " ".join((item.get("title") or "").split())
+
+
 def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
     """What one item breaks of the writing standard.
 
@@ -106,13 +126,13 @@ def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
     """
     out = []
     body = item.get("content") or ""
-    lacking = missing_labels(item.get("collection_slug", ""), body)
+    lacking = [] if one_line_request(item) else missing_labels(item.get("collection_slug", ""), body)
     if lacking:
         out.append(f"labels: no bold `**{lacking[0]}:**` line" + (f" (and {len(lacking) - 1} more)" if len(lacking) > 1 else ""))
     status = str(fields_of(item).get("status", "")).lower()
     texts = [c.get("body") or "" for c in comments]
     notes = [json.dumps(n) for n in item.get("implementation_notes") or []]
-    if status in CLOSED and not any(CLOSING.search(t) for t in texts):
+    if item.get("collection_slug") in WORK and status in CLOSED and not any(CLOSING.search(t) for t in texts):
         out.append(f"done: status {status} with no closing comment (`YYYY-MM-DD HH:MM AEDT DONE:` and what was done, the result, evidence, what stays open)")
     if status == "in-progress" and not texts and not notes:
         out.append("update: in progress with no note or comment")
@@ -122,7 +142,7 @@ def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
 
 
 def recent_refs(days: int, timeout: int, binary: str, extra: list[str]) -> list[str]:
-    """The refs of every plan, task and bug updated in the last `days` days.
+    """The refs of every item of a templated collection updated in the last `days` days.
 
     Args:
         days: the window.
@@ -158,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
         0 clean, 1 findings, 2 a pad call failed.
     """
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("refs", nargs="*", help="item refs (TASK-5); none: every plan, task and bug updated in the last --days days")
+    ap.add_argument("refs", nargs="*", help="item refs (TASK-5); none: every item of a templated collection updated in the last --days days")
     ap.add_argument("--days", type=int, default=2)
     ap.add_argument("--workspace", default=None)
     ap.add_argument("--pad", default="pad")

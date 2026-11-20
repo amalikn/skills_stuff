@@ -82,14 +82,20 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 
 ## Traps
 
+> **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed) · Source: `pad workspace --help` (no rename command); the operator renamed unified-network-controller in the web UI
+> (Settings, Workspace: Name editable, Slug read-only); `pad workspace list` then showed `unc (unified-network-controller)` · Falsifier: a CLI rename command or an editable slug in a later release
+> - A workspace is renamed only in the web UI, and only its display name: the slug stays, so `.pad.toml`, `--workspace` and every recipe that names the slug keep working unchanged.
+> - Rate limits hit reads too: a burst of `pad item show` calls in a loop returned `rate_limited` (`retry_after_seconds: 1`) on stdout's place, so a JSON parse of the output failed. Retry on empty
+> output, or space the calls.
+
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED (three refused comments, one session) · Source: `pad item comment TASK-145 "- **What:** ..."` → `Error: unknown shorthand flag: ' '` · Falsifier: a message argument starting with `-` saved as a comment
-> A message argument that starts with `-` (a bullet list) is parsed as a flag and refused; the usage text goes to stdout, so `| tail -1` hides the error. Pass bullet comments with
-> `--stdin` and a heredoc, and check for `Comment added` in the output.
+> A message argument that starts with `-` (a bullet list) is parsed as a flag and refused; the usage text goes to stdout, so `| tail -1` hides the error. Pass bullet comments with `--stdin` and a
+> heredoc, and check for `Comment added` in the output.
 
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed) · Source: `pad collection create "Asks" --awaits-human true --tracks-work false --schema @file` in
 > smc-resiliency; `pad collection list --format json` settings · Falsifier: the space form creating the collection on a later version
 > - `--awaits-human` and `--tracks-work` take their value only in the `=` form: with a space the command fails with "accepts 1 arg(s), received 2" and creates nothing.
->   `--awaits-human=true --tracks-work=false` worked; the settings show `"awaits_human":true`, `"tracks_work":false`; the schema's terminal options were kept.
+> `--awaits-human=true --tracks-work=false` worked; the settings show `"awaits_human":true`, `"tracks_work":false`; the schema's terminal options were kept.
 > - Item refs number across the workspace, not per collection: the first ask after TASK-104 was ASK-105. Read the ref from the create output; never guess it.
 > - There is no `pad collection get`; read a collection's schema and settings from `pad collection list --format json`.
 
@@ -178,20 +184,20 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 
 > **Learned 2026-11-19** · Pad CLI v0.21.0 (the pack documents v0.19.2) · VERIFIED_PRIMARY · Source: smc-resiliency session 19 Nov (TASK-71, TASK-55) · Falsifier: an upload of a binary-looking .log accepted, or a comment starting with "-" accepted without `--`.
 > - `pad attachment upload` refuses a file sniffed as application/octet-stream (a serial console log with control bytes): strip to printable text first
->   (`LC_ALL=C tr -cd '\11\12\15\40-\176'`) and keep the raw log elsewhere.
+> (`LC_ALL=C tr -cd '\11\12\15\40-\176'`) and keep the raw log elsewhere.
 > - `pad item comment <ref> "- **What:** ..."` fails ("unknown shorthand flag"): text starting with "-" needs `pad item comment <ref> -- "<text>"`.
 > - Body rewrites: `pad item update <ref> --stdin --replace` (a blank stdin is refused, nothing sent).
 
 > **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad workspace init skills --template startup` run from the skills_stuff repo root by an agent, no terminal, `pad auth whoami` a real user · Falsifier: the same command opening a browser or waiting for input when signed in
 > With a signed-in user it created the workspace and wrote `.pad.toml` (`workspace = "skills"`) without a browser or a prompt, and it still wrote `.claude/skills/pad/SKILL.md` and
-> `.agents/skills/pad/SKILL.md` (delete both, Rules). One `.pad.toml` at a repo root serves every folder under it, so a monorepo of packs shares one workspace. The `conventions` recipe split a
-> spaced `--trackers` value until it used `[positional-arguments]` and `"$@"` (fixed the same day); the other `*ARGS` recipes still pass `{{ARGS}}` unquoted.
+> `.agents/skills/pad/SKILL.md` (delete both, Rules). One `.pad.toml` at a repo root serves every folder under it, so a monorepo of packs shares one workspace. The `conventions` recipe split a spaced
+> `--trackers` value until it used `[positional-arguments]` and `"$@"` (fixed the same day); the other `*ARGS` recipes still pass `{{ARGS}}` unquoted.
 
 > **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: smc-resiliency workspace, `pad item show TASK-24 --format md` (rc 1), `pad item list bugs --format json`, `pad collection show tech-debt`, `pad help item history|restore|patch --format md` · Falsifier: `item show --format md` accepted, or `item list` JSON carrying `content`
 > Format names differ by command: `pad item show` takes `table|json|markdown` and refuses `md`; `pad help` takes `md`. `item show --format json` returns `fields` as a JSON string (parse it twice).
-> `pad item list --format json` returns a list with `content_preview`, not `content`: a body check must call `item show` per item (a count of `Serves:` lines from `list` came back 0 while TASK-24 has one).
-> There is no `pad collection show`. Undo: `pad item history --full` keeps body versions only and restoring one is web-UI only; `pad item patch --undo <patch-id>` inverts one patch (refused if the
-> text moved); `pad item restore` only un-archives a soft-deleted item. Fields, status and comments have no CLI undo, so a sync keeps its own before-image journal ([pad-markdown-sync-plan](../docs/pad-markdown-sync-plan-20261119_1845.md) 3.4).
+> `pad item list --format json` returns a list with `content_preview`, not `content`: a body check must call `item show` per item (a count of `Serves:` lines from `list` came back 0 while TASK-24 has
+> one). There is no `pad collection show`. Undo: `pad item history --full` keeps body versions only and restoring one is web-UI only; `pad item patch --undo <patch-id>` inverts one patch (refused if
+> the text moved); `pad item restore` only un-archives a soft-deleted item. Fields, status and comments have no CLI undo, so a sync keeps its own before-image journal ([pad-markdown-sync-plan](../docs/pad-markdown-sync-plan-20261119_1845.md) 3.4).
 
 > **Learned 2026-11-20** · Pad CLI v0.21.0 · VERIFIED_PRIMARY (continuum workspace, 2026-11-20) · Source: `pad item list decisions` printed one item while
 > `pad item list decisions --all --format json` returned 174 · Falsifier: a Pad version whose list shows terminal statuses by default.
@@ -205,3 +211,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > - **What:** ...
 > EOF2
 > ```
+
+> **Learned 2026-11-20** · Pad server (local, v0.21.x) · VERIFIED_PRIMARY · Source: ~/.pad/logs/server.log, 18:00 to 18:07 AEDT: 3,315 requests (unified-network-controller 1,594, continuum 457, smc-resiliency 11), 305 answered 429; `msg="rate limited" key=user:<id> limiter=api` · Falsifier: a 429 keyed by client address or workspace
+> The API limiter is keyed by the Pad user, so all sessions on the Mac share it: one session sweeping a workspace (item show plus comments for every
+> item) starves the others. `pad server start` has no rate-limit option. Retry single calls (`scripts/pad_retry.sh`) and run sweeps one at a time.
+

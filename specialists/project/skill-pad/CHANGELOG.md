@@ -9,14 +9,16 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1647
+Last rotated: 20261120_1813
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
+- [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
 - [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
 - [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
@@ -38,15 +40,23 @@ Last rotated: 20261120_1647
 - [20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check](#20261118_2212--tickets-tell-the-whole-story-bold-labels-updates-a-closing-statement-logs-attached-item-check)
 - [20261118_2200 — A run planned and recorded in Pad with fields set at create](#20261118_2200--a-run-planned-and-recorded-in-pad-with-fields-set-at-create)
 - [20261118_2149 — pad_decisions.py and a Decisions schema](#20261118_2149--pad_decisionspy-and-a-decisions-schema)
-- [20261118_2129 — 0.21.0 string flags need =value; continuum workspace set up](#20261118_2129--0210-string-flags-need-value-continuum-workspace-set-up)
-- [20261118_2106 — item update has no --op-key; code paths in item bodies; a question without an Asks collection](#20261118_2106--item-update-has-no---op-key-code-paths-in-item-bodies-a-question-without-an-asks-collection)
-- [20261118_1742 — CLI at 0.21.0](#20261118_1742--cli-at-0210)
 
 ---
+
+## 20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)
+
+- scripts/pad_retry.sh (new), `just pad` recipe, tests/test_pad_retry.py (4 tests: retry then success with stdin replayed, give up at the limit, no retry on success, bad usage); SKILL.md rule; references/cli-reference.md Learned entry on the per-user limiter (server log of 20 Nov); scripts/README.md, code-map.toml. 63 tests OK.
 
 ## 20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits
 
 - references/cli-reference.md: Learned 2026-11-20 from the continuum workspace (pad item list hides done-like items without --all; comment bodies starting with '- ' need --stdin; rate_limited bursts).
+
+## 20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only
+
+- `scripts/pad_decisions.py`: `--architecture PATH` mirrors the decision bullets of that document's `## Key decisions` section (unc keeps its decisions in ARCHITECTURE.md, not a DL log); refs are register ids (D17, S20, X2) or `ARCH-<slug>`; a status note without DECIDED, SETTLED, RESOLVED, still open or (operator, date) is skipped and listed; items whose ref left every source are listed as orphaned, never changed (a renamed bullet gets a new slug). Tests: `tests/test_pad_decisions.py` Architecture, orphans. unc: 34 decisions mirrored, a re-run plans 0 creates and 0 updates (3.5 s).
+- `scripts/pad_links.py`: a mirrored register id (`D17`) becomes `[[DECIS-n|D17]]`; never `D17-03` or `D3.6`. New `tests/test_pad_links.py` (4 tests).
+- `references/cli-reference.md` Traps: Learned 2026-11-20, workspace rename is web-UI and name-only (slug read-only); reads are rate-limited too.
+- unc workspace brought to the smc-resiliency and continuum layout: Asks and Decisions collections, baseline conventions plus decisions-mirror and progress-record, 52 bodies laid out, links applied.
 
 ## 20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)
 
@@ -185,18 +195,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
   version; matched on `decision_ref`, changed bodies rewritten. `conventions/collection-schemas/decisions.json`. From continuum (operator, 2026-11-18: decisions out of versions.toml into a dedicated
   Pad section).
 - references/cli-reference.md trap: `pad item list` hides closed statuses (accepted is closed in this schema); pass `--all` to see them.
-
-## 20261118_2129 — 0.21.0 string flags need =value; continuum workspace set up
-
-- references/cli-reference.md Traps: Learned entry, `--awaits-human=true --tracks-work=false` form; init still writes skill copies (moved to the Trash). From the continuum workspace setup.
-- references/cli-reference.md Traps: Learned entry, `pad item block <source> <target>` means source blocks target.
-
-## 20261118_2106 — item update has no --op-key; code paths in item bodies; a question without an Asks collection
-
-- `references/cli-reference.md`: Learned 2026-11-18 (v0.21.0), `item update` rejects `--op-key`; a backticked code path in an item body is checked by the project that exports it; an operator question
-  in a workspace with no Asks collection goes in as a blocking Task. From the unified-network-controller D17 session.
-
-## 20261118_1742 — CLI at 0.21.0
-
-- `references/cli-reference.md`: Learned 2026-11-18, the installed pad is 0.21.0 (map is v0.19.2); create flags unchanged; a new bug section renders as its own generated heading. Map refresh per
-  `references/upgrade.md` still to do.
