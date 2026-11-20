@@ -137,5 +137,51 @@ class RateLimitTests(unittest.TestCase):
         self.assertEqual(self._run([limited] * pic.RETRIES), (None, pic.RETRIES))
 
 
+
+class CommentFormAndRefsTests(unittest.TestCase):
+    """The update form of comments and references as links (operator, 2026-11-20)."""
+
+    def test_a_long_plain_comment_from_today_is_reported(self) -> None:
+        """A 300-character paragraph with no bullet line fails the form."""
+        c = [{"id": "86e9c9f3-x", "created_at": "2026-11-20T10:49:00Z", "body": "Started: " + "word " * 60}]
+        out = pic.findings(item("in-progress"), c, 0)
+        self.assertTrue(any(line.startswith("comments: 1 long comment") and "86e9c9f3" in line for line in out), out)
+
+    def test_bullets_short_lines_and_old_comments_pass_the_form(self) -> None:
+        """Bullets pass; a short status line passes; a long comment from before 2026-11-18 is not judged."""
+        c = [
+            {"created_at": "2026-11-20T10:49:00Z", "body": "2026-11-20 21:49 AEDT start:\n- **What:** " + "word " * 60},
+            {"created_at": "2026-11-20T10:50:00Z", "body": "Done: see the DONE comment"},
+            {"created_at": "2026-11-10T10:00:00Z", "body": "old " * 80},
+        ]
+        self.assertFalse(any(line.startswith("comments:") for line in pic.findings(item("in-progress"), c, 0)))
+
+    def test_plain_references_are_reported_and_links_pass(self) -> None:
+        """TASK-207 and DL-071 as text fail; [[TASK-207]], [[DECIS-177|DL-071]] and `TASK-9` in code pass."""
+        bad = pic.findings(item("open", GOOD_TASK + "\nSee TASK-207 and DL-071."), [], 0)
+        self.assertTrue(any(line.startswith("refs: TASK-207, DL-071") for line in bad), bad)
+        good = pic.findings(item("open", GOOD_TASK + "\nSee [[TASK-207]], [[DECIS-177|DL-071]] and `TASK-9`."), [], 0)
+        self.assertFalse(any(line.startswith("refs:") for line in good), good)
+
+    def test_comment_refs_count_from_the_links_rule_and_decisions_are_skipped(self) -> None:
+        """A plain ref in a comment of 2026-11-20 fails, one from 2026-11-19 does not; a decision mirror is never judged."""
+        new = [{"created_at": "2026-11-20T01:00:00Z", "body": "- **Next:** feeds TASK-53"}]
+        old = [{"created_at": "2026-11-19T01:00:00Z", "body": "- **Next:** feeds TASK-53"}]
+        self.assertTrue(any(line.startswith("refs: TASK-53") for line in pic.findings(item("open"), new, 0)))
+        self.assertFalse(any(line.startswith("refs:") for line in pic.findings(item("open"), old, 0)))
+        self.assertFalse(any(line.startswith("refs:") for line in pic.findings(item("accepted", "From TASK-5", "decisions"), [], 0)))
+
+    def test_refs_to_items_outside_the_workspace_are_not_judged(self) -> None:
+        """Another workspace's BUG-197 cannot be a link here; a ref of this workspace still counts."""
+        out = pic.findings(item("open", GOOD_TASK + "\nunc files it as Pad BUG-197 there; see TASK-5."), [], 0, known={"TASK-5"})
+        self.assertTrue(any(line.startswith("refs: TASK-5") for line in out), out)
+        self.assertFalse(any("BUG-197" in line for line in out), out)
+
+    def test_decision_ids_are_not_judged_without_a_decisions_collection(self) -> None:
+        """In a workspace with no Decisions collection a DL id cannot be a link; item refs still count."""
+        out = pic.findings(item("open", GOOD_TASK + "\nsmc-resiliency DL-107; see TASK-5."), [], 0, decision_ids=False)
+        self.assertTrue(any(line.startswith("refs: TASK-5") for line in out), out)
+        self.assertFalse(any("DL-107" in line for line in out), out)
+
 if __name__ == "__main__":
     unittest.main()

@@ -16,6 +16,7 @@ Last rotated: 20261120_1827
 
 ## Contents
 
+- [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
@@ -41,6 +42,10 @@ Last rotated: 20261120_1827
 - [20261118_2212 — Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check](#20261118_2212--tickets-tell-the-whole-story-bold-labels-updates-a-closing-statement-logs-attached-item-check)
 
 ---
+
+## 20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)
+
+- scripts/pad_item_check.py: two rules. `comments`: a comment from 2026-11-18 on, over 200 characters, with no `- **Label:**` bullet line. `refs`: an item ref of this workspace or a DL id (where the workspace has a Decisions collection) written as plain text, in the body or a comment from 2026-11-20 on. Another workspace's ref or a typo is not reported. 5 tests (77 OK). First run on smc-resiliency: 14 findings, cleared by `just links` and a word-for-word bullet conversion; TASK-92's non-existent BUG-89 found and corrected to BUG-91. Operator, 2026-11-20: TASK-53 passed item-check while its start comment was one paragraph and its body linked nothing.
 
 ## 20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted
 

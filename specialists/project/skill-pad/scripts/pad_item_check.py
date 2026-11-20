@@ -10,6 +10,9 @@ the last --days days) it reads the item, its comments and its attachments throug
     done     a closed item (done, fixed, resolved, shipped, cancelled, wont-fix, declined) with no comment starting `... DONE:` or `... CLOSED:`
     update   an item in progress with no note and no comment at all
     logs     an item whose body, notes or comments name a log file while the item has no attachment
+    comments a comment from 2026-11-18 on, longer than 200 characters, with no `- **Label:**` bullet line (the update form)
+    refs     an item ref (TASK-12) or decision id (DL-058) as plain text, not a `[[...]]` link, in the body or in a comment from 2026-11-20 on
+             (operator, 2026-11-20: "why are these references not links"); `just links` fixes bodies
 
 Usage:
     python3 pad_item_check.py TASK-57 BUG-66            # these items
@@ -45,6 +48,14 @@ CLOSING = re.compile(r"\b(DONE|CLOSED):")
 RETRIES = 5
 BACKOFF_S = 1.5
 LOG_NAME = re.compile(r"[\w./-]+\.(log|jsonl|out)\b")
+PREFIXES = ("TASK", "PLAN", "BUG", "ASK", "DECIS", "IDEA", "DOC", "FR", "TD", "PLAYB", "CONVE")  # Pad's collection prefixes (pad collection list)
+BARE_REF = re.compile(r"\b(?:" + "|".join(PREFIXES) + r")-\d+\b|\bDL-\d{3}\b")
+ITEM_REF = re.compile(r"\b(?:" + "|".join(PREFIXES) + r")-\d+\b")  # without decision ids, for a workspace with no Decisions collection
+PROTECTED = re.compile(r"```.*?```|`[^`\n]*`|\[\[[^\]]*\]\]", re.S)
+BULLET = re.compile(r"^- \*\*[^*]+:\*\*", re.M)
+COMMENT_FORM_SINCE = "2026-11-18"  # the update form (bold-label bullets) is required from here
+LINKS_SINCE = "2026-11-20"  # references as [[links]] are required from here
+SKIP_REFS = {"decisions", "playbooks", "conventions"}  # generated or library text (pad_links skips them too)
 
 
 def pad(args: list[str], timeout: int, binary: str = "pad") -> str:
@@ -112,13 +123,33 @@ def one_line_request(item: dict) -> bool:
     return item.get("collection_slug") == "feature-requests" and "\n" not in (item.get("content") or "").strip()
 
 
-def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
+def bare_refs(text: str, own: str = "", decision_ids: bool = True) -> list[str]:
+    """Item refs and decision ids written as plain text, outside links, inline code and fenced blocks.
+
+    Args:
+      text: a body or a comment.
+      own: the item's own ref, which may appear plain.
+
+    Returns:
+      The plain references, in order, without repeats.
+    """
+    plain = PROTECTED.sub(" ", text)
+    seen = []
+    for m in (BARE_REF if decision_ids else ITEM_REF).finditer(plain):
+        if m.group(0) != own and m.group(0) not in seen:
+            seen.append(m.group(0))
+    return seen
+
+
+def findings(item: dict, comments: list[dict], attachments: int, decision_ids: bool = True, known: set[str] | None = None) -> list[str]:
     """What one item breaks of the writing standard.
 
     Args:
         item: the item (collection_slug, content, fields, implementation_notes).
         comments: its comments, each with `body`.
         attachments: how many files are attached to it.
+        decision_ids: report plain DL-nnn ids too (the workspace has a Decisions collection).
+        known: the workspace's item refs; a plain ref not among them (another workspace's item, a typo) cannot be linked and is not reported.
 
     Returns:
         One line per finding; empty when the item meets the standard.
@@ -137,6 +168,19 @@ def findings(item: dict, comments: list[dict], attachments: int) -> list[str]:
         out.append("update: in progress with no note or comment")
     if item.get("collection_slug") in WORK and attachments == 0 and any(LOG_NAME.search(t) for t in [body, *texts, *notes]):
         out.append("logs: a log file is named but nothing is attached (`pad attachment upload <ref> <file>`)")
+    unformed = [c for c in comments if str(c.get("created_at", "")) >= COMMENT_FORM_SINCE and len(c.get("body") or "") > 200 and not BULLET.search(c.get("body") or "")]
+    if unformed:
+        out.append(f"comments: {len(unformed)} long comment(s) not in the bullet form (`- **What:**`, `- **Result:**` ...), first {str(unformed[0].get('id', ''))[:8]}")
+    if item.get("collection_slug") not in SKIP_REFS:
+        own = item.get("ref", "")
+        plain = bare_refs(body, own, decision_ids)
+        for c in comments:
+            if str(c.get("created_at", "")) >= LINKS_SINCE:
+                plain += [r for r in bare_refs(c.get("body") or "", own, decision_ids) if r not in plain]
+        if known is not None:
+            plain = [r for r in plain if r.startswith("DL-") or r in known]
+        if plain:
+            out.append(f"refs: {', '.join(plain[:5])}{' ...' if len(plain) > 5 else ''} not written as [[links]] (`just links` fixes bodies)")
     return out
 
 
@@ -193,11 +237,15 @@ def main(argv: list[str] | None = None) -> int:
     bad = 0
     try:
         refs = a.refs or recent_refs(a.days, a.timeout, a.pad, extra)
+        colls = json.loads(pad(["collection", "list", "--format", "json", *extra], a.timeout, a.pad) or "[]")
+        has_decisions = any(c.get("slug") == "decisions" for c in colls)
+        listed = json.loads(pad(["item", "list", "--all", "--format", "json", *extra], a.timeout, a.pad) or "[]")
+        known = {r["ref"] for r in (listed if isinstance(listed, list) else listed.get("items", []))}
         for ref in refs:
             item = json.loads(pad(["item", "show", ref, "--format", "json", *extra], a.timeout, a.pad))
             comments = json.loads(pad(["item", "comments", ref, "--format", "json", *extra], a.timeout, a.pad) or "[]")
             att = json.loads(pad(["attachment", "list", "--item", ref, "--format", "json", *extra], a.timeout, a.pad) or "{}")
-            for line in findings(item, comments or [], int(att.get("total", 0))):
+            for line in findings(item, comments or [], int(att.get("total", 0)), has_decisions, known):
                 bad += 1
                 print(f"{ref}: {line}")
     except (RuntimeError, json.JSONDecodeError) as exc:

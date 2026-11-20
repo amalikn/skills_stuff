@@ -155,3 +155,8 @@ Part of [ansible.md](../ansible.md).
 > swallows that error: the expression silently becomes `[]`. 2.19+ templates lazily and is not affected. To read one field of a templated dict on 2.18,
 > read it from the source as written (`lookup('file', path) | from_yaml`), and render fields one by one in an action plugin when the error must name the field.
 
+> **Learned 2026-11-20** · ansible-core 2.18 templating · VERIFIED_PRIMARY · Source: three-line playbook `g: {b: 1, c: "{{ g.b }}"}` fails on 2.18.8 and renders on 2.21.6 (local-knowledge-ansible roles/smc_change, 79cba75; smc-resiliency session) · Falsifier: that playbook rendering on 2.18
+> On 2.18 a variable whose values refer to the same variable fails with "recursive loop detected in template string"; 2.19+ templates lazily and resolves it.
+> Values files that cite their own group (smc_change specs: `smc_change_vars.env.steps`) therefore need a 2.19+ controller, or a loader that resolves the
+> self-references first.
+
