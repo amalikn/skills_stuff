@@ -271,6 +271,8 @@ files checked against companion rules, the Step 6b result, and the last memory-k
 |                                                             |   was missing from pass 1 (only its later "split done" showed). Search the transcript for `cross-session-message` and route each one   |
 |                                                             |   Since 2026-11-19 pass 1 lists queued peer messages as `peer` and pass 2 lists SendMessage replies as `send`; still grep: a peer      |
 |                                                             |   message embedded in a tool result is not parsed                                                                                      |
+| "Pass 1 lists every mid-turn message"                       | On 2026-11-20 (continuum) it missed three: a pasted-image message, an image-only one and two typed mid-turn lines ("why are these     |
+|                                                             |   references not links", "did you write it back to skill-pad"). Walk the conversation itself for mid-turn messages and route each      |
 | "Pass 1 lists every approval I gave"                        | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the user |
 |                                                             |   count with the raw transcript when approvals matter                                                                                  |
 | "The reference entry is there, so the write-back is         | Read back the skill's CHANGELOG line and version too: an entry added after the CHANGELOG line was written is not in it (2026-10-26)    |
