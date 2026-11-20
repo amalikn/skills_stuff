@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_0451
+Last rotated: 20261120_1702
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_1702 — smc_writers_probe reads installed timers, cron dirs, logrotate, freshclam; fleet facts of 20 Nov (v0.16.5 -> v0.16.6)](#20261120_1702--smc_writers_probe-reads-installed-timers-cron-dirs-logrotate-freshclam-fleet-facts-of-20-nov-v0165---v0166)
 - [20261120_0451 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)](#20261120_0451--rise-re-run-disables-the-overlay-the-pre-push-hooks-venv-and-worktree-smc_graylog-not-idempotent-v0164---v0165)
 - [20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)](#20261120_0440--lint-baseline-refreshsh-fixed-no-delete-before-generate-output-taken-from-the-project-root-git-common-dir-v0163---v0164)
 - [20261120_0400 — rise deploy on a stage Iridium bench Pi; controller symlinks; cost per task (v0.16.2 -> v0.16.3)](#20261120_0400--rise-deploy-on-a-stage-iridium-bench-pi-controller-symlinks-cost-per-task-v0162---v0163)
@@ -38,9 +39,13 @@ Last reviewed: 2026-10-27
 - [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
 - [20261116_1859 — Solutions to platforms (no version change)](#20261116_1859--solutions-to-platforms-no-version-change)
 - [20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)](#20261116_1736--fleet-facts-for-a-remote-conversion-boot-partition-free-root-label-x86-disk-layouts-v0144---v0145)
-- [20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)](#20261111_1318--smc_lynis-no_pubkey-7a9a1d9d5b27c6d3-and-apt_key_subkey_probesh-v0143---v0144)
 
 ---
+
+## 20261120_1702 — smc_writers_probe reads installed timers, cron dirs, logrotate, freshclam; fleet facts of 20 Nov (v0.16.5 -> v0.16.6)
+
+- scripts/probes/smc_writers_probe.sh: adds installed systemd timers (last and next run), `/etc/cron.{hourly,daily,weekly,monthly}` contents, logrotate configs and freshclam's state; canary on one rct Pi (31.6 s), then 14 boxes (13 answered, 305 s). scripts/README.md updated.
+- references/07_hardware-overlay.md: Learned entries for the x86 model census (26 plain BOXER-6404 with one CFast, 18 BOXER-6641), freshclam failed on nbn_accelerate, no USB drive on field Pis (smc-resiliency 20261120).
 
 ## 20261120_0451 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)
 
@@ -191,9 +196,3 @@ material says "recover themselves" for SMC recovery (operator, 16 Nov 2026; from
 
 `references/07_hardware-overlay.md` Learned 2026-11-16, from the 2026-11-10 survey raw output re-read by smc-resiliency: Pi p1 free (rct and wh 138 to 140 MB, nbn_wh 116 and 26 MB),
 `root=LABEL=writable` on all 41 Pis read, BOXER-6404 one-disk LVM with no free extents, BOXER-6641 two disks with the standby install.
-
-## 20261111_1318 — smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)
-
-`references/06_failure-modes.md` (`ec58b08`): cisofy's 2025-10-22 signing subkey; `apt_key` with `url` alone does not import it on SMCs holding the older key, so the role pins the subkey `id`
-(ansible-wifi master `9d504a89`, rise `c4d2ef51`). New read-only `scripts/probes/apt_key_subkey_probe.sh` (recipes `apt_key_subkey_probe`, `apt_key_subkey_probe_test`), smoke-run on
-kaltjiti-fergon-smc01.

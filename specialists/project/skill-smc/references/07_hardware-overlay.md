@@ -1382,3 +1382,15 @@ echo eeprom_config=$(vcgencmd bootloader_config 2>/dev/null | grep -vE "^\[|^$" 
 > new = "-A MANAGEMENT -s {bench_cidr} -j ACCEPT\n-A MANAGEMENT -j DROP\n"
 > ```
 
+## Fleet facts read 20 Nov 2026 (smc-resiliency)
+
+> **Learned 2026-11-20** · x86 hardware · VERIFIED_PRIMARY · Source: read-only DMI and lsblk on all 44 rcp and nbn_accelerate boxes (smc-resiliency docs/overview/team-session-notes-assessment-sources-20261120_1558/x86-model-census-20261120_1655.txt) · Falsifier: a box reporting BOXER-6404M or a second disk beside the CFast
+> 26 boxes are plain "BOXER-6404 V1.0" with one 60 GB CFast each (25 Innodisk 3ME3, 1 Transcend CFX600) and no second disk; 18 are "BOXER-6641 V1.0" with two 119 GB Transcend SSDs. The
+> plain BOXER-6404's chassis has one CFast slot and no 2.5" bay (AAEON manual 5th Ed.); the board has a SATA port (CN8) and +5 V drive power (CN7).
+
+> **Learned 2026-11-20** · nbn_accelerate ClamAV · VERIFIED_PRIMARY · Source: smc_writers_probe.sh on 3 random nbn_accelerate boxes (smc-resiliency docs/overview/smc-scheduled-writer-inventory-sources-20261117_0820) · Falsifier: `systemctl is-active clamav-freshclam` active on those boxes
+> clamav-freshclam is enabled and in the failed state on every nbn_accelerate box read, so signatures do not update; the cause was not read.
+
+> **Learned 2026-11-20** · Pi storage · VERIFIED_PRIMARY · Source: lsblk on 6 random field Pis (4 rct, 2 wh answered) · Falsifier: a field Pi with a USB block device
+> No field Pi read has a USB drive: each has one block device, the 58 GB SD card, and boots from it.
+

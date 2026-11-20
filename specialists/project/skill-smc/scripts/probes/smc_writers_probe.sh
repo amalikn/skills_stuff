@@ -7,7 +7,9 @@
 # Prints one `== <node>` block per box: uptime and the disk's sectors written since boot; the 15 processes that wrote most since they
 # started (`proc=<bytes> <seconds running> <pid> <name>`, from /proc/<pid>/io write_bytes); the 15 folders holding the most bytes in files
 # changed in the last 24 h (`dir24h=<bytes> <folder>`, a find on the root filesystem at idle I/O priority, cut at 90 s); the journal's size;
-# the overlayroot configuration and command line; every cron line (`cron=<file>: <line>`); the journal's top sources in the last hour
+# the overlayroot configuration and command line; every cron line (`cron=<file>: <line>`); the installed systemd timers with their last and
+# next run (`timer=<unit> last=<when> next=<when>`), the scripts in /etc/cron.{hourly,daily,weekly,monthly} (`crondir=<dir>: <names>`), the
+# logrotate configs (`logrotate=<names>`) and freshclam's state (`freshclam=<enabled> <active>`); the journal's top sources in the last hour
 # (`journal_1h=<count> <unit or identifier>`); and on a Pi the throttle flags and the kernel's undervoltage lines of the last 7 days.
 # Only reads; writes nothing on the box or locally. The proxy is required and never guessed. Each tsh call is cut at the deadline (default
 # 240 s): TERM, then KILL (tsh survives SIGALRM, 2026-11-10).
@@ -18,7 +20,7 @@ set -u
 usage() {
   # Print the header comment as help.
   # Args: none. Returns: 0; the help text on stdout.
-  sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 proxy=""
@@ -51,6 +53,10 @@ if command -v vcgencmd >/dev/null 2>&1; then
   journalctl -k --since "-7d" -o short-iso 2>/dev/null | grep -i "voltage" | tail -6 | sed "s/^/voltage_line=/"
 fi
 for c in /etc/crontab /etc/cron.d/* /var/spool/cron/crontabs/*; do [ -f "$c" ] && grep -vE "^\s*(#|$)|^(SHELL|PATH|MAILTO)=" "$c" | sed "s|^|cron=$(basename $c): |"; done
+systemctl list-timers --all --no-legend --no-pager 2>/dev/null | awk "{u=\"\"; for(i=1;i<=NF;i++) if(\$i ~ /\\.timer\$/) u=\$i; print u}" | while read -r u; do [ -n "$u" ] && echo "timer=$u last=$(systemctl show -p LastTriggerUSec --value "$u" 2>/dev/null | tr " " _) next=$(systemctl show -p NextElapseUSecRealtime --value "$u" 2>/dev/null | tr " " _)"; done
+for d in hourly daily weekly monthly; do [ -d /etc/cron.$d ] && echo "crondir=cron.$d: $(ls /etc/cron.$d 2>/dev/null | grep -v "^\.placeholder$" | tr "\n" " ")"; done
+echo "logrotate=$(ls /etc/logrotate.d 2>/dev/null | tr "\n" " ")"
+echo "freshclam=$(systemctl is-enabled clamav-freshclam 2>/dev/null || echo absent) $(systemctl is-active clamav-freshclam 2>/dev/null)"
 journalctl --since "-1h" -o json --output-fields=_SYSTEMD_UNIT,SYSLOG_IDENTIFIER 2>/dev/null | grep -oE "\"(_SYSTEMD_UNIT|SYSLOG_IDENTIFIER)\":\"[^\"]+\"" | sort | uniq -c | sort -rn | head -8 | sed "s/^/journal_1h=/"
 echo probe_end=ok
 '

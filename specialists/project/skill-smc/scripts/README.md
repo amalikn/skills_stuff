@@ -844,7 +844,8 @@ boxes (Pi and x86) plus an unknown name (reported unreachable, exit 1). No offli
 Added 2026-11-10. `fleet/pi_bootloader_census.sh [--parallel 8] [--deadline 120] < sample.txt` reads only the bootloader version, board and throttle flags of every Pi named on stdin (`sample_fleet.py
 --per-flavour 1000` lists them all), eight at a time: 312 Pis in about 8 minutes. `probes/smc_writers_probe.sh --proxy <proxy> <node>...` shows what writes on a Pi or x86 box: top processes by
 `/proc/<pid>/io` write_bytes (a parent's figure includes its reaped children, so cron's is everything cron started), folders holding files changed in the last 24 h (find at idle I/O priority, cut at
-90 s), the journal size, overlayroot settings, every cron line, the journal's top sources in the last hour, and on a Pi the undervoltage history.
+90 s), the journal size, overlayroot settings, every cron line, the installed systemd timers with last and next run, the scripts in `/etc/cron.{hourly,daily,weekly,monthly}`, the
+logrotate configs and freshclam's state (added 2026-11-20), the journal's top sources in the last hour, and on a Pi the undervoltage history.
 
 ```bash
 just pi_bootloader_census < sample.txt
