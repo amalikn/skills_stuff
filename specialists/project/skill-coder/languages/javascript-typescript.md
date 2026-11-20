@@ -127,6 +127,25 @@ Module._load = function (request, ...rest) {
 - pptxgenjs writes its own name into every deck's properties unless told otherwise: set `pres.company = ""` and `pres.subject = ""` (or real values) next to `new pptxgen()`, and check a built deck's
   `docProps/app.xml` and `docProps/core.xml`, not only its slides, before it leaves the team.
 
+> **Learned 2026-11-20** · Running VS Code or VSCodium as an isolated test editor · VERIFIED_PRIMARY (each item seen in a run and fixed; the final run's log names only
+> run-local paths) · Source: continuum-app `scripts/editor_harness.py` (1fa6384, 8eb6064), BUG-271 · Falsifier: an editor build that keeps shared storage under
+> --user-data-dir, or a Mac Electron build that ignores `--use-mock-keychain`.
+
+- `--user-data-dir` and `--extensions-dir` do not isolate everything: VS Code opens `~/.vscode-shared/sharedStorage/state.vscdb` (VSCodium `~/.vscode-oss-shared`)
+  under the real home, so a test editor touched the person's own database. Give it `HOME=<run>/home`.
+- With that fake HOME, macOS finds no login keychain and offers "Reset To Defaults" for the editor's "Code Key": pass Chromium's `--use-mock-keychain` (Linux:
+  `--password-store=basic`), and warn the person before any run that may raise a system dialog.
+- Started from inside VS Code (a terminal or an agent there), the child inherits `ELECTRON_RUN_AS_NODE=1` ("bad option: --user-data-dir") and `VSCODE_*` hooks that
+  can reach the person's running editor: strip both prefixes.
+- Every window runs its own extension host: a single fixed socket name lets the newest window hide the others; name it per process (`vscode-<pid>.sock`).
+- A test editor holding unsaved buffers ignores SIGTERM (save prompt): kill its process group after a short grace period.
+
+```python
+env = {k: v for k, v in os.environ.items() if not k.startswith(("ELECTRON_", "VSCODE_"))}
+env["HOME"] = str(state / "home")
+args = [app, "--user-data-dir", ud, "--extensions-dir", ext, *( ["--use-mock-keychain"] if mac else ["--password-store=basic"] )]
+```
+
 ## Open items
 
 - Formatter, test runner and module-format (ESM versus CommonJS) guidance: UNVERIFIED stubs.
