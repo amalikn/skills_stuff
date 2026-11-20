@@ -134,3 +134,19 @@ Part of [ansible.md](../ansible.md).
 >     ...
 >     remote_url_changed = set_remote_url(git_path, module, repo, dest, remote)
 > ```
+
+> **Learned 2026-11-20** · ansible --check · VERIFIED_PRIMARY · Source: test playbooks on ansible-core 2.18.8 and 2.21.6 (smc-resiliency session, ansible-wifi branches local/bases-check-mode ef0c9230 and local/rise-check-mode 960300a4) · Falsifier: a skipped command task under --check whose registered result has no `rc`
+> Under `--check`, a skipped `command`/`shell` task still registers a result with `rc: 0` and `stdout: ""`, so `x.rc == 0` reads true and `x.rc | default(1)`
+> never applies. On a skipped result `until` IS evaluated while `changed_when` and `failed_when` are not. A wait loop on a skipped probe therefore runs its full
+> retries under `--check` and fails: end it with `ansible_check_mode` directly. Mark only read-only probes `check_mode: false`; guard writers' consumers with
+> `not ansible_check_mode`. A handler or task with `check_mode: no` that reboots runs for real under `--check` (`ansible_check_mode` stays true inside it, so
+> `when: not ansible_check_mode` stops it).
+>
+> ```yaml
+> # roles/smc_dns_mgmt/tasks/main.yml (ansible-wifi local/bases-check-mode ef0c9230)
+> - name: Wait for port 53 to be released
+>   ansible.builtin.shell: ss -lunp | grep -q ':53 '
+>   register: ss
+>   until: ansible_check_mode or ss.rc == 1   # was: ss.rc | default(1) == 1 (never defaulted: skipped => rc 0)
+> ```
+

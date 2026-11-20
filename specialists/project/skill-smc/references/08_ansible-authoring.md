@@ -2220,3 +2220,10 @@ risk.
 > ```
 >
 > No visual surface.
+
+> **Learned 2026-11-20** · ansible-wifi --check previews · VERIFIED_PRIMARY · Source: ansible-wifi local/bases-check-mode (iridium base, 10+3 commits) and local/rise-check-mode (rise base, 23 commits), both local, unpushed; bench Pi runs in smc-resiliency spike/out/packageC2*-20261120.log · Falsifier: a `--check` of smc_bases on an unchanged overlay hub reaching PLAY RECAP with no guard
+> Making `--check` reach the end needs: read-only probes `check_mode: false`; `-e disable_overlay=true` on an overlayroot hub (the guards refuse otherwise), with the
+> later overlay aborts and the root-partition grow skipped under `--check` only; rise's `Reboot and wait` handler has `check_mode: no`, so a preview could really
+> reboot the box (now `when: not ansible_check_mode` on the rise branch). smc_prometheus downloads and extracts its tarball to /root even under `--check`
+> (`check_mode: false`, an existing write). Iridium's overlay reboot handlers use the `reboot` module, which `--check` skips.
+

@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_1702
+Last rotated: 20261120_1725
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261120_1724 — --check previews of the bases and rise playbooks: what they need and the reboot-handler hazard (v0.16.6 -> v0.16.7)](#20261120_1724----check-previews-of-the-bases-and-rise-playbooks-what-they-need-and-the-reboot-handler-hazard-v0166---v0167)
 - [20261120_1702 — smc_writers_probe reads installed timers, cron dirs, logrotate, freshclam; fleet facts of 20 Nov (v0.16.5 -> v0.16.6)](#20261120_1702--smc_writers_probe-reads-installed-timers-cron-dirs-logrotate-freshclam-fleet-facts-of-20-nov-v0165---v0166)
 - [20261120_0451 — rise re-run disables the overlay; the pre-push hook's venv and worktree; smc_graylog not idempotent (v0.16.4 -> v0.16.5)](#20261120_0451--rise-re-run-disables-the-overlay-the-pre-push-hooks-venv-and-worktree-smc_graylog-not-idempotent-v0164---v0165)
 - [20261120_0440 — lint-baseline-refresh.sh fixed: no delete before generate, output taken from the project root, git common dir (v0.16.3 -> v0.16.4)](#20261120_0440--lint-baseline-refreshsh-fixed-no-delete-before-generate-output-taken-from-the-project-root-git-common-dir-v0163---v0164)
@@ -38,9 +39,12 @@ Last reviewed: 2026-10-27
 - [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
 - [20261117_1044 — Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)](#20261117_1044--teleport-self-upgrade-cron-on-every-flavour-v0145---v0146)
 - [20261116_1859 — Solutions to platforms (no version change)](#20261116_1859--solutions-to-platforms-no-version-change)
-- [20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)](#20261116_1736--fleet-facts-for-a-remote-conversion-boot-partition-free-root-label-x86-disk-layouts-v0144---v0145)
 
 ---
+
+## 20261120_1724 — --check previews of the bases and rise playbooks: what they need and the reboot-handler hazard (v0.16.6 -> v0.16.7)
+
+- references/08_ansible-authoring.md: Learned entry on making `--check` reach the end on overlay hubs, and rise's `check_mode: no` reboot handler (smc-resiliency 20261120).
 
 ## 20261120_1702 — smc_writers_probe reads installed timers, cron dirs, logrotate, freshclam; fleet facts of 20 Nov (v0.16.5 -> v0.16.6)
 
@@ -191,8 +195,3 @@ the C6 `pkill -9 python3` entry (from apn smc-resiliency scheduled-writer invent
 
 `references/01_overview.md` section 2: the Raspberry Pi solution covers the `rct` booths and the Wi-Fi hubs (`wh`, `nbn_wh`); Community Wi-Fi sites are all x86 (`rcp`, `nbn_accelerate`); management
 material says "recover themselves" for SMC recovery (operator, 16 Nov 2026; from apn enterprise-strategy).
-
-## 20261116_1736 — fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)
-
-`references/07_hardware-overlay.md` Learned 2026-11-16, from the 2026-11-10 survey raw output re-read by smc-resiliency: Pi p1 free (rct and wh 138 to 140 MB, nbn_wh 116 and 26 MB),
-`root=LABEL=writable` on all 41 Pis read, BOXER-6404 one-disk LVM with no free extents, BOXER-6641 two disks with the standby install.

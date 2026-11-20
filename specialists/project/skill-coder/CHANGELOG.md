@@ -31,6 +31,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-20: languages/ansible/learned-execution.md, Learned 2026-11-20: a skipped task under --check registers rc 0 and empty stdout (default() never applies); `until` is evaluated on a skipped result, `changed_when`/`failed_when` are not; a `check_mode: no` reboot runs for real under --check.
 - 2026-11-20: languages/rust/learned-platform.md, Learned 2026-11-20: `git worktree repair` writes through old absolute paths (rewrote a source over a VM shared mount; BUG-247); symlink modes are not portable; `#[path]` for an integration test's submodule.
 - 2026-11-19: languages/shell/learned-safety.md Disputed 2026-11-19 entry reordered to the entry format (Conflicts last; `just test` caught it) and its source cited as commit 0ffd12f.
 - 2026-11-19: languages/rust/ folder (operator: Rust needs its own folder and a readable guide): rust.md split by topic (topics.toml; learned-cargo-and-builds, learned-crates,

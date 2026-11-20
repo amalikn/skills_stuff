@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261120_1725.md](changelog-20261120_1725.md) 1 entry, 2026-11-16 to 2026-11-16: fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)
 - [changelog-20261120_1702.md](changelog-20261120_1702.md) 1 entry, 2026-11-11 to 2026-11-11: smc_lynis NO_PUBKEY 7A9A1D9D5B27C6D3 and apt_key_subkey_probe.sh (v0.14.3 -> v0.14.4)
 - [changelog-20261120_0451.md](changelog-20261120_0451.md) 1 entry, 2026-11-11 to 2026-11-11: urlcapture-prune: galiwinku checked (v0.14.2 -> v0.14.3)
 - [changelog-20261120_0435.md](changelog-20261120_0435.md) 1 entry, 2026-11-11 to 2026-11-11: urlcapture-prune first run read; uc-old-files needs the cw proxy (v0.14.1 -> v0.14.2)
