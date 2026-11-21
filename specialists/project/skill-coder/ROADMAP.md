@@ -42,6 +42,13 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
   problem and to read `languages/<lang>/` topic files, which surfaced 7 more headers and 4 unlogged Python entries (all fixed). Done 2026-11-19.
 - [ ] **Ansible and YAML size** — `code_size.py` measures no `.yml` files; decide a task-file limit once `languages/ansible.md` has a source.
 
+## Open items (tools)
+
+- [ ] scripts/code_size.py names some Rust functions after a parameter type when the signature spans lines (continuum-app baseline held `lib.rs::Path`, `::Json`,
+  `::State` for plan_handoff and siblings), so adding a parameter or reformatting a signature makes the entry STALE ("in the baseline but no longer found") although
+  the function still exists. Seen 2026-11-22: `just code-size` in continuum-app after adding `axum::Extension(actor): axum::Extension<identity::Actor>` to
+  stream_events and plan_handoff. Fix: take the name from `fn <name>` on the header line, not from the first identifier before `(` across lines.
+
 ## Completed
 
 Done items move to `docs/history/roadmap-*.md` (`just rotate`; find one with `just history <term>`).
