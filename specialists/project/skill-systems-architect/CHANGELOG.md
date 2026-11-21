@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-21 (v2.3.16 -> v2.3.17): security-and-service-identity.md (Secrets and break-glass; Patterns table), Learned 2026-11-21: a server that chooses the recipient set defeats device-side
+  encryption; client-authenticated roster, 100-bit device code, rekey only on removal.
 - 2026-11-20: containers-and-platforms.md (Single-host compose stacks), Learned 2026-11-20: Temporal dev server needs --db-filename on a volume the image user owns; a JVM SIGBUS with RAM free points at the Docker VM disk (pre-push free-space guard).
 - 2026-11-20: backup-disaster-recovery.md, Learned 2026-11-20: restic exit codes 10 and 12, tags, cleared env and --no-cache; SeaweedFS -volume.port in single-host CI.
 - 2026-11-20: backup-disaster-recovery.md (Copy placement and isolation), Learned 2026-11-20: repository passwords generated into a secrets store make that store's data part of every backup's recovery path (Continuum DL-067, FR-248).

@@ -703,6 +703,14 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-c876254c",
+   "title": "book.keybase.io",
+   "url": "https://book.keybase.io/docs/teams/puk",
+   "evidence": "CITED",
+   "note": "cited in references/security-and-service-identity.md",
+   "generated": true
+  },
+  {
    "id": "C-f5342a5e",
    "title": "C4 model",
    "url": "https://c4model.com/",

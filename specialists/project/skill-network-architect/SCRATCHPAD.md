@@ -23,6 +23,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Next actions
 
+- 2026-11-21: the edge allowlist miss recurred; the route-coverage check it proposes is not built anywhere yet; build it in the next project with a path-allowlisting edge.
 1. Operator: `git -C /Volumes/Data/_ai/_skills/skills_stuff push origin main` (auto mode refused the agent's push).
 2. Verify the open items: nbn maximum frame sizes for RFC 4638, whether the POI count changed since 2012, carrier-side STIR, PRI format.
 3. Rerun `just links` and `just fetch-sources --apply` before each release; `just ledger --apply` after any new citation.

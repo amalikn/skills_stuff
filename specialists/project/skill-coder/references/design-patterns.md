@@ -125,6 +125,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-79 | Delegated rewrite proved word-preserving before it is applied | Many texts restructured by helpers or agents told to keep every word, before a write |
 | P-80 | Work order withdrawn at its deadline | A queue of remote steps waited on with a deadline, where workers can be late or restart |
 | P-81 | Approval marked per item from an evidence file, with a check | A partly tested catalogue whose status must follow evidence, item by item |
+| P-82 | Encrypt before a content-addressed store: address the ciphertext | Client-side encryption over a store that checks every body hashes to its address |
 
 ## Patterns
 
@@ -2021,6 +2022,32 @@ Reuse:        feature flags graduating from beta; API endpoints moving to stable
 Pitfalls:     editing JSON by load-and-dump reformats every file (use a targeted text edit on the one status line); the check must be shown to fail before the apply (it did: rc 1 before, 0 after)
 Realised in:  Python -> continuum scripts/contract_approve.py (`just contract-approve --check`)
 Evidence:     CANDIDATE: one project; 18 operations, 12 schemas, 3 events, 18 transitions marked; --check failed before and passed after
+
+### P-82 Encrypt before a content-addressed store: address the ciphertext
+
+> **Learned 2026-11-21** · continuum FR-237 device-side encryption · CANDIDATE (one project) · Source: continuum-app `apps/agent/src/steps.rs` (`sealed_upload`, stage), continuum
+> `contracts/schemas/envelope.schema.json` (tools_stuff 8e0985f) · Falsifier: a store that accepts a body under an address it does not hash to, or a stage that keeps a file whose plaintext digest
+> differs from the manifest's.
+
+Problem:      a client must encrypt artefacts before upload, but the store is content addressed and refuses a body that does not hash to its path, and the manifest names files by plaintext digest
+Solution:     upload each artefact encrypted at the digest of its ciphertext; upload one encrypted envelope holding the manifest's exact text, its plaintext digest and a plaintext-to-ciphertext map;
+              the envelope's address is what the workflow passes on; the receiver checks the ciphertext address on download, decrypts, then checks every plaintext digest from the envelope
+Why it works: the store's integrity check stays intact (no exemption for encrypted bodies), the server sees only ciphertext and ciphertext digests, and the plaintext checks move to the one party
+              that can do them
+Reuse:        encrypted backups to an object store keyed by hash; client-side encrypted package caches; any dedup store fronted by end-to-end encryption
+Pitfalls:     addressing encrypted bodies by plaintext digest was the first design and the store refused every upload (found by reading the store before running the gate); a plaintext manifest beside
+              encrypted members leaks names and digests; the step that later restores must check the plaintext digest, not the envelope address it was handed (a small file in the stage folder carries it)
+Realised in:  Rust -> continuum-app apps/agent/src/steps.rs, transfer.rs (excerpt)
+Evidence:     CANDIDATE: one project; P4 gate 11/11 with every capture encrypted, the store holding an age file without a known marker
+
+```rust
+for (f, plain) in files(dir)? {
+  let a = transfer::put(http, edge, capsule, epoch, &dir.join(&f), Some(&k.recipient)).await?; // address = ciphertext digest
+  objects.insert(plain, Value::String(a.clone()));
+}
+let envelope = json!({"schema": "continuum.envelope.v1", "workspace_json": text, "manifest_sha256": digest, "objects": objects});
+let address = transfer::put_bytes(http, edge, capsule, epoch, keys::encrypt(&k.recipient, &serde_json::to_vec(&envelope)?)?).await?;
+```
 
 ## Language realisations
 

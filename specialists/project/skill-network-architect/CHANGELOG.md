@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261121_1313 — Edge allowlist miss recurred; route-coverage check proposed (v2.3.9 -> v2.3.10)
+
+- references/security-and-segmentation.md: Recurred 2026-11-21 note under the 2026-11-20 edge allowlist entry, with a cheaper guard (route coverage check).
+
 ## 20261120_2330 — An edge path allowlist silently drops new device routes (v2.3.8 -> v2.3.9)
 
 - `references/security-and-segmentation.md` (Trust-boundary pass): Learned 2026-11-20 from the continuum P4 gate, with the Caddy excerpt.

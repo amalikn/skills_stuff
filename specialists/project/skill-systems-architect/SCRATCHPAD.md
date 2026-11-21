@@ -32,6 +32,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Next actions
 
+- 2026-11-21: the client-authenticated recipient set entry (security-and-service-identity.md) rests on one project and Keybase; add a second source (Signal or MLS device linking) on the next E2EE design.
 - 2026-11-11 (v2.3.7): edge-appliances read-only root entry is design reasoning; promote to VERIFIED once smc-resiliency records the R28 outcome with scheduled writers run in a trial.
 
 1. Operator: push skills_stuff (see the network pack SCRATCHPAD).

@@ -170,6 +170,20 @@ Rotate at once on compromise or staff exit. Log access and name an owner.
 - Break-glass per identity system: accounts, storage (split or sealed, offline copy), who may use it, trigger, alert on use, rotation and review after use.
 - Test break-glass on a schedule and after identity-system changes.
 
+> **Learned 2026-11-21** · device-side encryption with a shared per-user key · VERIFIED_PRIMARY (design and gate) · Source: Keybase per-user keys, https://book.keybase.io/docs/teams/puk
+> (read 2026-11-21); continuum DL-109, DL-111, DL-112, DL-114 and continuum-app `apps/agent/src/keys.rs` (P4 gate 2026-11-21) · Falsifier: a design where the server can add a recipient without a
+> device or person noticing.
+> When devices share one user key sealed to each device, "the server never holds the key" holds only if the server cannot choose who the key is sealed to. A draft that asked the server for the
+> recipient list (at enrolment, revocation and recovery-key change) let a compromised server seal the key to itself. Fixes: (1) the device set is written only by devices and authenticated with a key
+> the server lacks (an HMAC keyed from the user key, or a signature chain as Keybase does); (2) a new device is approved by comparing a code derived from its public key on both screens, at least
+> about 100 bits when the server relays the key, because a server that sees the real key first can grind a 6-digit code in seconds; (3) adding a device seals the current key and lets the chain open
+> history; only removal rolls a generation. The server still checks shape and sequence (version + 1, exactly one device added, removal only) since it cannot check the MAC.
+>
+> ```rust
+> let roster = keys::roster(&uk.identity, v, uk.generation, &devices, rec)?;      // HMAC keyed by HKDF(user identity); the server cannot forge it
+> keys::verify_roster(&identity, &v["roster"], seen_version(state))?;            // every device refuses a bad MAC or a lower version
+> ```
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.
@@ -191,6 +205,7 @@ Rotate at once on compromise or staff exit. Log access and name an owner.
 | Independent break-glass             | Any IdP, CA or proxy      | Emergency account behind the same IdP or proxy | The outage locks out the recovery path          |
 | Separate backup trust domain        | Ransomware scope          | Backup admin in the production directory       | One compromise deletes production and backups   |
 | Boundary pass with non-capabilities | Threat review             | List every theoretical attack as high          | Severity inflation hides the real paths         |
+| Client-authenticated recipient set  | End-to-end encryption     | Server hands out the list of keys to seal to   | A compromised server seals the key to itself    |
 
 ## Failure modes and tests
 

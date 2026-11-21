@@ -122,6 +122,11 @@ E4: dedicated management VRF, OOB where possible
 > 	reverse_proxy {$COORDINATOR_UPSTREAM} { header_up X-Continuum-Client-Cert-Sha256 {tls_client_fingerprint} }
 > }
 > ```
+>
+> **Recurred 2026-11-21** · the same project, a day later (FR-237 key routes, continuum-app `caddy/Caddyfile`, P4 gate run 2 failed at the first key call with `404 ... null`) · The written rule did
+> not
+> stop it: the route list lives in two places and the second is easy to forget. Cheaper guard: a check that lists the backend's device-port routes and fails when the edge's matchers do not cover
+> each one, run with the project's checks, so the miss shows before an end-to-end run.
 
 ## Zone matrix
 

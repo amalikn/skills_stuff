@@ -31,6 +31,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-21: references/design-patterns.md, P-82 (encrypt before a content-addressed store: address the ciphertext), from continuum FR-237.
+- 2026-11-21: references/testing.md (Checks that can fail), Learned 2026-11-21: a gate verdict read from a summary line misses checks printed after it.
 - 2026-11-20: references/design-patterns.md, P-80 (work order withdrawn at its deadline) and P-81 (approval marked per item from an evidence file, with a check), from continuum.
 - 2026-11-20: languages/shell/learned-processes-and-timeouts.md, Learned 2026-11-20: never edit a running script (a git hook edited mid-push failed with unexpected EOF); exec a separate body file.
 - 2026-11-20: languages/rust/learned-async-and-tests.md, Learned 2026-11-20: Temporal Rust SDK 1.2.0 (self: Arc<Self> activities, serde_json errors, data vs infrastructure errors, workflow_time); clippy result_large_err with axum Response -> Box<Response>.

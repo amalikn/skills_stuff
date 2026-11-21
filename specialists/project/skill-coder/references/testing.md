@@ -45,6 +45,15 @@ Summary: >-
 
 ## Checks that can fail
 
+> **Learned 2026-11-21** · gate recipes that grep a log for their verdict · VERIFIED_PRIMARY · Source: continuum-app `justfile` p4-gate (FR-237 leg) · Falsifier: a recipe whose verdict line is
+> printed after every check it runs. A gate recipe decided pass from its `summary: ... 0 failed` line, which the harness prints after the original cases; checks added after that line (a new leg run
+> once the cases finish) could panic and the recipe still exited 0. Require the last check's own PASS line as well, or make the verdict the test's exit status.
+>
+> ```bash
+> grep -q "P4 gate summary: .* 0 failed" "$g/e2e.log" || rc=1
+> grep -q "FR-237 recovery drill: PASS" "$g/e2e.log" || rc=1  # the leg's last check, printed after the summary
+> ```
+
 > **Learned 2026-11-18** · catalog checks over a justfile · VERIFIED_PRIMARY · Source: Continuum `scripts/govcheck/checks/catalogs.py:91` (tools_stuff b6370ba..), probe recipe test · Falsifier: a
 > justfile whose `name := value` line the corrected pattern reads as a recipe. A recipe pattern like `^([\w-]+)(?: [^\n:]*)?:` also matches variable assignments (`py := ...`) and `set dotenv-load :=
 > false`, so the check demanded catalog rows for `py`, `wc`, `set`. Six fake rows ("read-only governance inspection") had been added to satisfy it, which hid the false positive and would hide a real
