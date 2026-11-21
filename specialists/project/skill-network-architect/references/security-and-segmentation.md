@@ -127,6 +127,10 @@ E4: dedicated management VRF, OOB where possible
 > not
 > stop it: the route list lives in two places and the second is easy to forget. Cheaper guard: a check that lists the backend's device-port routes and fails when the edge's matchers do not cover
 > each one, run with the project's checks, so the miss shows before an end-to-end run.
+>
+> **Built 2026-11-21** · continuum-app `scripts/edge_routes_check.py` (bce8978), part of `just ci` · CANDIDATE (one project) · It reads the routes from the device-route builders in
+> the Rust source, makes a sample path per route (`{digest}` -> `sha256:<hex>`), and requires a `path_regexp` matcher in the agent-port block whose `method` list holds the route's
+> methods; `--self-test` drops each matcher in turn and expects a failure (9 routes, 4 matchers, every removal caught).
 
 ## Zone matrix
 

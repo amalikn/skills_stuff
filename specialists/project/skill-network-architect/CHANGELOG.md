@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261121_1950 — Edge route-coverage check built in a project (v2.3.10 -> v2.3.11)
+
+- references/security-and-segmentation.md: Built 2026-11-21 note under the edge allowlist entry (continuum-app edge_routes_check.py with a self-test).
+
 ## 20261121_1313 — Edge allowlist miss recurred; route-coverage check proposed (v2.3.9 -> v2.3.10)
 
 - references/security-and-segmentation.md: Recurred 2026-11-21 note under the 2026-11-20 edge allowlist entry, with a cheaper guard (route coverage check).

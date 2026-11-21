@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261121_1949.md](changelog/changelog-20261121_1949.md) 2 entries, 2026-11-19 to 2026-11-19: Body layout for every collection: pad_format_spec.py; Comment edits can be refused by the server
 - [changelog-20261121_1909.md](changelog/changelog-20261121_1909.md) 1 entry, 2026-11-19 to 2026-11-19: Decision-log process rows mirrored to Pad
 - [changelog-20261120_2218.md](changelog/changelog-20261120_2218.md) 1 entry, 2026-11-18 to 2026-11-18: Tickets tell the whole story: bold labels, updates, a closing statement, logs attached; item-check
 - [changelog-20261120_1827.md](changelog/changelog-20261120_1827.md) 2 entries, 2026-11-18 to 2026-11-18: A run planned and recorded in Pad with fields set at create; pad_decisions.py and a Decisions schema

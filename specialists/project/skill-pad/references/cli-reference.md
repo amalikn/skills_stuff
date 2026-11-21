@@ -240,6 +240,10 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > - `pad item list <collection> --format json` returned only part of a collection (6 of 48 tasks, 1 of 197 decisions) even with `--limit 1000`, so it cannot be used to
 >   look up a ref by title. To link a decision-log row, read its ref from `pad item show DECIS-<n>` (the mirror creates refs in DL order) before writing the link;
 >   never write a placeholder such as `[[DECIS-?|DL-106]]` (written and fixed three times that night).
+> - **2026-11-21:** `pad item show --format json` returns `fields` as a JSON string, not an object: parse it before reading `status` (scripts/pad_done_backfill.py `field()`).
+> - **2026-11-21:** one `item comment-edit` (TASK-268, an agent comment) was refused with "this server does not support editing or deleting comments from the CLI (it does not
+>   advertise item_scoped_comment_writes)" while 38 other comment edits in the same `just links` run succeeded; the refusal is per comment, not per server. Treat it as a skip
+>   and report it (continuum, `pad_links.py --apply`).
 > - **2026-11-21:** Tech Debt closes with `resolved` and refuses `done` ("value \"done\" is not in allowed options [identified planned in-progress resolved]",
 >   `pad item update TD-315 --status done`, continuum).
 

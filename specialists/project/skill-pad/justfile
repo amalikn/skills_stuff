@@ -210,6 +210,16 @@ spec-words SPEC *ARGS: _require-venv
 rewrite SPEC *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_rewrite.py" "{{SPEC}}" {{ARGS}}
 
+# Add a closing DONE: comment to closed work items that have none, built only from the item's own comments (quoted, with ids); plan by default, --apply to write [writes comments in Pad]
+[no-cd]
+done-backfill REFS *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_done_backfill.py" --refs "{{REFS}}" {{ARGS}}
+
+# Write a rewrite spec that adds each missing required label of the per-collection templates, inventing nothing ("not recorded (template pass <date>)"; an ask's Question is its title). Read-only in Pad; apply with `just rewrite`.
+[no-cd]
+label-fill REFS OUT *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/pad_label_fill.py" --refs "{{REFS}}" --out "{{OUT}}" {{ARGS}}
+
 # Write a rewrite spec that lays item bodies out to the writing standard (bold labels, own paragraphs, hard wraps joined; words unchanged). Read-only in Pad; apply with `just rewrite`.
 [no-cd]
 format-spec OUT *ARGS: _require-venv

@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261121_1909
+Last rotated: 20261121_1949
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit](#20261121_1950--label-fill-and-done-backfill-scripts-fields-as-a-json-string-a-refused-comment-edit)
 - [20261121_1908 — Tech Debt closes with resolved, not done](#20261121_1908--tech-debt-closes-with-resolved-not-done)
 - [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
@@ -39,10 +40,14 @@ Last rotated: 20261121_1909
 - [20261119_1609 — Workspace init from an agent shell; conventions recipe quoting](#20261119_1609--workspace-init-from-an-agent-shell-conventions-recipe-quoting)
 - [20261119_1551 — CLI traps from smc-resiliency: octet-stream attachments refused, dash-led comment text](#20261119_1551--cli-traps-from-smc-resiliency-octet-stream-attachments-refused-dash-led-comment-text)
 - [20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority](#20261119_1550--cli-traps-no-attachment-delete-comments-not-in-item-show-tech-debt-priority)
-- [20261119_1434 — Body layout for every collection: pad_format_spec.py](#20261119_1434--body-layout-for-every-collection-pad_format_specpy)
-- [20261119_1325 — Comment edits can be refused by the server](#20261119_1325--comment-edits-can-be-refused-by-the-server)
 
 ---
+
+## 20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit
+
+- scripts/pad_label_fill.py (`just label-fill`): a rewrite spec adding each missing required template label, inventing nothing; tests/test_pad_label_fill.py.
+- scripts/pad_done_backfill.py (`just done-backfill`): a DONE closing statement for closed work items without one, quoted from their own comments; tests/test_pad_done_backfill.py.
+- references/cli-reference.md: `fields` comes as a JSON string; one comment edit refused while others in the run succeeded. Used on continuum 2026-11-21: 48 bodies filled, 26 closing statements, 39 link writes.
 
 ## 20261121_1908 — Tech Debt closes with resolved, not done
 
@@ -184,16 +189,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 
 - `references/cli-reference.md` Traps: Learned 2026-11-19 (Pad 0.21.0, continuum workspace): no attachment delete or replace (correct with a CORRECTION comment); comments only through `pad item
   comments`; Tech Debt stores `--priority` undeclared; rate limits on back-to-back calls.
-
-## 20261119_1434 — Body layout for every collection: pad_format_spec.py
-
-- New `scripts/pad_format_spec.py` (`just format-spec OUT`): writes a `pad_rewrite.py` spec that bolds known section labels, starts each on its own paragraph and joins hard-wrapped lines; lists,
-  tables, code and words untouched (an item whose words would change is skipped). 7 tests in `tests/test_pad_format_spec.py`; a no-op reformat fails 3.
-- Operator 2026-11-19: 'Formatting of all the pad entries for this project are not correct'. In continuum, 19 of 43 items (all Asks, FRs, TDs; TASK-178 hard-wrapped) rewritten, rescan 0; TASK-166 and
-  TASK-171 closing comments rewritten as `DONE:` bullets; item-check 0 findings.
-- Learned entry in docs/pad-usage-guidelines-20261110_1628.md 3.3: the standard covers Asks, FRs and TDs; never draft a body in a file the markdown hook reflows; Pad stores `_` as `\\_` in some
-  bodies.
-
-## 20261119_1325 — Comment edits can be refused by the server
-
-- `references/cli-reference.md`: Learned 2026-11-19: `comment-edit` refused (no `item_scoped_comment_writes`); fallback, a new formatted comment.
