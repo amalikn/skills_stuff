@@ -242,8 +242,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 >   never write a placeholder such as `[[DECIS-?|DL-106]]` (written and fixed three times that night).
 > - **2026-11-21:** `pad item show --format json` returns `fields` as a JSON string, not an object: parse it before reading `status` (scripts/pad_done_backfill.py `field()`).
 > - **2026-11-21:** one `item comment-edit` (TASK-268, an agent comment) was refused with "this server does not support editing or deleting comments from the CLI (it does not
->   advertise item_scoped_comment_writes)" while 38 other comment edits in the same `just links` run succeeded; the refusal is per comment, not per server. Treat it as a skip
->   and report it (continuum, `pad_links.py --apply`).
+>   advertise item_scoped_comment_writes)" while 38 other comment edits in the same `just links` run succeeded; the same edit succeeded an hour later (CORRECTION 2026-11-21:
+>   transient, not per comment). Retry it later before treating it as unsupported (continuum, `pad_links.py --apply`).
 > - **2026-11-21:** Tech Debt closes with `resolved` and refuses `done` ("value \"done\" is not in allowed options [identified planned in-progress resolved]",
 >   `pad item update TD-315 --status done`, continuum).
 
