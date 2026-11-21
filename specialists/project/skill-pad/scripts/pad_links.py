@@ -58,7 +58,9 @@ def pad(binary: str, timeout: int, *args: str, stdin: str | None = None) -> str:
     r = subprocess.run([binary, *args], input=stdin, capture_output=True, text=True, timeout=timeout)
     if r.returncode == 0:
       return r.stdout
-    if "rate_limited" not in r.stderr + r.stdout:
+    # Transient: the rate limit, and the comment-edit capability refusal Pad gives under bursts (2026-11-22, continuum: 10 of 71 refused,
+    # every one applied on a rerun).
+    if not any(x in r.stderr + r.stdout for x in ("rate_limited", "does not advertise item_scoped_comment_writes")):
       raise RuntimeError(f"pad {' '.join(args[:3])}: {(r.stderr or r.stdout).strip()[:300]}")
     time.sleep(1 + attempt)
   raise RuntimeError("pad: still rate limited after five attempts")

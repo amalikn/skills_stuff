@@ -201,6 +201,31 @@ Rotate at once on compromise or staff exit. Log access and name an owner.
 - Use skill-coder for secret-safe implementation.
 - Record exceptions, compensating controls and risk owners. A checklist does not make a design "compliant" or "secure".
 
+> **Learned 2026-11-22** · Keycloak passkey-only sign-in: what the flow conditions mean, and the bootstrap password · VERIFIED_PRIMARY (Keycloak 26.8.2 admin API and a browser-flow probe)
+> · Source: continuum TASK-190, TD-331; continuum-app `keycloak/realm/continuum.json`, `scripts/keycloak_finish_user.py` (62e5ea1) · Falsifier: a password accepted for a user holding a passkey.
+> `Condition - credential` with `included: false` is true when that credential was NOT USED in the current authentication, not when the user lacks it; paired with a passkey subflow gated by
+> `Condition - user configured`, a user with a passkey is only ever offered WebAuthn (a probe without a passkey saw no password field and no "try another way"). The bootstrap password stays stored
+> (`temporary: false`) after the passkey is registered; if the passkey is later removed the password signs in again. Delete it once a passkey exists, and prove it with a throwaway user:
+
+```python
+# continuum-app scripts/keycloak_finish_user.py (62e5ea1): finish refuses without a passkey, then
+for c in admin(token, "GET", f"/users/{uid}/credentials") or []:
+  if c["type"] == "password":
+    admin(token, "DELETE", f"/users/{uid}/credentials/{c['id']}")
+```
+
+> **Learned 2026-11-22** · BFF login with a SameSite=Strict cookie loops after a sign-in on the identity provider's page · VERIFIED_PRIMARY (Chrome, live loop: five sessions a second) ·
+> Source: continuum BUG-333; continuum-app `apps/coordinator/src/portal/login.rs` (2091a4e) · Falsifier: a browser that sends Strict cookies on a redirect chain started on another site.
+> When the person signs in on the IdP's page (another site: `localhost:18080` vs `127.0.0.1:8080`, or another registrable domain), the navigation chain is cross-site, so the browser withholds the
+> Strict session cookie on the 303 that follows the callback; the page sees no session, sends the browser to the IdP, whose SSO session bounces back, and it loops. A silent SSO sign-in (no IdP page)
+> hides the bug until a step-up (`prompt=login`) forces one. Keep Strict and answer the callback with a page of your own that moves on, so the next request starts same-site:
+
+```rust
+// continuum-app apps/coordinator/src/portal/login.rs callback (2091a4e)
+let body = format!("<!doctype html><meta charset=\"utf-8\"><meta http-equiv=\"refresh\" content=\"0;url={to}\"><title>Continuum</title><p>Signed in. <a href=\"{to}\">Continue</a></p>");
+(StatusCode::OK, [(header::SET_COOKIE, set), (header::CACHE_CONTROL, "no-store".to_string())], Html(body)).into_response()
+```
+
 ## Patterns and anti-patterns
 
 | Pattern                             | Use when                  | Anti-pattern                                   | Why it fails                                    |

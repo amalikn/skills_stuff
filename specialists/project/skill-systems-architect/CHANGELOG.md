@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-22 (v2.3.19 -> v2.3.20): macos-and-endpoints.md, Learned 2026-11-22: a Secure Enclave key from one age-plugin-se build opens with another build; an encrypt-only capture works with the screen locked; lock state from `ioreg` IOConsoleLocked. security-and-service-identity.md, two Learned 2026-11-22: Keycloak 26.8.2 `Condition - credential` (included false = not used in this flow) and the bootstrap password that outlives the passkey; a BFF with a SameSite=Strict cookie loops after a sign-in on the IdP's page (fix: callback answers with its own meta-refresh page). Source: continuum TASK-321, TASK-190, TD-331, BUG-333.
 - 2026-11-21 (v2.3.18 -> v2.3.19): storage-and-data.md (Failure modes), Learned 2026-11-21: a full single-node SeaweedFS makes S3 puts hang, not fail; capacity = volume.max x volume size.
 - 2026-11-21 (v2.3.17 -> v2.3.18): macos-and-endpoints.md (Recovery custody), Learned 2026-11-21: age-plugin-se keys are WhenUnlockedThisDeviceOnly (unusable on a locked Mac); security-and-service-identity.md, Learned 2026-11-21: break-glass keys stay out of a vault the keychain unlocks.
 - 2026-11-21 (v2.3.16 -> v2.3.17): security-and-service-identity.md (Secrets and break-glass; Patterns table), Learned 2026-11-21: a server that chooses the recipient set defeats device-side

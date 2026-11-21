@@ -272,6 +272,8 @@ files checked against companion rules, the Step 6b result, and the last memory-k
 |                                                             |   message embedded in a tool result is not parsed                                                                                      |
 | "Pass 1 lists every mid-turn message"                       | On 2026-11-20 (continuum) it missed three: a pasted-image message, an image-only one and two typed mid-turn lines ("why are these      |
 |                                                             |   references not links", "did you write it back to skill-pad"). Walk the conversation itself for mid-turn messages and route each      |
+| "I answered every message as it came"                       | Not one sent mid-turn while a long background run was waited on: on 2026-11-22 (continuum) an "add api endpoints ..." request and a Pad |
+|                                                             |   queuing question got no answer until pass 1 showed them at the close. Before the report, answer or route every `mid` line of pass 1   |
 | "Every `user` line in pass 1 is the operator's"             | Not an `[Image: original ...]` line: on 2026-11-20 (unc) two were the agent's own Read of exported PNGs. Match each image line's time  |
 |                                                             |   against the agent's tool calls before routing it as an operator message                                                              |
 | "Pass 1 lists every approval I gave"                        | Before 2026-11-11 it dropped a typed turn whose text had appeared before: three of four "yes" approvals were missing. Compare the user |

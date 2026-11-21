@@ -141,6 +141,12 @@ Module._load = function (request, ...rest) {
 - A test editor holding unsaved buffers ignores SIGTERM (save prompt): kill its process group after a short grace period.
 - VS Code puts its own IPC socket in `--user-data-dir` (`1.14-main.sock`): keep that folder's path short, since a Unix socket path must stay under 104 bytes on
   macOS (a longer run folder failed with `listen EINVAL`).
+- A second window opened through the editor's own command line (same `--user-data-dir`, `--new-window <folder>`) gets its own extension host, but it comes up in Restricted
+  Mode: `--disable-workspace-trust` applied only to the first launch, so the extension never activated. Turn trust off in the throwaway profile instead (`User/settings.json`:
+  `{"security.workspace.trust.enabled": false}`), and pass the same socket-folder variables to that command, since its environment reaches the new window (continuum TASK-276,
+  `scripts/editor_harness.py`, 0ba73c8).
+- Under `xvfb-run -a` on Linux the editor's command line is itself an Electron start and fails with "Missing X server or $DISPLAY": give it the running editor's display, read from the
+  Xvfb process in the editor's process group (`Xvfb :N ... -auth FILE` gives `DISPLAY` and `XAUTHORITY`). OrbStack passes the Mac's XQuartz `DISPLAY` through, which is never the right one.
 
 ```python
 env = {k: v for k, v in os.environ.items() if not k.startswith(("ELECTRON_", "VSCODE_"))}

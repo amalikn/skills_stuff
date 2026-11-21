@@ -107,6 +107,22 @@ Legend: ^ v escrow or retrieval   X failure and its effect
 > unattended on a locked Mac cannot unseal with it: design for it (continuum pins the verified public half of the account key so a locked Mac still encrypts captures, and anything that decrypts
 > waits for an unlock), or choose an after-first-unlock key and accept a fork. Its `--recipient-type tag` recipients (`age1tag1`) are encryptable by any age 0.12 client without the plugin.
 
+> **Learned 2026-11-22** · Secure Enclave keys: binary independence and locked-screen behaviour (age-plugin-se v0.2.1, macOS) · VERIFIED_PRIMARY (live runs on the operator's Mac) ·
+> Source: continuum TASK-321; continuum-app `apps/coordinator/tests/agent_e2e/p4_cases.rs` (e3d865b) · Falsifier: a second build that cannot decrypt, or a locked-screen capture that needs the enclave.
+> A key made by one build of age-plugin-se (keygen `--access-control none --recipient-type tag`) was opened by a separately built copy of the same commit (different SHA-256): the identity file is
+> a reference to the enclave key, not bound to one binary. A capture that only encrypts (to pinned `age1tag1` and X25519 recipients) completes with the screen locked; only unsealing waits for an
+> unlock. A test can wait for the lock state the way macOS reports it:
+
+```rust
+// continuum-app apps/coordinator/tests/agent_e2e/p4_cases.rs (e3d865b)
+fn console_locked() -> Result<bool, Error> {
+  let out = Command::new("ioreg").args(["-n", "Root", "-d1", "-a"]).output()?;
+  let text = String::from_utf8_lossy(&out.stdout);
+  let after = text.split("<key>IOConsoleLocked</key>").nth(1).ok_or("ioreg reports no IOConsoleLocked")?;
+  Ok(after.trim_start().starts_with("<true/>"))
+}
+```
+
 ## Updates and identity
 
 | Ring           | Size                   | Start       | Rule                                               |

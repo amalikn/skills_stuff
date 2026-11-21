@@ -246,4 +246,12 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 >   transient, not per comment). Retry it later before treating it as unsupported (continuum, `pad_links.py --apply`).
 > - **2026-11-21:** Tech Debt closes with `resolved` and refuses `done` ("value \"done\" is not in allowed options [identified planned in-progress resolved]",
 >   `pad item update TD-315 --status done`, continuum).
+> - **2026-11-22:** the comment-edit refusal recurs under bursts: 10 of 71 edits in one `pad_links.py --apply` run and 1 in 58 `pad_rewrite.py` comment edits, every one applied
+>   on a rerun seconds later (continuum TD-323). pad_rewrite.py, pad_links.py and pad_retry.sh now treat it like `rate_limited` and retry with backoff (`TRANSIENT`).
+> - **2026-11-22:** `pad item comment <ref> "- **What:** ..."` fails with "unknown shorthand flag: ' ' in - **What:** ...": a body starting with `-` is read as a flag. Put `--`
+>   before the body (`pad item comment TD-1 --workspace w -- "- **What:** ..."`) or use `--stdin`. The failure is easy to miss inside a loop that prints only the last line.
+> - **2026-11-22:** a closing comment longer than 200 characters needs both forms: item-check's `done` rule wants it to start `YYYY-MM-DD HH:MM AEDT DONE:` and its `comments`
+>   rule wants a `- **Label:**` bullet, so write `<stamp> DONE:` on the first line and the text as `- **What:** ...` bullets below it.
+> - **2026-11-22:** pad_rewrite.py writes in the order items, comments, notes, decides; when the standard says "save the original as a note first", apply the notes in a spec of
+>   their own before the comments (continuum TD-323: two passes).
 

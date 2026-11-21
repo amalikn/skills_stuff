@@ -28,7 +28,7 @@ usage() {
 is_rate_limited() {
   # Tell whether a pad call's combined output says it was rate-limited.
   # Args: $1 the output. Returns: 0 when rate-limited, 1 otherwise.
-  printf '%s' "$1" | grep -qiE 'too many requests|rate_limited|rate limited|status[= ]?429'
+  printf '%s' "$1" | grep -qiE 'too many requests|rate_limited|rate limited|status[= ]?429|does not advertise item_scoped_comment_writes'
 }
 
 retry_after() {

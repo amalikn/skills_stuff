@@ -16,6 +16,7 @@ Last rotated: 20261121_1949
 
 ## Contents
 
+- [20261122_0031 — Transient comment-edit refusal retried; decision store not a log; CLI traps](#20261122_0031--transient-comment-edit-refusal-retried-decision-store-not-a-log-cli-traps)
 - [20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit](#20261121_1950--label-fill-and-done-backfill-scripts-fields-as-a-json-string-a-refused-comment-edit)
 - [20261121_1908 — Tech Debt closes with resolved, not done](#20261121_1908--tech-debt-closes-with-resolved-not-done)
 - [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
@@ -42,6 +43,12 @@ Last rotated: 20261121_1949
 - [20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority](#20261119_1550--cli-traps-no-attachment-delete-comments-not-in-item-show-tech-debt-priority)
 
 ---
+
+## 20261122_0031 — Transient comment-edit refusal retried; decision store not a log; CLI traps
+
+- scripts/pad_rewrite.py, pad_links.py, pad_retry.sh: the comment-edit capability refusal ("does not advertise item_scoped_comment_writes") is retried with backoff like `rate_limited` (`TRANSIENT`); continuum 2026-11-22 saw 11 such refusals, each applied on a rerun.
+- scripts/pad_item_check.py: a `*decisions.jsonl` store named in an item is no longer reported as a log to attach (continuum TASK-27 false positive).
+- references/cli-reference.md Traps: the refusal recurs under bursts; `--` before a comment body starting with `-`; a long DONE comment needs bullets too; pad_rewrite order (notes first in their own spec). Tests: `just test` 88 OK.
 
 ## 20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit
 

@@ -49,7 +49,9 @@ CLOSED = {"done", "fixed", "resolved", "shipped", "cancelled", "wont-fix", "decl
 CLOSING = re.compile(r"\b(DONE|CLOSED):")
 RETRIES = 5
 BACKOFF_S = 1.5
-LOG_NAME = re.compile(r"[\w./-]+\.(log|jsonl|out)\b")
+# A store named in a body is not a log to attach: the knowledge-curator decision store .kc/decisions.jsonl (2026-11-22, continuum TASK-27
+# was flagged for naming it).
+LOG_NAME = re.compile(r"[\w./-]+\.(?:log|out)\b|[\w./-]+(?<!decisions)\.jsonl\b")
 PREFIXES = ("TASK", "PLAN", "BUG", "ASK", "DECIS", "IDEA", "DOC", "FR", "TD", "PLAYB", "CONVE")  # Pad's collection prefixes (pad collection list)
 BARE_REF = re.compile(r"\b(?:" + "|".join(PREFIXES) + r")-\d+\b|\bDL-\d{3}\b")
 ITEM_REF = re.compile(r"\b(?:" + "|".join(PREFIXES) + r")-\d+\b")  # without decision ids, for a workspace with no Decisions collection

@@ -46,3 +46,27 @@ Part of [rust.md](../rust.md).
 > Also from the same gate: symlink permission bits are not portable (macOS keeps 0755 from lchmod, Linux reports 0777, Git ignores them), so a cross-OS file
 > listing records mode 0 for links. An integration test's submodule file lives beside the test: `#[path = "agent_e2e/p2_gate.rs"] mod p2_gate;` in
 > `tests/agent_e2e.rs` (without `#[path]` rustc looks for `tests/p2_gate.rs`).
+
+> **Learned 2026-11-22** · a process-wide memo of "already checked" facts · VERIFIED_PRIMARY (tests run; a store call dropped from 2.29 s to 1.52 s) · Source: continuum-app
+> `crates/continuum-store/src/restic/mod.rs` `known`/`remember` (1f44449) · Falsifier: the fact can become false while the process runs (then the memo must be cleared on the failure).
+> When every call re-checks something that, once true, stays true for the process (a restic repository exists; repositories are never deleted under it), keep a `static` set behind `OnceLock` and a
+> `Mutex`, record the fact only after it was seen true, and treat a poisoned lock as "not known":
+
+```rust
+static KNOWN: std::sync::OnceLock<std::sync::Mutex<std::collections::HashSet<String>>> = std::sync::OnceLock::new();
+fn known(url: &str) -> bool { KNOWN.get_or_init(Default::default).lock().is_ok_and(|k| k.contains(url)) }
+fn remember(url: &str) { if let Ok(mut k) = KNOWN.get_or_init(Default::default).lock() { k.insert(url.to_string()); } }
+```
+
+> **Learned 2026-11-22** · a tar in memory with the `tar` crate · VERIFIED_PRIMARY (round-trip test) · Source: continuum-app `apps/agent/src/wsbundle.rs` (1f44449) · Falsifier: none expected.
+> `tar::Builder::new(Vec::new())` writes to memory; each entry needs a header with its size, mode and checksum set before `append_data`, and `into_inner()` returns the bytes. Reading back,
+> `tar::Archive::new(&bytes[..]).entries()` yields entries whose `path()` and `read_to_end` give name and contents. Recognise the format by its first entry's name, which a tar starts with.
+
+```rust
+let mut h = tar::Header::new_gnu();
+h.set_size(bytes.len() as u64);
+h.set_mode(0o600);
+h.set_cksum();
+t.append_data(&mut h, name, bytes)?;
+```
+

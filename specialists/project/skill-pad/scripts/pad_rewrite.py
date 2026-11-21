@@ -38,6 +38,10 @@ TYPES = ("FINDING", "BLOCKED", "RISK", "CORRECTION", "HANDOFF", "NEXT")
 STAMP = re.compile(r"^(?P<stamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}(?: [A-Z]{3,5})?)(?P<sep>:?\s*)")
 
 
+#: Answers retried with backoff: the rate limit, and a comment-edit capability refusal Pad gives under bursts although the server supports it
+#: (2026-11-22, continuum: 10 of 71 edits refused, every one applied on a rerun seconds later).
+TRANSIENT = ("rate_limited", "does not advertise item_scoped_comment_writes")
+
 def prefixed(body: str, kind: str) -> str | None:
   """Return the comment body with its type word added, or None when it already has one.
 
@@ -122,7 +126,8 @@ def pad(argv: list[str], timeout: int, binary: str, stdin: str | None = None) ->
 
   Raises:
     RuntimeError: a non-zero exit or a timeout, with pad's stderr; a `rate_limited` answer is retried up to RATE_RETRIES times, waiting the
-      server's retry_after_seconds (2026-11-10: a 12-note burst was refused with retry_after 1).
+      server's retry_after_seconds (2026-11-10: a 12-note burst was refused with retry_after 1); the capability refusal in TRANSIENT is
+      retried the same way (2026-11-22, continuum TD-323: refused mid-burst after 36 good comment edits, then applied on a rerun).
   """
   for attempt in range(RATE_RETRIES + 1):
     try:
@@ -132,7 +137,7 @@ def pad(argv: list[str], timeout: int, binary: str, stdin: str | None = None) ->
     if r.returncode == 0:
       return r.stdout
     m = re.search(r'"retry_after_seconds":\s*(\d+)', r.stderr)
-    if "rate_limited" not in r.stderr or attempt == RATE_RETRIES:
+    if not any(t in r.stderr for t in TRANSIENT) or attempt == RATE_RETRIES:
       break
     time.sleep(int(m.group(1)) if m else 1 + attempt)
   raise RuntimeError(f"pad {' '.join(argv[:3])} failed: {r.stderr.strip()[:400]}")
