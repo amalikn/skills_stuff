@@ -276,3 +276,11 @@ Measurement and security
 [rbd-mirror]: https://docs.ceph.com/en/latest/rbd/rbd-mirroring/
 [rhcs-stretch]: https://docs.redhat.com/en/documentation/red_hat_ceph_storage/9/html/administration_guide/stretch-clusters-for-ceph-storage
 [ceph-stretch-blog]: https://ceph.io/en/news/blog/2025/stretch-cluuuuuuuuusters-part1/
+
+> **Learned 2026-11-22** · compress and deduplicate before you encrypt on the client · VERIFIED_PRIMARY (continuum measurements) · Source: continuum TD-250, continuum-app f8d2870,
+> 7c27a49 · Falsifier: a backup tool that deduplicates client-encrypted data.
+> Once data is encrypted on the device, the backup tool (restic) can neither compress nor deduplicate it: every upload is stored full-size. Compress on the device first
+> (zstd level 3: a 171 MiB workspace tar to 78 MiB in 0.2 s; a 213 MiB move 19.7 -> 16 s) and skip unchanged objects by their plaintext digest (reuse the stored ciphertext's
+> address). Readers should recognise compressed data by its frame magic so older objects still read, and cap decompression size. Retention must keep every object a
+> manifest still names. Each restic invocation also costs a repository open (about 0.7 s on a dev S3): remember facts that stay true (repository exists, snapshot ids).
+

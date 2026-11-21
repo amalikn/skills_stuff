@@ -71,3 +71,14 @@ Part of [rust.md](../rust.md).
 >   Ok(())
 > }
 > ```
+
+> **Learned 2026-11-22** · a test that compiles only in a workspace build · VERIFIED_PRIMARY (cargo test -p continuum-cli failed: "no testkit in the root", `cargo test --workspace`
+> passed) · Source: continuum-app `apps/cli/Cargo.toml` (2b2eb8f) · Falsifier: none expected; Cargo unifies features across a build.
+> A crate's tests that use another crate's feature-gated helpers (`test-support`) compile in `cargo test --workspace` because some other crate turned the feature on,
+> then fail alone. Declare the feature in the crate's own dev-dependency (`continuum-coordinator = { path = "../coordinator", features = ["test-support"] }`).
+
+> **Learned 2026-11-22** · release size: strip, LTO, codegen-units · VERIFIED_PRIMARY (measured, macOS arm64) · Source: continuum-app `Cargo.toml` [profile.release] (bb17d15) ·
+> Falsifier: a crate set where LTO grows the binary. `strip = "symbols"`, `lto = "fat"`, `codegen-units = 1` cut an axum/tokio service 37.4 -> 18.9 MB and a CLI 7.2 -> 4.3 MB;
+> the release build went 110 -> 203 s; `lto = "thin"` gave 21.2 / 5.2 MB in 157 s. Keep opt-level 3 where hot paths matter, and unwinding where a panic in one request must not
+> stop a server.
+
