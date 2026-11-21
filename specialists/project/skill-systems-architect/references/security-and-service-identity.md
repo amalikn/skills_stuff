@@ -184,6 +184,12 @@ Rotate at once on compromise or staff exit. Log access and name an owner.
 > keys::verify_roster(&identity, &v["roster"], seen_version(state))?;            // every device refuses a bad MAC or a lower version
 > ```
 
+> **Learned 2026-11-21** · break-glass keys and vault custody · USER_STATED (operator decision after review) · Source: continuum DL-116 · Falsifier: a recovery key stored where an
+> enrolled device can read it with no prompt.
+> A vault that unlocks with no prompt (master password in the OS keychain, a CLI wrapper reading it) is readable by every process on that machine; if the machine is one of the devices a recovery
+> key recovers, the key falls with it. Keep break-glass keys in a separate vault whose password is typed, kept in two places (a synced copy that survives losing the machine, an offline copy),
+> and generate the key straight into the vault so it is never printed or passed as an argument.
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.

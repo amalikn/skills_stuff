@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_2218
+Last rotated: 20261121_1909
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261121_1908 — Tech Debt closes with resolved, not done](#20261121_1908--tech-debt-closes-with-resolved-not-done)
 - [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
@@ -40,9 +41,12 @@ Last rotated: 20261120_2218
 - [20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority](#20261119_1550--cli-traps-no-attachment-delete-comments-not-in-item-show-tech-debt-priority)
 - [20261119_1434 — Body layout for every collection: pad_format_spec.py](#20261119_1434--body-layout-for-every-collection-pad_format_specpy)
 - [20261119_1325 — Comment edits can be refused by the server](#20261119_1325--comment-edits-can-be-refused-by-the-server)
-- [20261119_1136 — Decision-log process rows mirrored to Pad](#20261119_1136--decision-log-process-rows-mirrored-to-pad)
 
 ---
+
+## 20261121_1908 — Tech Debt closes with resolved, not done
+
+- references/cli-reference.md (statuses and listing): Tech Debt refuses `done` and takes `resolved` (continuum TD-315, 2026-11-21).
 
 ## 20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial
 
@@ -193,8 +197,3 @@ SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the refer
 ## 20261119_1325 — Comment edits can be refused by the server
 
 - `references/cli-reference.md`: Learned 2026-11-19: `comment-edit` refused (no `item_scoped_comment_writes`); fallback, a new formatted comment.
-
-## 20261119_1136 — Decision-log process rows mirrored to Pad
-
-- `scripts/pad_decisions.py`: `process` rows of a decision log are mirrored as well as `architecture` rows (category `decision-log-process`); the operator wants every decision in Pad (Continuum,
-  2026-11-19). `tests/test_pad_decisions.py` updated; it fails without the change.

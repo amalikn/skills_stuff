@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-21 (v2.3.17 -> v2.3.18): macos-and-endpoints.md (Recovery custody), Learned 2026-11-21: age-plugin-se keys are WhenUnlockedThisDeviceOnly (unusable on a locked Mac); security-and-service-identity.md, Learned 2026-11-21: break-glass keys stay out of a vault the keychain unlocks.
 - 2026-11-21 (v2.3.16 -> v2.3.17): security-and-service-identity.md (Secrets and break-glass; Patterns table), Learned 2026-11-21: a server that chooses the recipient set defeats device-side
   encryption; client-authenticated roster, 100-bit device code, rekey only on removal.
 - 2026-11-20: containers-and-platforms.md (Single-host compose stacks), Learned 2026-11-20: Temporal dev server needs --db-filename on a volume the image user owns; a JVM SIGBUS with RAM free points at the Docker VM disk (pre-push free-space guard).

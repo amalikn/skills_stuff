@@ -61,3 +61,18 @@ Part of [rust.md](../rust.md).
 >   Err(e) => problem(StatusCode::INTERNAL_SERVER_ERROR, "store_error", e.to_string()),
 > }
 > ```
+
+> **Learned 2026-11-21** · age 0.12.1 tag recipients and plugins · VERIFIED_PRIMARY (crate source, tests) · Source: continuum-app `apps/agent/src/device_key.rs` (d1b08b0); age-0.12.1
+> `src/native/tag.rs`, `src/plugin.rs` · Falsifier: an age 0.12 build that cannot encrypt to an `age1tag1` recipient without a plugin binary.
+> - age 0.12 encrypts to P-256 tag recipients (`age1tag1...`, `age::tag::Recipient`) natively, so devices without the Secure Enclave plugin can seal to a Mac's enclave key; only
+>   decryption needs the plugin (`age::plugin::IdentityPluginV1`, feature `plugin`), which finds `age-plugin-<name>` on `$PATH` and needs an `age::Callbacks` impl.
+> - The project forbids `unsafe`, and in edition 2024 `std::env::set_var` is unsafe, so the agent cannot add the plugin folder to its own PATH: the launcher sets PATH.
+> - A README's example recipient may not be a real one: age-plugin-se's examples fail the Bech32 checksum. Make test vectors from a known point (the P-256 generator) instead.
+>
+> ```rust
+> if recipient.starts_with("age1tag1") {
+>   let r = age::tag::Recipient::from_str(recipient).map_err(|e| format!("not an age tag recipient: {e}"))?;
+>   return Ok(age::encrypt_and_armor(&r, secret.to_string().expose_secret().as_bytes())?);
+> }
+> ```
+

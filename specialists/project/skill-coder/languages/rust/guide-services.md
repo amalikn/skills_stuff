@@ -183,4 +183,6 @@ Read next: [the clippy lint list](https://rust-lang.github.io/rust-clippy/).
 - [The standard library](https://doc.rust-lang.org/std/): search it for any type you meet (`Option`, `Result`, `Path`, `Command`).
 - [The Cargo Book](https://doc.rust-lang.org/cargo/), [the tokio tutorial](https://tokio.rs/tokio/tutorial), [Asynchronous Programming in Rust](https://rust-lang.github.io/async-book/), [axum](https://docs.rs/axum/latest/axum/), [sqlx](https://docs.rs/sqlx/latest/sqlx/), [clippy lints](https://rust-lang.github.io/rust-clippy/).
 
+Continue with [part 3: keys and secrets](guide-keys.md).
+
 All links checked 2026-11-19 (HTTP 200). New Rust learned in any project goes into the `learned-*.md` files; when it teaches a concept worth reading, a part here gains an excerpt too.

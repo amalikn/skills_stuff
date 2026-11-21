@@ -100,6 +100,13 @@ Legend: ^ v escrow or retrieval   X failure and its effect
 - Do not copy Intel-era recovery steps onto Apple silicon: recoveryOS, LocalPolicy and volume ownership differ.
 - Do not promise remote unlock after every restart.
 
+> **Learned 2026-11-21** · Secure Enclave keys for unattended agents (age-plugin-se v0.2.1) · VERIFIED_PRIMARY · Source: age-plugin-se `Sources/Plugin.swift:44` (v0.2.1, commit a229872), keygen on a
+> locked Mac returned OSStatus -25308 (errSecInteractionNotAllowed) inside and outside the tool sandbox in an Aqua session; continuum DL-117, DL-118 · Falsifier: an enclave key from this plugin used
+> while the Mac is locked.
+> The plugin creates keys with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`, so even with `--access-control none` a key cannot be made or used while the Mac is locked. An agent that must act
+> unattended on a locked Mac cannot unseal with it: design for it (continuum pins the verified public half of the account key so a locked Mac still encrypts captures, and anything that decrypts
+> waits for an unlock), or choose an after-first-unlock key and accept a fork. Its `--recipient-type tag` recipients (`age1tag1`) are encryptable by any age 0.12 client without the plugin.
+
 ## Updates and identity
 
 | Ring           | Size                   | Start       | Rule                                               |
