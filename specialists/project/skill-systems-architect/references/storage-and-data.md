@@ -169,6 +169,16 @@ TWO SITES: measured RTT decides the shape
 | PLP SSD for SLOG and WAL               | sync-heavy workloads      | consumer SSD without power-loss protection | high sync latency; acknowledged writes lost on power cut |
 | Two clusters plus async replication    | sites in different metros | one cluster stretched over ~12-14 ms RTT   | every write pays the RTT; outside the ~10 ms guideline   |
 
+> **Learned 2026-11-21** · single-node SeaweedFS capacity · VERIFIED_PRIMARY (observed) · Source: continuum-app `compose.yaml` (SeaweedFS 4.54, 8b25b18), SeaweedFS log "failed to find
+> writable volumes ... Not enough data nodes found" · Falsifier: a full single-node SeaweedFS that refuses S3 puts at once with an error.
+> A single-node `weed server` holds at most `-volume.max` x `-master.volumeSizeLimitMB` (8 x 64 MB = 512 MB here). When full, S3 puts did not fail fast: restic and the
+> client waited until their own timeouts, so the symptom was "every upload hangs", not "disk full". Size the store for the largest test run, watch the volume count, and look in
+> the SeaweedFS log first when uploads stall.
+>
+> ```yaml
+> command: ["server", "-dir=/data", "-master.volumeSizeLimitMB=64", "-volume.max=64", "-s3"]   # 64 x 64 MB = 4 GB (was 8 = 512 MB, filled)
+> ```
+
 ## Failure modes and tests
 
 | Failure                          | Symptom                                       | Blast radius                 | Proving test                                                           |

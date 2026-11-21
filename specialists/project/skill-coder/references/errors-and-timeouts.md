@@ -84,6 +84,18 @@ Language idioms differ (exceptions in Python and TypeScript, error values in Go,
 > ```
 - A scheduled job holds a lock so a manual run cannot overlap it. Why: two runs writing the same state corrupt it.
 
+> **Learned 2026-11-21** · upload timeouts when the server answers after storing · VERIFIED_PRIMARY · Source: continuum-app `apps/agent/src/transfer.rs` `transfer_timeout` (8b25b18) ·
+> Falsifier: a store that acknowledges before persisting, so a fixed short timeout suffices.
+> A client-wide total timeout (15 s) is right for small API calls and wrong for an upload whose response comes only after the server has stored the body (restic here): a
+> 200 MB upload timed out while the server was still working, and a retry would repeat the whole upload. Give transfers their own timeout that grows with size and is capped
+> at the server's own limit, and keep the short default for everything else.
+>
+> ```rust
+> fn transfer_timeout(bytes: usize) -> std::time::Duration {
+>   std::time::Duration::from_secs((30 + (bytes >> 20) as u64).min(300)) // 30 s + 1 s per MiB, capped at the store's 300 s
+> }
+> ```
+
 ## Retries
 
 - Retry only operations that are safe to repeat (reads, idempotent writes), a bounded number of times with backoff, and never a login. Why: an unbounded retry loop is an outage amplifier, and a

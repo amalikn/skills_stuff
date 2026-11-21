@@ -31,6 +31,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-21: references/errors-and-timeouts.md (Timeouts), Learned 2026-11-21: upload timeouts scale with size when the server answers after storing.
 - 2026-11-21: languages/rust/guide-keys.md (new, part 3 of the operator's Rust guide: enums with data, a library trait, let chains, secrets, module folders); languages/rust/learned-crates.md, Learned 2026-11-21: age tag recipients natively, plugin identities need PATH, README test vectors.
 - 2026-11-21: references/design-patterns.md, P-82 (encrypt before a content-addressed store: address the ciphertext), from continuum FR-237.
 - 2026-11-21: references/testing.md (Checks that can fail), Learned 2026-11-21: a gate verdict read from a summary line misses checks printed after it.

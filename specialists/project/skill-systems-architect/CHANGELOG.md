@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-21 (v2.3.18 -> v2.3.19): storage-and-data.md (Failure modes), Learned 2026-11-21: a full single-node SeaweedFS makes S3 puts hang, not fail; capacity = volume.max x volume size.
 - 2026-11-21 (v2.3.17 -> v2.3.18): macos-and-endpoints.md (Recovery custody), Learned 2026-11-21: age-plugin-se keys are WhenUnlockedThisDeviceOnly (unusable on a locked Mac); security-and-service-identity.md, Learned 2026-11-21: break-glass keys stay out of a vault the keychain unlocks.
 - 2026-11-21 (v2.3.16 -> v2.3.17): security-and-service-identity.md (Secrets and break-glass; Patterns table), Learned 2026-11-21: a server that chooses the recipient set defeats device-side
   encryption; client-authenticated roster, 100-bit device code, rekey only on removal.
