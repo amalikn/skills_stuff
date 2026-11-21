@@ -76,3 +76,24 @@ Part of [rust.md](../rust.md).
 > }
 > ```
 
+> **Learned 2026-11-22** · sqlx refuses a query string built with `format!` · VERIFIED_PRIMARY (compile error E0277 "dynamic SQL strings should be audited for possible
+> injections") · Source: continuum-app `apps/coordinator/tests/portal/actions.rs` (909c00e) · Falsifier: a sqlx version that accepts `&String` from `format!` in `query`.
+> `sqlx::query(&format!(...))` does not compile in this sqlx version, even in tests; keep the SQL literal and bind the value:
+
+```rust
+sqlx::query("INSERT INTO user_key (owner_subject, generation, recipient, created_by_device, created_at) VALUES ('alice', 1, $1, 'mac-1', now())")
+  .bind(format!("age1{}", "q".repeat(58)))
+  .execute(&pool)
+  .await?;
+```
+
+> **Learned 2026-11-22** · calling one axum handler from another · VERIFIED_PRIMARY (tests run) · Source: continuum-app `apps/coordinator/src/portal/actions.rs` `launch` (909c00e) ·
+> Falsifier: none expected; handlers are plain async functions. To reuse an API handler's whole logic (checks, transaction, workflow start) from a form handler, build its
+> extractors yourself and call it, then read the `Response`: `axum::body::to_bytes(resp.into_body(), limit)` gives the JSON body. One code path, no copy of the rules.
+
+```rust
+let actor = Actor { subject: s.subject.clone(), acr: None, auth_time: Some(s.auth_time) };
+let resp = crate::handoff::start(State(pool.clone()), Extension(actor), Extension(rt), Path(capsule.to_string()), headers, axum::Json(plan)).await;
+let body: Value = serde_json::from_slice(&axum::body::to_bytes(resp.into_body(), 1 << 20).await?)?;
+```
+

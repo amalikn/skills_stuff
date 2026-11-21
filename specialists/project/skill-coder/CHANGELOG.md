@@ -17,6 +17,7 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261122_0059 — sqlx dynamic SQL refusal; calling an axum handler directly](#20261122_0059--sqlx-dynamic-sql-refusal-calling-an-axum-handler-directly)
 - [20261122_0031 — Editor second windows; OnceLock memo; tar in memory](#20261122_0031--editor-second-windows-oncelock-memo-tar-in-memory)
 - [20261119_1734 — Go and Rust keep their formatter's indentation (operator)](#20261119_1734--go-and-rust-keep-their-formatters-indentation-operator)
 - [20261119_1659 — Learned: stop-at-first tests, minute-stamped names, diff before re-render](#20261119_1659--learned-stop-at-first-tests-minute-stamped-names-diff-before-re-render)
@@ -73,6 +74,10 @@ Last rotated: 20261119_1601
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261122_0059 — sqlx dynamic SQL refusal; calling an axum handler directly
+
+- languages/rust/learned-crates.md: sqlx refuses `query(&format!(...))` (bind instead); calling an axum handler from another handler by building its extractors (continuum FR-342).
+
 ## 20261122_0031 — Editor second windows; OnceLock memo; tar in memory
 
 - languages/javascript-typescript.md (isolated editor tests): a second window opened through the editor's CLI comes up in Restricted Mode (turn trust off in the profile's settings.json); on Linux the CLI needs the running Xvfb's DISPLAY and XAUTHORITY (continuum TASK-276).
