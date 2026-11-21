@@ -4,7 +4,7 @@ Category: architecture
 Status: current
 Authority: canonical
 Scope: How skill-pad's parts connect: the skill, its references and mirror, the Pad CLI and server, the projects, the backup and export paths
-Last reviewed: 2026-11-20
+Last reviewed: 2026-11-21
 Summary: >-
   skill-pad is a CLI-driven skill over a local Pad server whose data lives in tools_stuff/pad on the Data volume; repo trackers stay the truth, Pad items point at them, and
   exports and nightly backups keep copies outside Pad.
@@ -31,6 +31,11 @@ verbatim under `references/upstream/` and rewritten into topic references the sk
 | `scripts/pad_export.py`            | renders one workspace's items to Markdown in its project (run by each project's commit gate)               |
 | `scripts/pad_tracker.py`           | a Bugs or Features tracker file generated from its Pad collection: `import`, `export` (commit gate), `links` |
 | `scripts/pad_rewrite.py`           | applies a reviewed JSON spec of Pad item rewrites (bodies by seq, comments, notes, decisions); shared `pad` call |
+| `scripts/pad_format_spec.py`       | a rewrite spec laying item bodies out to the writing standard, words unchanged (`just format-spec`)           |
+| `scripts/pad_label_fill.py`        | a rewrite spec adding each missing required template label, inventing nothing (`just label-fill`)            |
+| `scripts/pad_done_backfill.py`     | a DONE closing statement for closed work items without one, quoted from their own comments (`just done-backfill`) |
+| `scripts/pad_links.py`             | bare item refs in bodies and agent comments as `[[links]]`, typed relations from a spec (`just links`)        |
+| `scripts/pad_spec_words.py`        | proves a delegated rewrite spec keeps every word before it is applied (skill-coder P-79)                     |
 | `scripts/pad_item_check.py`        | read-only check of items against the writing standard: bold labels, a closing DONE comment, an update on work in progress, logs attached (`just item-check`) |
 | `scripts/pad_decisions.py`         | mirrors a project's curator ledger and decision log (architecture and process rows) into a `decisions` collection (`just decisions`) |
 | `scripts/pad_toml_probe.py`        | upgrade test: rewrites a scratch `.pad.toml` through Pad and reports what Pad kept                          |
