@@ -228,6 +228,20 @@ def _usable(path, drive):  # drive None: always-present disk
 > creator" to every member. Compare the relation's reach with the rule it replaces before moving it, and add the dependency's failure mode (authoriser down = 503 on every
 > checked route) to the design.
 
+> **Learned 2026-11-22** · a phone as the passkey for a dev portal · UNVERIFIED (from the WebAuthn rules as known; confirm against the W3C WebAuthn Level 3 RP ID and
+> secure-context sections, https://www.w3.org/TR/webauthn-3/) · Source: continuum TASK-413, TASK-455 · Falsifier: a phone passkey prompt on a plain-HTTP LAN IP page.
+> A dev portal on `127.0.0.1` cannot be opened from a phone, and moving it to `http://<LAN IP>` does not help: passkeys need a secure context (HTTPS, or `localhost`)
+> and an RP ID that is a domain, never an IP, and a passkey made for `localhost` is unusable under any other name. On a dev stack the page stays on the computer and
+> the phone can only be the authenticator through the browser's hybrid QR flow, and only if it holds a passkey for that RP ID; when the account's only passkey was made
+> on the computer, the browser offered no phone option at all (observed; cause inferred, not confirmed). A phone that opens the page itself needs HTTPS under a hostname
+> it trusts and a passkey registered for that hostname: a deployment or network design step, not a dev setting.
+
+> **Learned 2026-11-22** · an authorisation model with no source for its relations · VERIFIED_PRIMARY (code read; fixed by migration and consumer) · Source: continuum-app
+> `migrations/0013_organisation_member.sql`, `src/authorise.rs` (cbffb5a; DL-166) · Falsifier: none. The OpenFGA model derived `can_plan` from organisation membership,
+> but no table recorded members and only tests wrote the member and owner tuples, so every real person would have been refused once a route relied on it. Before moving
+> a check into a relationship authoriser, trace each relation back to the stored fact and the code that writes its tuple; write tuples from that fact by the same
+> consumer that writes the others, and backfill existing rows.
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.

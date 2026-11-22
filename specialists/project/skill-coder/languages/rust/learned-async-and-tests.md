@@ -60,3 +60,8 @@ Part of [rust.md](../rust.md).
 > **Learned 2026-11-22** · testing code that reads an environment variable (edition 2024) · VERIFIED_PRIMARY (test passes) · Source: continuum-app `apps/cli/src/keystore.rs`
 > `mirror_to` (00c1f1f) · Falsifier: none. `std::env::set_var` is `unsafe` in edition 2024 and races between parallel tests. Keep the env read in a thin wrapper and test an inner
 > function that takes the value: `fn mirror(r, t) { mirror_to(mirror_dir().as_deref(), r, t); }`, then `assert!(!mirror_to(Some(&absent), ..))` and `mirror_to(None, ..)`.
+
+> **Learned 2026-11-22** · `?` from `Box<dyn Error + Send + Sync>` into `Box<dyn Error>` · VERIFIED_PRIMARY (E0277 "`dyn Error + Send + Sync: Sized` is not satisfied") ·
+> Source: continuum-app `apps/coordinator/tests/handoff_kit/mod.rs` (cbffb5a) · Falsifier: a std release with that conversion. A test helper returning `Box<dyn Error>`
+> cannot `?` a library error typed `Box<dyn Error + Send + Sync>`; convert through a string (`.map_err(|e| e.to_string())?`) or make the helper's error type
+> `Send + Sync` too. Related: clippy's `large_enum_variant` fired when one field grew a struct; box that field (`Box<Restic>`) rather than allow the lint.

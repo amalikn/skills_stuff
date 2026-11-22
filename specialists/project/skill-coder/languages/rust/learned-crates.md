@@ -127,3 +127,19 @@ let mut sealed_out = z.finish()?.finish()?;         // zstd, then age: both fini
 > **Learned 2026-11-22** · fastcdc 3.2.1 (`v2020`) · VERIFIED_PRIMARY (spike) · Source: continuum `spikes/p5-fastcdc/src/main.rs` (c8f4971) · Falsifier: a 4.x API change.
 > `fastcdc::v2020::FastCDC::new(&data, min, avg, max)` iterates `Chunk { offset, length, hash }`; min = avg / 4 and max = avg * 4 are the usual ratios. At 16 KiB average a
 > 719 MB tar chunked twice in about 4.5 s on one core; 16 KiB sent about half of what 64 KiB did for small edits. Hash chunks with SHA-256 for identity: `hash` is a gear hash.
+
+> **Learned 2026-11-22** · rustic_core 0.14 inside a server · VERIFIED_PRIMARY (live tests on SeaweedFS: rustic and the restic CLI read each other's snapshots) · Source:
+> continuum-app `crates/continuum-store/src/restic/rustic.rs` (f04865d) · Falsifier: a rustic_core release that backs up from a reader. `BackupOptions` with stdin
+> reads the process's own stdin (useless in a server): write the bytes to a private staged file (0700 folder, 0600 file, removed on drop) and set
+> `opts.as_path = Some("/<name>".into())` so the snapshot path matches `restic backup --stdin --stdin-filename <name>`. `BackendOptions` is `#[non_exhaustive]`:
+> no struct literal, but its pub fields can be assigned on a `default()` value. S3 is `repository = "opendal:s3"` with options `endpoint`, `bucket`, `root`,
+> `access_key_id`, `secret_access_key`, `region`. opendal keeps its own static tokio runtime, and calling it from `tokio::task::spawn_blocking` works (no nested-runtime
+> panic). Keep the CLI as a fallback, but test the library path directly: a fallback hides every library failure from end-to-end tests.
+
+```rust
+let mut opts = BackupOptions::default();
+opts.as_path = Some(PathBuf::from(format!("/{hex}")));
+let mut snap = SnapshotOptions::default().add_tags(&format!("{digest},capsule:{capsule}")).map_err(err)?;
+snap.host = Some("continuum-coordinator".into());
+r.backup(&opts, &PathList::from_string(&staged.to_string_lossy())?.sanitize()?, snap.to_snapshot()?)?;
+```

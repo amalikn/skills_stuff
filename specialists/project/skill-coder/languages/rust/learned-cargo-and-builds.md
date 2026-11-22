@@ -115,3 +115,13 @@ CARGO_INCREMENTAL=0 RUSTC_WRAPPER=sccache SCCACHE_DIR=<working-cache>/sccache CA
 > **Learned 2026-11-22** · a module over the size limit after a small change · VERIFIED_PRIMARY (code-size gate) · Source: continuum-app `apps/coordinator/src/userkey/rotate.rs`
 > `replay`, `approve.rs` `SELF_APPROVAL` (4e18e20) · Falsifier: none. Adding one guard pushed a handler from 58 to 64 lines; rustfmt's line splits did the rest. Extract a
 > cohesive step into a helper returning `Option<Response>` (None = carry on) and hoist long message strings to a `const`; never raise the limit for it.
+
+> **Learned 2026-11-22** · key derivation in unoptimised dev builds · VERIFIED_PRIMARY (measured: 4 live store tests 121 s -> 15.9 s) · Source: continuum-app `Cargo.toml`
+> `[profile.dev.package.scrypt]` (f04865d) · Falsifier: none. A crate that derives keys with scrypt (rustic_core opening a restic repository) takes tens of seconds per call
+> in a debug build. Optimise only the crypto crates in the dev profile (`[profile.dev.package.<name>] opt-level = 3` for scrypt, salsa20, pbkdf2, aes, poly1305, sha2);
+> everything else keeps fast debug compiles.
+
+> **Learned 2026-11-22** · sccache beside an incremental dev target · VERIFIED_PRIMARY (measured: gate rebuild 35 s from cache vs 94 s cold) · Source: continuum-app
+> `.githooks/pre-push`, `justfile` (144bf3f) · Falsifier: a cargo that caches incremental artefacts. sccache needs `CARGO_INCREMENTAL=0`; running it on the dev target
+> makes the push gate and everyday builds rebuild each other's work. Give the gate its own target (`CARGO_TARGET_DIR=<cache>/target-gate`) behind sccache, and let the
+> justfile honour an exported target: `export CARGO_TARGET_DIR := env("CARGO_TARGET_DIR", "<default>")`.

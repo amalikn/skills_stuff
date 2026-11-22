@@ -16,6 +16,7 @@ Last rotated: 20261122_2046
 
 ## Contents
 
+- [20261122_2341 — Decision links looked up, not recalled](#20261122_2341--decision-links-looked-up-not-recalled)
 - [20261122_2046 — Bugs close with fixed; no pad search; blocked-by](#20261122_2046--bugs-close-with-fixed-no-pad-search-blocked-by)
 - [20261122_1745 — Status values per collection; `--` before dash-led comments; collections used unprompted](#20261122_1745--status-values-per-collection----before-dash-led-comments-collections-used-unprompted)
 - [20261122_0031 — Transient comment-edit refusal retried; decision store not a log; CLI traps](#20261122_0031--transient-comment-edit-refusal-retried-decision-store-not-a-log-cli-traps)
@@ -39,6 +40,10 @@ Last rotated: 20261122_2046
 - [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
 
 ---
+
+## 20261122_2341 — Decision links looked up, not recalled
+
+references/cli-reference.md: two DECIS links written from memory pointed at missing items; look ids up with pad item list decisions --all and fix bodies with pad item update --stdin.
 
 ## 20261122_2046 — Bugs close with fixed; no pad search; blocked-by
 

@@ -3105,6 +3105,14 @@
    "generated": true,
    "local": "sources/web/sqlite.org/wal.html-d6f43ae0.md.txt",
    "checked": "2026-10-29"
+  },
+  {
+   "id": "C-092c737c",
+   "title": "www.w3.org",
+   "url": "https://www.w3.org/TR/webauthn-3/",
+   "evidence": "CITED",
+   "note": "cited in references/security-and-service-identity.md",
+   "generated": true
   }
  ]
 }
