@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261122_2358 — Learned: one-click links and a story map on plain pages; card heights
+
+references/data-first-diagrams.md, two Learned 2026-11-22 from continuum's journey.drawio: a plain drawio.mxfile.Page needs base_locked for one-click links, lanes go before their cards, a story-map page and short link schemes; page_audit() misses card labels taller than their box (screenshot 20261122-journey-one-pager).
+
 ## 20261119_1659 — compare_drawings.py; Learned: consumer drawings after a renderer change
 
 - `scripts/compare_drawings.py` (`just compare-drawings`): two drawings compared per page, labels apart from style and geometry, compressed pages read; exit 1 on a label change. Tests in `tests/test_compare_drawings.py`.

@@ -261,6 +261,21 @@ if any(faults.values()):
 return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just one-pagers", "just check"))
 ```
 
+> **Learned 2026-11-22** · one-click links and a story map on pages built without the flow-map engine · VERIFIED_PRIMARY (export reviewed; 90 links, both pages
+> locked) · Source: continuum `scripts/journey_parts.py`, `scripts/build_journey_drawio.py` (journey.drawio) · Falsifier: a plain `Page` whose links open on one click
+> without the lock. The flow-map engine locks the base layer for you (`look.lock_base_layer`); a page made with `drawio.mxfile.Page` directly does not, so set
+> `page.base_locked = True` or every link needs a double click. Cells stack in the order they are added: add a background lane before the cards in it (measure the
+> lane first). A story map (goal bar, activities as a backbone, tasks in release bands such as Built / Next / Later; the draw.io blog's story-map template) fits this
+> layout well, and resolving links from short schemes in the data keeps the map readable: `page:<id>` -> `data:page/id,<id>`, a tracker item -> its web URL, a repo
+> file -> a localhost opener that redirects to `vscode://file/...`, a decision id -> that row's line.
+
+```python
+page = Page("story-map", "Story map")
+page.base_locked = True                                    # one click follows a box's link
+page.box(f"lane-{b}", label(name), x, y, w, lane_h, LANE)   # lane first, so its cards sit on top
+card(page, cid, [text], (x, cy), kind, W, link)            # link resolved from "pad:TASK-1", "file:ROADMAP.md", "page:journey"
+```
+
 > **Learned 2026-11-22** · card heights on a page without flows · VERIFIED_PRIMARY (export reviewed; screenshot `references/screenshots/20261122-journey-one-pager/`) · Source:
 > continuum `scripts/build_journey_drawio.py` (journey one-pager) · Falsifier: `page_audit()` reporting text past a card's bottom edge. `page_audit()` checks routes,
 > overlaps and marks, not whether a card's label fits its height: the first render passed the audit with the last line of three cards below their border. Size cards
