@@ -23,6 +23,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Next actions
 
+- 2026-11-22: v2.3.12 write-back from continuum (untrusted managed browsers as a front end). Next: verify WebSocket behaviour behind a TLS-inspecting proxy when a real guest PC is available.
+
 - 2026-11-21: the edge allowlist miss recurred; the route-coverage check was built the same day in continuum-app (edge_routes_check.py, bce8978); promote it to a generic helper when a second project with a path-allowlisting edge needs it.
 1. Operator: `git -C /Volumes/Data/_ai/_skills/skills_stuff push origin main` (auto mode refused the agent's push).
 2. Verify the open items: nbn maximum frame sizes for RFC 4638, whether the POI count changed since 2012, carrier-side STIR, PRI format.

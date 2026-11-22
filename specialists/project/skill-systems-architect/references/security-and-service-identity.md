@@ -151,6 +151,27 @@ Legend: --> issue, present or revoke   PEP = policy enforcement point
 > `hostname` is a fixed full URL; then `hostname-backchannel-dynamic=true` lets back-channel calls (device authorization, token) arrive by any name while the issuer and the
 > approval link stay on the one URL a browser can open. Pick that URL by where the person approves, not where the agent runs.
 
+> **Learned 2026-11-22** · testing passkey-only flows without a person · VERIFIED_PRIMARY (built and run: registration, device grant, portal step-up and CLI, all accepted by
+> Keycloak 26.8.2) · Source: continuum-app `scripts/soft_passkey.py`, `scripts/devbot.py` (cddb5cd); Red Hat KB 6988073 · Falsifier: a Keycloak release that puts the real
+> `auth_time` in password-grant tokens.
+> A password grant (direct access grant) does not stand in for a person in a step-up design: Keycloak's password-grant tokens carry no real `auth_time`, so any "signed in within
+> N minutes" check fails, and enabling it is an exception to a passkey-only rule. A software WebAuthn authenticator does: an ES256 key (signed with `openssl`, key on stdin),
+> attestation "none", flags UP+UV, answering the IdP's own registration and sign-in pages, so the test user passes the real browser flow, device grant and step-up. Keep it to
+> dev and test realms (refuse elsewhere), its key in the operator's vault, and a guard that fails if product code ever names the test user.
+>
+> ```python
+> auth_data = sha256(rp_id) + bytes([0x05]) + (0).to_bytes(4, "big")          # UP+UV, no counter
+> cd = json.dumps({"type": "webauthn.get", "challenge": challenge, "origin": origin, "crossOrigin": False})
+> sig = openssl(["dgst", "-sha256", "-sign", "/dev/stdin", data_file], key_pem)  # DER ES256
+> ```
+
+> **Learned 2026-11-22** · signing in on an untrusted, managed browser with a phone passkey · VERIFIED_PRIMARY (CTAP 2.2 section 11.5; Windows passkeys docs; Chrome and Edge
+> policy files, read 2026-11-22) · Source: continuum `docs/research/guest-pc-20261122/browser-constraints.md` · Falsifier: a browser or OS adding a Bluetooth-free hybrid transport.
+> WebAuthn hybrid (QR on the PC, passkey on the phone) needs Bluetooth on the PC (a proximity advert) and the CTAP relay domains (`cable.ua5v.com`, `cable.auth.com`); IT can
+> block Bluetooth by policy (Windows Bluetooth CSP) although no browser policy turns hybrid off. Design a Bluetooth-free path that always works: the guest page shows a short-lived
+> code and QR, the phone (already signed in with its passkey) approves it after a step-up while showing the guest's browser and address, and the guest gets a first-party session
+> cookie. It has the device-code phishing exposure, so: one use, two minutes, the code and requester shown on the phone.
+
 ## Secrets and break-glass
 
 Lifecycle: create -> store (vault of record) -> distribute (runtime fetch, never git) -> use -> rotate -> revoke -> destroy.

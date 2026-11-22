@@ -202,6 +202,21 @@ Each limit, its consequence, the design response and the evidence:
 - Before declaring a site down, check the access path (certificate validity, proxy login, agent status) and try the second path. A fleet
   where most targets fail at the same moment with the same error is a shared-dependency failure until proven otherwise.
 
+
+> **Learned 2026-11-22** · reaching a self-hosted service from an untrusted, enterprise-managed browser · VERIFIED_PRIMARY (Chrome policy templates, Edge policy docs, CTAP 2.2
+> section 11.5, Keycloak JS adapter, code-server guide; read 2026-11-22) · Source: continuum `docs/research/guest-pc-20261122/`, review `guest-pc-architect-review-20261122_1706.md`
+> · Falsifier: a managed fleet where a WebSocket-free tool works through the same proxies.
+> Design for the strictest guest: 443/TCP only (HTTPS and WSS, no QUIC reliance); one registrable domain for the app and its IdP so no third-party cookies or iframes are
+> needed (`BlockThirdPartyCookies`, always on in InPrivate); clients that reconnect and send heartbeats every 20-30 s, because TLS-inspecting proxies cut idle or long-lived
+> WebSockets and every web terminal, IDE and remote desktop needs them (only Guacamole has an HTTP-tunnel fallback, unverified); no dependence on the Clipboard API,
+> uploads or downloads (`DefaultClipboardSetting`, `AllowFileSelectionDialogs`, `DownloadRestrictions`); a publicly trusted certificate and early URL categorisation of a
+> new domain. Phone-passkey "hybrid" sign-in also needs the CTAP relay domains (`cable.*`) reachable and Bluetooth on the PC; a phone-approved pairing code avoids both.
+>
+> ```text
+> guest browser --443 HTTPS/WSS--> edge (one domain: app.<d>, auth.<d>) --forward-auth--> app / IdP
+>              (no 3rd-party cookies, heartbeat + reconnect, no clipboard/upload/download reliance)
+> ```
+
 ## Patterns and anti-patterns
 
 | Pattern                            | Use when                 | Anti-pattern                     | Why it fails                                    |

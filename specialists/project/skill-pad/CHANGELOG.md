@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261121_1949
+Last rotated: 20261122_1738
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261122_1745 — Status values per collection; `--` before dash-led comments; collections used unprompted](#20261122_1745--status-values-per-collection----before-dash-led-comments-collections-used-unprompted)
 - [20261122_0031 — Transient comment-edit refusal retried; decision store not a log; CLI traps](#20261122_0031--transient-comment-edit-refusal-retried-decision-store-not-a-log-cli-traps)
 - [20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit](#20261121_1950--label-fill-and-done-backfill-scripts-fields-as-a-json-string-a-refused-comment-edit)
 - [20261121_1908 — Tech Debt closes with resolved, not done](#20261121_1908--tech-debt-closes-with-resolved-not-done)
@@ -36,25 +37,28 @@ Last rotated: 20261121_1949
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 - [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
 - [20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders](#20261119_1820--ansible-wifi-workspace-adapted-conventions-file-one-workspace-for-three-folders)
-- [20261119_1648 — SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it](#20261119_1648--skillmd-names-installed-cli-0210---op-key-rule-names-the-commands-that-take-it)
-- [20261119_1631 — Periodic review; 90-day review window](#20261119_1631--periodic-review-90-day-review-window)
-- [20261119_1609 — Workspace init from an agent shell; conventions recipe quoting](#20261119_1609--workspace-init-from-an-agent-shell-conventions-recipe-quoting)
-- [20261119_1551 — CLI traps from smc-resiliency: octet-stream attachments refused, dash-led comment text](#20261119_1551--cli-traps-from-smc-resiliency-octet-stream-attachments-refused-dash-led-comment-text)
-- [20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority](#20261119_1550--cli-traps-no-attachment-delete-comments-not-in-item-show-tech-debt-priority)
 
 ---
 
+## 20261122_1745 — Status values per collection; `--` before dash-led comments; collections used unprompted
+
+- references/cli-reference.md (Traps), Learned 2026-11-22: allowed statuses per collection (asks, feature requests, bugs, tasks, tech debt); `--` lets a comment start with `-`; plans have no priority
+  field; operator rule to use every collection unprompted (continuum).
+
 ## 20261122_0031 — Transient comment-edit refusal retried; decision store not a log; CLI traps
 
-- scripts/pad_rewrite.py, pad_links.py, pad_retry.sh: the comment-edit capability refusal ("does not advertise item_scoped_comment_writes") is retried with backoff like `rate_limited` (`TRANSIENT`); continuum 2026-11-22 saw 11 such refusals, each applied on a rerun.
+- scripts/pad_rewrite.py, pad_links.py, pad_retry.sh: the comment-edit capability refusal ("does not advertise item_scoped_comment_writes") is retried with backoff like `rate_limited` (`TRANSIENT`);
+  continuum 2026-11-22 saw 11 such refusals, each applied on a rerun.
 - scripts/pad_item_check.py: a `*decisions.jsonl` store named in an item is no longer reported as a log to attach (continuum TASK-27 false positive).
-- references/cli-reference.md Traps: the refusal recurs under bursts; `--` before a comment body starting with `-`; a long DONE comment needs bullets too; pad_rewrite order (notes first in their own spec). Tests: `just test` 88 OK.
+- references/cli-reference.md Traps: the refusal recurs under bursts; `--` before a comment body starting with `-`; a long DONE comment needs bullets too; pad_rewrite order (notes first in their own
+  spec). Tests: `just test` 88 OK.
 
 ## 20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit
 
 - scripts/pad_label_fill.py (`just label-fill`): a rewrite spec adding each missing required template label, inventing nothing; tests/test_pad_label_fill.py.
 - scripts/pad_done_backfill.py (`just done-backfill`): a DONE closing statement for closed work items without one, quoted from their own comments; tests/test_pad_done_backfill.py.
-- references/cli-reference.md: `fields` comes as a JSON string; one comment edit refused while others in the run succeeded. Used on continuum 2026-11-21: 48 bodies filled, 26 closing statements, 39 link writes.
+- references/cli-reference.md: `fields` comes as a JSON string; one comment edit refused while others in the run succeeded. Used on continuum 2026-11-21: 48 bodies filled, 26 closing statements, 39
+  link writes.
 
 ## 20261121_1908 — Tech Debt closes with resolved, not done
 
@@ -62,31 +66,45 @@ Last rotated: 20261121_1949
 
 ## 20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial
 
-- references/cli-reference.md: Disputed 2026-11-20 beside the 2026-11-19 refusal (comment-edit worked four times on 0.21.1); Learned 2026-11-20: Feature Requests use
-  `building`, not `in-progress`; `item list --format json` returns part of a collection, so read refs with `item show` and never write placeholder links.
+- references/cli-reference.md: Disputed 2026-11-20 beside the 2026-11-19 refusal (comment-edit worked four times on 0.21.1); Learned 2026-11-20: Feature Requests use `building`, not `in-progress`;
+  `item list --format json` returns part of a collection, so read refs with `item show` and never write placeholder links.
 
 ## 20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)
 
-- scripts/pad_item_check.py: `stale` rule: an in-progress item with no item update, comment or note for `--stale-hours` (default 24); the recent list always includes every in-progress item, however old. 2 tests (79 OK). SKILL.md rule "No item left in the wrong state": at session start run item-check and resume each stale item or set it back to open with a comment saying why. First runs: smc-resiliency 217 items clean (three idle items had been reset by hand the same evening: TASK-14, TASK-96, TASK-98); ansible-wifi 3 comments with bullets on one line, split. Operator, 2026-11-20.
+- scripts/pad_item_check.py: `stale` rule: an in-progress item with no item update, comment or note for `--stale-hours` (default 24); the recent list always includes every in-progress item, however
+  old. 2 tests (79 OK). SKILL.md rule "No item left in the wrong state": at session start run item-check and resume each stale item or set it back to open with a comment saying why. First runs:
+  smc-resiliency 217 items clean (three idle items had been reset by hand the same evening: TASK-14, TASK-96, TASK-98); ansible-wifi 3 comments with bullets on one line, split. Operator, 2026-11-20.
 
 ## 20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)
 
-- scripts/pad_item_check.py: two rules. `comments`: a comment from 2026-11-18 on, over 200 characters, with no `- **Label:**` bullet line. `refs`: an item ref of this workspace or a DL id (where the workspace has a Decisions collection) written as plain text, in the body or a comment from 2026-11-20 on. Another workspace's ref or a typo is not reported. 5 tests (77 OK). First run on smc-resiliency: 14 findings, cleared by `just links` and a word-for-word bullet conversion; TASK-92's non-existent BUG-89 found and corrected to BUG-91. Operator, 2026-11-20: TASK-53 passed item-check while its start comment was one paragraph and its body linked nothing.
+- scripts/pad_item_check.py: two rules. `comments`: a comment from 2026-11-18 on, over 200 characters, with no `- **Label:**` bullet line. `refs`: an item ref of this workspace or a DL id (where the
+  workspace has a Decisions collection) written as plain text, in the body or a comment from 2026-11-20 on. Another workspace's ref or a typo is not reported. 5 tests (77 OK). First run on
+  smc-resiliency: 14 findings, cleared by `just links` and a word-for-word bullet conversion; TASK-92's non-existent BUG-89 found and corrected to BUG-91. Operator, 2026-11-20: TASK-53 passed
+  item-check while its start comment was one paragraph and its body linked nothing.
 
 ## 20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted
 
-- docs/pad-usage-guidelines-20261110_1628.md 3.3: Templates by collection (operator 2026-11-20, Extend and enforce): required and optional labels for plans, tasks, bugs, tech debt, ideas, asks, feature requests (a one-line request keeps the operator's words), decisions, conventions; the closing-comment check is for work only. 3.4: component tags in a workspace shared by several projects or packs (operator 2026-11-20). Section 6 step 6: trial over, Pad adopted for all important projects (unc ASK-237).
-- scripts/pad_item_check.py: required labels per collection; closing-comment and log checks only on work collections (a decision naming its .jsonl ledger is not a log: 102 false findings in continuum); a one-line feature request is exempt even with a cut title; a collection missing from a workspace is skipped. Tests added.
-- scripts/pad_decisions.py: bold labels in both generated bodies (Serves, Question, Decision, Reason, Versions, Source); unc 34, smc-resiliency 100, continuum 191 and enterprise-strategy 128 decisions re-synced.
+- docs/pad-usage-guidelines-20261110_1628.md 3.3: Templates by collection (operator 2026-11-20, Extend and enforce): required and optional labels for plans, tasks, bugs, tech debt, ideas, asks,
+  feature requests (a one-line request keeps the operator's words), decisions, conventions; the closing-comment check is for work only. 3.4: component tags in a workspace shared by several projects or
+  packs (operator 2026-11-20). Section 6 step 6: trial over, Pad adopted for all important projects (unc ASK-237).
+- scripts/pad_item_check.py: required labels per collection; closing-comment and log checks only on work collections (a decision naming its .jsonl ledger is not a log: 102 false findings in
+  continuum); a one-line feature request is exempt even with a cut title; a collection missing from a workspace is skipped. Tests added.
+- scripts/pad_decisions.py: bold labels in both generated bodies (Serves, Question, Decision, Reason, Versions, Source); unc 34, smc-resiliency 100, continuum 191 and enterprise-strategy 128 decisions
+  re-synced.
 - scripts/pad_links.py: agent-written comments linked as well as bodies (operator: "Unblocked: ASK-237 answered" went out unlinked); a person's comment is never edited. Test with a fake pad.
 - scripts/pad_conventions.py: retries a rate-limited call (three of four applies had stopped). Tests.
-- conventions/apn-baseline.toml and ansible-wifi.toml: every content as Rule and Source; writing-standard names every template, links in comments and component tags; pad-owned-trackers drops the old bug first-line form. Applied to unc, smc-resiliency, enterprise-strategy (without pad-owned-trackers) and ansible-wifi; a second plan shows 0 changes. unc's CONVE-24 tracker list restored (an earlier run today had replaced it with docs/trackers/).
-- docs/flows/: draw.io flow map (operator 2026-11-20): 11 flows in four families rendered by skill-drawio's engine; just flows, just flows-check in just check (drift, code citations, layout audits clean).
-- SKILL.md Rules: links in comments and status comments; skill work goes to the skills workspace (operator 2026-11-20). Pad items: skills TASK-12, TASK-13, TASK-14 (tag skill-pad); ansible-wifi items tagged by component (ansible-wifi 20, local-knowledge 7, skill-smc 1).
+- conventions/apn-baseline.toml and ansible-wifi.toml: every content as Rule and Source; writing-standard names every template, links in comments and component tags; pad-owned-trackers drops the old
+  bug first-line form. Applied to unc, smc-resiliency, enterprise-strategy (without pad-owned-trackers) and ansible-wifi; a second plan shows 0 changes. unc's CONVE-24 tracker list restored (an
+  earlier run today had replaced it with docs/trackers/).
+- docs/flows/: draw.io flow map (operator 2026-11-20): 11 flows in four families rendered by skill-drawio's engine; just flows, just flows-check in just check (drift, code citations, layout audits
+  clean).
+- SKILL.md Rules: links in comments and status comments; skill work goes to the skills workspace (operator 2026-11-20). Pad items: skills TASK-12, TASK-13, TASK-14 (tag skill-pad); ansible-wifi items
+  tagged by component (ansible-wifi 20, local-knowledge 7, skill-smc 1).
 
 ## 20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)
 
-- scripts/pad_retry.sh (new), `just pad` recipe, tests/test_pad_retry.py (4 tests: retry then success with stdin replayed, give up at the limit, no retry on success, bad usage); SKILL.md rule; references/cli-reference.md Learned entry on the per-user limiter (server log of 20 Nov); scripts/README.md, code-map.toml. 63 tests OK.
+- scripts/pad_retry.sh (new), `just pad` recipe, tests/test_pad_retry.py (4 tests: retry then success with stdin replayed, give up at the limit, no retry on success, bad usage); SKILL.md rule;
+  references/cli-reference.md Learned entry on the per-user limiter (server log of 20 Nov); scripts/README.md, code-map.toml. 63 tests OK.
 
 ## 20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits
 
@@ -94,14 +112,17 @@ Last rotated: 20261121_1949
 
 ## 20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only
 
-- `scripts/pad_decisions.py`: `--architecture PATH` mirrors the decision bullets of that document's `## Key decisions` section (unc keeps its decisions in ARCHITECTURE.md, not a DL log); refs are register ids (D17, S20, X2) or `ARCH-<slug>`; a status note without DECIDED, SETTLED, RESOLVED, still open or (operator, date) is skipped and listed; items whose ref left every source are listed as orphaned, never changed (a renamed bullet gets a new slug). Tests: `tests/test_pad_decisions.py` Architecture, orphans. unc: 34 decisions mirrored, a re-run plans 0 creates and 0 updates (3.5 s).
+- `scripts/pad_decisions.py`: `--architecture PATH` mirrors the decision bullets of that document's `## Key decisions` section (unc keeps its decisions in ARCHITECTURE.md, not a DL log); refs are
+  register ids (D17, S20, X2) or `ARCH-<slug>`; a status note without DECIDED, SETTLED, RESOLVED, still open or (operator, date) is skipped and listed; items whose ref left every source are listed as
+  orphaned, never changed (a renamed bullet gets a new slug). Tests: `tests/test_pad_decisions.py` Architecture, orphans. unc: 34 decisions mirrored, a re-run plans 0 creates and 0 updates (3.5 s).
 - `scripts/pad_links.py`: a mirrored register id (`D17`) becomes `[[DECIS-n|D17]]`; never `D17-03` or `D3.6`. New `tests/test_pad_links.py` (4 tests).
 - `references/cli-reference.md` Traps: Learned 2026-11-20, workspace rename is web-UI and name-only (slug read-only); reads are rate-limited too.
 - unc workspace brought to the smc-resiliency and continuum layout: Asks and Decisions collections, baseline conventions plus decisions-mirror and progress-record, 52 bodies laid out, links applied.
 
 ## 20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)
 
-- scripts/pad_links.py and `just links`: bare item refs and decision ids in bodies become `[[REF]]` / `[[DECIS-n|DL-058]]` wiki-links; a JSON spec adds typed relations (blocks, implements, split-from, supersedes); plan by default, idempotent. Operator, 2026-11-20 (continuum ASK-251): references must be clickable and dependencies recorded in the relationship section.
+- scripts/pad_links.py and `just links`: bare item refs and decision ids in bodies become `[[REF]]` / `[[DECIS-n|DL-058]]` wiki-links; a JSON spec adds typed relations (blocks, implements, split-from,
+  supersedes); plan by default, idempotent. Operator, 2026-11-20 (continuum ASK-251): references must be clickable and dependencies recorded in the relationship section.
 - references/items-and-edits.md rule 6 rewritten to require both. First run in continuum: 13 bodies and 13 relations.
 - SKILL.md "Tickets tell the whole story" gains the links-and-relations bullet, so every project loads the rule, not only items-and-edits readers.
 
@@ -119,9 +140,11 @@ check fails on a KEEP decision with no log row (negative test: rc 1 with a row r
 - SKILL.md Rules: new rule after "Claim before working an item": work found in Pad is claimed and set `in-progress` before it starts; work not in Pad gets an item created first, then kept current and
   closed with the closing statement (operator, 20 Nov 2026, from the enterprise-strategy hub session; hub items TASK-19, TASK-144, TASK-145 were run this way).
 - references/cli-reference.md Traps: a comment message starting with `-` is read as a flag and refused (v0.21.1); use `--stdin`.
-- Duplicate removed: a parallel session committed this rule and its own fuller "Work is visible in Pad" rule together (a0fea8bb); this rule's text is dropped and its "a relay, a write-back or a side task counts as work" clause joins the kept rule.
+- Duplicate removed: a parallel session committed this rule and its own fuller "Work is visible in Pad" rule together (a0fea8bb); this rule's text is dropped and its "a relay, a write-back or a side
+  task counts as work" clause joins the kept rule.
 - 20261120_1425: housekeeping exception (operator, 20 Nov 2026): closeout, slurp, skill write-backs, coherence sweeps and staleness audits get no Pad item; "a write-back" dropped from the work clause.
-- SKILL.md Rules: "Never add to Pad" lists the housekeeping kinds (closeout and slurps, write-backs, coherence sweeps, staleness audits, record upkeep, sync reports, memory saves, their commits) (operator, 20 Nov 2026).
+- SKILL.md Rules: "Never add to Pad" lists the housekeeping kinds (closeout and slurps, write-backs, coherence sweeps, staleness audits, record upkeep, sync reports, memory saves, their commits)
+  (operator, 20 Nov 2026).
 
 ## 20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
 
@@ -171,28 +194,3 @@ cherry-picks to iridium and master, lint/syntax-check/pre-push ansible-lint gate
 clone (a symlink to its own real file in ansible-wifi-root-governance, excluded in .git/info/exclude, so a rewrite through the clone never touches the local-knowledge file), and skill-smc inside
 skills_stuff, whose nearer `.pad.toml` overrides the skills_stuff root link for that folder only (bootstrap resolves each to the right slug, checked 2026-11-19). The startup template does not create
 Bugs, Feature Requests or Tech Debt: they were created from `conventions/collection-schemas/`.
-
-## 20261119_1648 — SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it
-
-SKILL.md states pad 0.21.0 installed (pad --version, 2026-11-19) while the references and the upstream mirror stay mapped from v0.19.2. The --op-key rule now lists the 0.21.0 commands that accept it
-(item create, patch, comment, note, decide, copy, chat send, push) and says item update has none, read from pad help --format md on 2026-11-19 (references/cli-reference.md Learned 2026-11-18).
-
-## 20261119_1631 — Periodic review; 90-day review window
-
-- Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now
-  90 days (`--window-days 90` in the justfile).
-
-## 20261119_1609 — Workspace init from an agent shell; conventions recipe quoting
-
-- `references/cli-reference.md` Learned 2026-11-19 (Pad 0.21.0, skills_stuff): `pad workspace init` works without a terminal when signed in and still writes two skill copies; one root `.pad.toml`
-  serves a whole repo. `justfile` `conventions` passes arguments with `[positional-arguments]` and `"$@"`, so a spaced `--trackers` value is no longer split.
-
-## 20261119_1551 — CLI traps from smc-resiliency: octet-stream attachments refused, dash-led comment text
-
-- `references/cli-reference.md`: Learned 2026-11-19 (Pad 0.21.0, smc-resiliency): `attachment upload` refuses application/octet-stream (strip a console log to text first); a comment whose text starts
-  with `-` needs `--`; body rewrite with `--stdin --replace`.
-
-## 20261119_1550 — CLI traps: no attachment delete, comments not in item show, Tech Debt priority
-
-- `references/cli-reference.md` Traps: Learned 2026-11-19 (Pad 0.21.0, continuum workspace): no attachment delete or replace (correct with a CORRECTION comment); comments only through `pad item
-  comments`; Tech Debt stores `--priority` undeclared; rate limits on back-to-back calls.

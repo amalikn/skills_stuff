@@ -47,9 +47,8 @@ Part of [rust.md](../rust.md).
 > ```
 
 > **Learned 2026-11-19** · clippy `result_large_err` on axum helpers · VERIFIED_PRIMARY (clippy 1.100 `-D warnings`) · Source: continuum-app `apps/coordinator/src/artefact.rs` `refusal` (TASK-216) ·
-> Falsifier: clippy accepting `Result<T, axum::response::Response>`
-> A helper that returns `Result<T, Response>` so handlers can `?` an early refusal trips `clippy::result_large_err` (Response is at least 128 bytes). Never silence it: when the
-> success value carries nothing, return `Option<Response>` (`Some` = refuse); otherwise box the error (`Result<T, Box<Response>>`).
+> Falsifier: clippy accepting `Result<T, axum::response::Response>` A helper that returns `Result<T, Response>` so handlers can `?` an early refusal trips `clippy::result_large_err` (Response is at
+> least 128 bytes). Never silence it: when the success value carries nothing, return `Option<Response>` (`Some` = refuse); otherwise box the error (`Result<T, Box<Response>>`).
 >
 > ```rust
 > async fn refusal(pool: &PgPool, a: &Artefacts, edge: &Edge, peer: Option<SocketAddr>, h: &HeaderMap, capsule: &str) -> Option<Response> { /* Some(problem(..)) to refuse */ }
@@ -57,9 +56,8 @@ Part of [rust.md](../rust.md).
 > ```
 
 > **Learned 2026-11-19** · workspace lints and tests · VERIFIED_PRIMARY (clippy `unwrap_used` denied in a test module) · Source: continuum-app `crates/continuum-store/src/artefacts.rs` tests ·
-> Falsifier: a workspace whose `[lints]` excludes test code
-> Workspace `[lints]` (here `unwrap_used = "deny"`) apply to `#[cfg(test)]` modules too. Write tests that return `Result` and use `?`; match error variants with `matches!` rather than
-> `unwrap_err()`.
+> Falsifier: a workspace whose `[lints]` excludes test code Workspace `[lints]` (here `unwrap_used = "deny"`) apply to `#[cfg(test)]` modules too. Write tests that return `Result` and use `?`; match
+> error variants with `matches!` rather than `unwrap_err()`.
 >
 > ```rust
 > type R = Result<(), Box<dyn std::error::Error>>;
@@ -73,12 +71,28 @@ Part of [rust.md](../rust.md).
 > ```
 
 > **Learned 2026-11-22** · a test that compiles only in a workspace build · VERIFIED_PRIMARY (cargo test -p continuum-cli failed: "no testkit in the root", `cargo test --workspace`
-> passed) · Source: continuum-app `apps/cli/Cargo.toml` (2b2eb8f) · Falsifier: none expected; Cargo unifies features across a build.
-> A crate's tests that use another crate's feature-gated helpers (`test-support`) compile in `cargo test --workspace` because some other crate turned the feature on,
-> then fail alone. Declare the feature in the crate's own dev-dependency (`continuum-coordinator = { path = "../coordinator", features = ["test-support"] }`).
+> passed) · Source: continuum-app `apps/cli/Cargo.toml` (2b2eb8f) · Falsifier: none expected; Cargo unifies features across a build. A crate's tests that use another crate's feature-gated helpers
+> (`test-support`) compile in `cargo test --workspace` because some other crate turned the feature on, then fail alone. Declare the feature in the crate's own dev-dependency (`continuum-coordinator =
+> { path = "../coordinator", features = ["test-support"] }`).
 
 > **Learned 2026-11-22** · release size: strip, LTO, codegen-units · VERIFIED_PRIMARY (measured, macOS arm64) · Source: continuum-app `Cargo.toml` [profile.release] (bb17d15) ·
-> Falsifier: a crate set where LTO grows the binary. `strip = "symbols"`, `lto = "fat"`, `codegen-units = 1` cut an axum/tokio service 37.4 -> 18.9 MB and a CLI 7.2 -> 4.3 MB;
-> the release build went 110 -> 203 s; `lto = "thin"` gave 21.2 / 5.2 MB in 157 s. Keep opt-level 3 where hot paths matter, and unwinding where a panic in one request must not
-> stop a server.
+> Falsifier: a crate set where LTO grows the binary. `strip = "symbols"`, `lto = "fat"`, `codegen-units = 1` cut an axum/tokio service 37.4 -> 18.9 MB and a CLI 7.2 -> 4.3 MB; the release build went
+> 110 -> 203 s; `lto = "thin"` gave 21.2 / 5.2 MB in 157 s. Keep opt-level 3 where hot paths matter, and unwinding where a panic in one request must not stop a server.
+
+> **Learned 2026-11-22** · one program under two binary names · VERIFIED_PRIMARY (cargo build; `just test` 122 pass) · Source: continuum-app `apps/agent/src/{lib,main,c7m_agent}.rs`,
+> `apps/coordinator/src/c7m_coordinator.rs`, `apps/*/Cargo.toml` (db6a16e, dca1a91) · Falsifier: a Cargo release that allows one `path` in several `[[bin]]` without a warning. Two `[[bin]]` entries
+> with the same `path` build but warn "found to be present in multiple build targets". Without a warning: move the program into the library (`pub async fn run()`) and make each binary a three-line
+> `main` calling it; or, when `main.rs` only uses the library's paths, load it in the second binary with `#[path = "main.rs"] mod entry;` and call `entry::main()` (fails when `main.rs` declares `mod`s
+> that use `crate::` paths). Either way add `default-run` to the package: with two binaries `cargo run -p <pkg>` refuses to pick one (a dev recipe broke on it).
+>
+> ```toml
+> [package]
+> default-run = "continuum-agent"
+> [[bin]]
+> name = "continuum-agent"
+> path = "src/main.rs"
+> [[bin]]
+> name = "c7m-agent"
+> path = "src/c7m_agent.rs"   # #[tokio::main] async fn main() -> ... { continuum_agent::run().await }
+> ```
 

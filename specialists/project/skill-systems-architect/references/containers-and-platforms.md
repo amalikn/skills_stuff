@@ -131,6 +131,28 @@ Platform layers: a failure at any layer takes down every layer above it on that 
 > [ -n "$free_gib" ] && [ "$free_gib" -ge "${MIN_FREE_GIB:-10}" ] || { echo "Docker VM has ${free_gib:-unknown} GiB free" >&2; exit 1; }
 > ```
 
+> **Learned 2026-11-22** · the same JVM crash again, with the disk full · VERIFIED_PRIMARY (observed: Keycloak exited in `PerfLongVariant::sample`, this time as SIGTRAP, while the
+> Docker VM overlay showed 96 MB free of 75 GB) · Source: continuum BUG-398, BUG-394 · Falsifier: the frame recurring with ample disk.
+> Supports the 2026-11-20 entry above: the perf-data crash followed the VM disk filling (765 leaked test databases). The signal varies (SIGBUS, SIGTRAP); the cause is the
+> memory-mapped perf file. Check the disk first; `-XX:-UsePerfData` removes the mapping if a JVM must survive a full disk.
+
+> **Learned 2026-11-22** · OrbStack: disk, orphan endpoints, and state kept inside containers · VERIFIED_PRIMARY (observed on OrbStack 2.2.5; `orbctl config show`) · Source:
+> continuum-app `compose.yaml` (48c599b); continuum DL-144, DL-146 · Falsifier: an OrbStack release with a fixed-size data image.
+> 1. OrbStack's Docker VM disk has no size setting (`machine.docker.disk_bytes: 0`): it grows into the Mac's free space, so "VM disk full" means "Mac disk full" and the
+>    fix is host space (deleting an unused OrbStack machine freed 22 GiB at once), not a setting as on Docker Desktop.
+> 2. After the disk filled and a container died, the compose network kept an orphan endpoint named after it ("endpoint with name X already exists"); `network disconnect -f`,
+>    recreate and rename did not clear it; only an engine restart (`orbctl restart docker`, 6 s) did. Plan the restart: in-memory services (a dev OpenBao) lose their state.
+> 3. A service whose data lives in the container filesystem (Keycloak dev mode H2) loses it on recreate: give it a named volume, mounted at a directory the image already
+>    owns (`/opt/keycloak/data`), because a new volume copies the image directory's ownership; mounted at a path the image lacks (`data/h2`) it starts root-owned and a
+>    non-root service cannot open its database (two failed CI runs). Prove it by `--force-recreate` and reading the data back.
+>
+> ```yaml
+> keycloak:
+>   volumes: ["./keycloak/realm:/opt/keycloak/data/import:ro", "keycloak-data:/opt/keycloak/data"]
+> volumes:
+>   keycloak-data:
+> ```
+
 ## Kubernetes essentials
 
 - etcd needs a majority: quorum = (n/2)+1. Run 3 or 5 members; an even count adds no tolerance. VERIFIED_PRIMARY, [etcd-faq], checked 2026-10-29.

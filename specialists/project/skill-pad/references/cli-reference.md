@@ -81,9 +81,9 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > ```
 
 > **Disputed 2026-11-20** · `pad item comment-edit` on the Continuum workspace · VERIFIED_PRIMARY (observed four times) · Source: Continuum session 2026-11-20 night,
-> `pad item comment-edit TASK-283 <id> "..."` (also TASK-288, TASK-25, FR-237) answered "Comment <id> on <ref> updated" · Falsifier: the refusal above returning on
-> the same server and CLI · Conflicts: Learned 2026-11-19 (comment edits refused). On CLI 0.21.1 against the same local server, comment edits worked all evening. The
-> server's advertisement can change between restarts, so try `comment-edit` first and keep the add-a-new-comment fallback for a refusal.
+> `pad item comment-edit TASK-283 <id> "..."` (also TASK-288, TASK-25, FR-237) answered "Comment <id> on <ref> updated" · Falsifier: the refusal above returning on the same server and CLI · Conflicts:
+> Learned 2026-11-19 (comment edits refused). On CLI 0.21.1 against the same local server, comment edits worked all evening. The server's advertisement can change between restarts, so try
+> `comment-edit` first and keep the add-a-new-comment fallback for a refusal.
 
 ## Traps
 
@@ -108,6 +108,15 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED (three refused comments, one session) · Source: `pad item comment TASK-145 "- **What:** ..."` → `Error: unknown shorthand flag: ' '` · Falsifier: a message argument starting with `-` saved as a comment
 > A message argument that starts with `-` (a bullet list) is parsed as a flag and refused; the usage text goes to stdout, so `| tail -1` hides the error. Pass bullet comments with `--stdin` and a
 > heredoc, and check for `Comment added` in the output.
+
+> **Learned 2026-11-22** · Pad CLI v0.21.x · VERIFIED_PRIMARY (observed, continuum workspace) · Source: continuum session 2026-11-22 (ASK-367, FR-344, PLAN-384, TD-363 comment) ·
+> Falsifier: a collection schema change in the workspace.
+> - Status values differ per collection and a wrong one is refused with the allowed list: asks `open | answered | withdrawn`; feature requests `submitted | under-review |
+> planned | building | shipped | declined`; bugs end `fixed`; tasks end `done`; tech debt starts `identified`. Read the refusal, never guess.
+> - `--` ends option parsing: `pad item comment TD-363 --workspace continuum -- '- **What:** ...'` posts a comment that starts with `-` (simpler than `--stdin`).
+> - The plans collection has no `priority` field: `pad item create plans ... --priority high` stores it "as-is" with a warning.
+> - Operator rule (2026-11-22, "you should not be reminded"): use every collection unprompted when its trigger appears: a plan when work spans three or more items or waits
+> on one decision (children by `--parent`, order by block relations), a bug, tech-debt or feature item per finding, an ask per operator question.
 
 > **Learned 2026-11-20** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (observed) · Source: `pad collection create "Asks" --awaits-human true --tracks-work false --schema @file` in
 > smc-resiliency; `pad collection list --format json` settings · Falsifier: the space form creating the collection on a later version
@@ -235,23 +244,22 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > **Learned 2026-11-20** · Pad CLI 0.21.1 statuses and listing · VERIFIED_PRIMARY (observed) · Source: Continuum workspace, `pad item update FR-237 --status in-progress`
 > · Falsifier: a collection that accepts `in-progress` without it in its options.
 > - Status options belong to the collection. Tasks take `in-progress`; Feature Requests refuse it ("value \"in-progress\" is not in allowed options [submitted
->   under-review planned building shipped declined]") and use `building` for work under way. When a rule says "set the item in-progress", use the collection's
->   working state and say which one.
+> under-review planned building shipped declined]") and use `building` for work under way. When a rule says "set the item in-progress", use the collection's working state and say which one.
 > - `pad item list <collection> --format json` returned only part of a collection (6 of 48 tasks, 1 of 197 decisions) even with `--limit 1000`, so it cannot be used to
->   look up a ref by title. To link a decision-log row, read its ref from `pad item show DECIS-<n>` (the mirror creates refs in DL order) before writing the link;
->   never write a placeholder such as `[[DECIS-?|DL-106]]` (written and fixed three times that night).
+> look up a ref by title. To link a decision-log row, read its ref from `pad item show DECIS-<n>` (the mirror creates refs in DL order) before writing the link; never write a placeholder such as
+> `[[DECIS-?|DL-106]]` (written and fixed three times that night).
 > - **2026-11-21:** `pad item show --format json` returns `fields` as a JSON string, not an object: parse it before reading `status` (scripts/pad_done_backfill.py `field()`).
 > - **2026-11-21:** one `item comment-edit` (TASK-268, an agent comment) was refused with "this server does not support editing or deleting comments from the CLI (it does not
->   advertise item_scoped_comment_writes)" while 38 other comment edits in the same `just links` run succeeded; the same edit succeeded an hour later (CORRECTION 2026-11-21:
->   transient, not per comment). Retry it later before treating it as unsupported (continuum, `pad_links.py --apply`).
+> advertise item_scoped_comment_writes)" while 38 other comment edits in the same `just links` run succeeded; the same edit succeeded an hour later (CORRECTION 2026-11-21: transient, not per comment).
+> Retry it later before treating it as unsupported (continuum, `pad_links.py --apply`).
 > - **2026-11-21:** Tech Debt closes with `resolved` and refuses `done` ("value \"done\" is not in allowed options [identified planned in-progress resolved]",
->   `pad item update TD-315 --status done`, continuum).
+> `pad item update TD-315 --status done`, continuum).
 > - **2026-11-22:** the comment-edit refusal recurs under bursts: 10 of 71 edits in one `pad_links.py --apply` run and 1 in 58 `pad_rewrite.py` comment edits, every one applied
->   on a rerun seconds later (continuum TD-323). pad_rewrite.py, pad_links.py and pad_retry.sh now treat it like `rate_limited` and retry with backoff (`TRANSIENT`).
+> on a rerun seconds later (continuum TD-323). pad_rewrite.py, pad_links.py and pad_retry.sh now treat it like `rate_limited` and retry with backoff (`TRANSIENT`).
 > - **2026-11-22:** `pad item comment <ref> "- **What:** ..."` fails with "unknown shorthand flag: ' ' in - **What:** ...": a body starting with `-` is read as a flag. Put `--`
->   before the body (`pad item comment TD-1 --workspace w -- "- **What:** ..."`) or use `--stdin`. The failure is easy to miss inside a loop that prints only the last line.
+> before the body (`pad item comment TD-1 --workspace w -- "- **What:** ..."`) or use `--stdin`. The failure is easy to miss inside a loop that prints only the last line.
 > - **2026-11-22:** a closing comment longer than 200 characters needs both forms: item-check's `done` rule wants it to start `YYYY-MM-DD HH:MM AEDT DONE:` and its `comments`
->   rule wants a `- **Label:**` bullet, so write `<stamp> DONE:` on the first line and the text as `- **What:** ...` bullets below it.
+> rule wants a `- **Label:**` bullet, so write `<stamp> DONE:` on the first line and the text as `- **What:** ...` bullets below it.
 > - **2026-11-22:** pad_rewrite.py writes in the order items, comments, notes, decides; when the standard says "save the original as a note first", apply the notes in a spec of
->   their own before the comments (continuum TD-323: two passes).
+> their own before the comments (continuum TD-323: two passes).
 

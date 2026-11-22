@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261122_1740 — Untrusted managed browsers as a front end (v2.3.11 -> v2.3.12)
+
+- references/security-and-segmentation.md (Zero-trust access), Learned 2026-11-22: 443 only, one registrable domain, WSS heartbeat and reconnect, no clipboard/upload/download reliance, hybrid needs cable.* relays and Bluetooth; a phone-approved pairing avoids both. Source: continuum TASK-404, TASK-406.
+
 ## 20261121_1950 — Edge route-coverage check built in a project (v2.3.10 -> v2.3.11)
 
 - references/security-and-segmentation.md: Built 2026-11-21 note under the edge allowlist entry (continuum-app edge_routes_check.py with a self-test).
