@@ -101,6 +101,20 @@ use super::{add_device, device_id, fetch, generation_doc, get_json, open, send};
 
 Outside callers still write `crate::encryption::rotate`, because `mod.rs` re-exports it: `pub use rotation::{recover, rotate};`.
 
+### Streaming a big file: writers inside writers
+
+A capture can be gigabytes, so it must never sit in memory whole. Rust's `std::io::Write` lets each layer wrap the next: a zstd compressor
+writes into an age encryptor, which writes into a file. `std::io::copy` pushes the input through in small pieces. At the end, each layer's
+`finish()` flushes its tail and hands back the layer inside it, so you call them from the outside in. Skipping one leaves a cut-off file with
+no error, which is why the test decrypts what it wrote (continuum-app `apps/agent/src/stream.rs`, 82fffef):
+
+```rust
+let mut sealed = age::Encryptor::with_recipients(std::iter::once(recipient as &dyn age::Recipient))?.wrap_output(file)?;
+let mut z = zstd::stream::write::Encoder::new(sealed, 3)?;
+std::io::copy(&mut input, &mut z)?;   // compress, then encrypt, piece by piece
+z.finish()?.finish()?;                // zstd's tail, then age's tail
+```
+
 ## 20. Further reading
 
 - [Defining an enum](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html) and [traits](https://doc.rust-lang.org/book/ch10-02-traits.html) in the book.

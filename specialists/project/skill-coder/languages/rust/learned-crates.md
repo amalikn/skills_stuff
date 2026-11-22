@@ -97,3 +97,33 @@ let resp = crate::handoff::start(State(pool.clone()), Extension(actor), Extensio
 let body: Value = serde_json::from_slice(&axum::body::to_bytes(resp.into_body(), 1 << 20).await?)?;
 ```
 
+
+> **Learned 2026-11-22** · age + zstd as one streaming pass · VERIFIED_PRIMARY (unit test both directions; P4 gate 13/13) · Source: continuum-app `apps/agent/src/stream.rs` `encrypt_file`
+> (82fffef) · Falsifier: an age release whose `StreamWriter::finish` no longer returns the inner writer. Compress-then-encrypt a file of any size without holding it in memory: stack the
+> writers inside out (file ← hashing wrapper ← age `wrap_output` ← zstd `Encoder`), `std::io::copy` into the outermost, then finish from the outside in: `z.finish()?` returns the age
+> writer, whose `.finish()?` returns the hashing writer. Forgetting the inner `finish` leaves a truncated, undecryptable file with no error. To read, sniff the magic with
+> `BufReader::fill_buf` (no bytes consumed) and wrap `age::Decryptor::new_buffered(..)?.decrypt(ids)` in `zstd::stream::read::Decoder::with_buffer`; cap with `take(MAX + 1)`.
+
+```rust
+let enc = age::Encryptor::with_recipients(std::iter::once(recipient as &dyn age::Recipient))?;
+let mut sealed = enc.wrap_output(out)?;              // out: BufWriter<File> inside a hashing wrapper
+let mut z = zstd::stream::write::Encoder::new(sealed, LEVEL)?;
+std::io::copy(&mut input, &mut z)?;
+let mut sealed_out = z.finish()?.finish()?;         // zstd, then age: both finishes are needed
+```
+
+> **Learned 2026-11-22** · rustic_core 0.14 reads and writes a restic repository · VERIFIED_PRIMARY (spike PASS both ways against restic 0.19.1) · Source: continuum
+> `spikes/p5-rustic/src/main.rs` (dfa0d76) · Falsifier: a rustic_core minor release that renames these calls (it is pre-1.0). Open, index, find a snapshot by tag, dump one path:
+> `BackendOptions::default().repository(path).to_backends()?`, `Repository::new(&RepositoryOptions::default(), &backends)?.open(&Credentials::Password(pw))?.to_indexed()?`,
+> `get_all_snapshots()`, `node_from_snapshot_path("<id>:/<path>", |_| true)`, `repo.dump(&node, &mut w)`. Writing: `PathList::from_string(p)?.sanitize()?`,
+> `SnapshotOptions::default().add_tags("k:v")?.to_snapshot()?`, `repo.backup(&BackupOptions::default(), &paths, snap)`. All calls are blocking: use `spawn_blocking` under tokio.
+> A small read cost 0.2 ms once open, against about 0.7 s per `restic --no-cache` process (key derivation and index load each time).
+
+> **Learned 2026-11-22** · tar 0.4.46 `HeaderMode::Complete` writes no atime · VERIFIED_PRIMARY (`src/header.rs` `fill_platform_from`: mtime, uid, gid, mode only) · Source: tar
+> crate source; used by continuum-app `apps/agent/src/tree/capture.rs` · Falsifier: a tar release that adds atime/ctime to Complete GNU headers. So an unchanged file gives a
+> byte-identical header between two captures, which content-defined chunking and dedup depend on. `git archive`, by contrast, stamps every entry with the commit time (use
+> `--mtime=<fixed>` when comparing archives of two commits): the first FastCDC run read 90-98 % of a tree as "changed" for a nine-file commit for that reason.
+
+> **Learned 2026-11-22** · fastcdc 3.2.1 (`v2020`) · VERIFIED_PRIMARY (spike) · Source: continuum `spikes/p5-fastcdc/src/main.rs` (c8f4971) · Falsifier: a 4.x API change.
+> `fastcdc::v2020::FastCDC::new(&data, min, avg, max)` iterates `Chunk { offset, length, hash }`; min = avg / 4 and max = avg * 4 are the usual ratios. At 16 KiB average a
+> 719 MB tar chunked twice in about 4.5 s on one core; 16 KiB sent about half of what 64 KiB did for small edits. Hash chunks with SHA-256 for identity: `hash` is a gear hash.

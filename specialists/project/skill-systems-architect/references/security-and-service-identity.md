@@ -211,6 +211,23 @@ Rotate at once on compromise or staff exit. Log access and name an owner.
 > key recovers, the key falls with it. Keep break-glass keys in a separate vault whose password is typed, kept in two places (a synced copy that survives losing the machine, an offline copy),
 > and generate the key straight into the vault so it is never printed or passed as an argument.
 
+> **Learned 2026-11-22** · a second copy of a private key on an encrypted removable drive · VERIFIED_PRIMARY (built and self-tested) · Source: continuum-app
+> `scripts/devbot_copies.py`, `apps/cli/src/keystore.rs` (00c1f1f; DL-155) · Falsifier: a platform where an unmounted volume path cannot be written. On macOS an unplugged
+> drive leaves its path under `/Volumes`, and a write there can land on the internal disk. Write the copy only when the drive is mounted (`os.path.ismount(<mount point>)`) or
+> when the target folder already exists, force 0600 on every write (an existing file keeps its old mode), restore a missing copy from the other on read, and treat an
+> absent drive as a warning so automation continues. Throwaway test credentials must be kept off the mirror (they would overwrite or, at logout, delete the real copy).
+
+```python
+def _usable(path, drive):  # drive None: always-present disk
+  return drive is None or os.path.ismount(drive)
+```
+
+> **Learned 2026-11-22** · moving an owner check into a relationship-based authoriser · VERIFIED_PRIMARY (OpenFGA v1.22.1 measured) · Source: continuum
+> `spikes/p5-openfga/README.md` (73b7280) · Falsifier: a model whose relation equals the SQL rule exactly. A check costs about 0.4 ms median (0.6 ms p95) over a kept-alive
+> connection on a quiet host, under 6 ms p95 under CPU load: affordable per request. The risk is semantic: a relation computed from organisation membership widens "only the
+> creator" to every member. Compare the relation's reach with the rule it replaces before moving it, and add the dependency's failure mode (authoriser down = 503 on every
+> checked route) to the design.
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.

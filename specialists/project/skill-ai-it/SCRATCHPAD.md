@@ -9,7 +9,7 @@ Summary: Current working state, newest first per section; superseded entries rot
 Kind: state
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261118_2108
+Last rotated: 20261122_2048
 Keep: Next actions=1, Memory pointers=1, Session history=2, Current state=3, Recent decisions=3
 Open items tracker: docs/trackers/open-items-20261010_1830.md
 ---
@@ -73,18 +73,14 @@ under `just nav_validate` until re-upgraded: `me/llm-m2max`, `apn/vocus-profitab
 
 ## Open items
 
+- 2026-11-22 (found in a continuum close): `just check` fails on code size at HEAD, scripts unchanged: budget_plan.py main 67/61, history_migrate.py migrate_one 95/0, rotate_records.py choose 71/68 and main 115/114. Split them (skill-coder module-and-function-shape); the check stops at the first failing step, so freshness failures hid it.
+- 2026-11-22 (continuum, skill-pad): `just budget --apply` printed "project check: FAILED, update the guard or registry that names the moved text" when the check failed for an unrelated reason (ruff format); print the failing lines instead. The audit's false "LOST" recurred on skill-pad's CHANGELOG (34 reported; the 8 removed lines were all archived): ROADMAP Audit item.
 - Review follow-ups (periodic review 2026-11-19, found by the review agents, not fixed): embedded copies in references/files-context-map.md, files-support.md and script-task-inventory.md have drifted from their templates (remove them, as done for files-ai-navigation); package-layout.md tree omits scripts/install/, templates/govcheck/, seed-folder/, intake/brief/plan-tracker templates and patterns/navigation/; templates/justfile `check` stops at the first failing step against pitfalls Learned 2026-11-18; finishing.md Audit Output Format lacks govern and new-skill; navigation-automation.md omits yaml_key_diff, check_outside_blocks, migrate_legacy_blocks, nav-check-blocks; managed-blocks.md states the version stamp but is not in CONSTANT_SURFACES; the AI_NAVIGATION managed block names files a pack lacks (.archcore/, memory-bank/, ARCHITECTURE.md) and uppercase names where packs use lowercase (goal-guard), and its regenerate command is bare `repomix`; skill-smc's governance block says bare `python3 scripts/check_governance.py`; adopt_governed_files.py writes `Review by` = today + 30 on a new header whatever the project's --window-days; rotate_records counts a file with a trailing blank line as 200 while doc_freshness counts 201 (agent-stack CHANGELOG); `Archive:` default still docs/history/ (roadmap-*.md) against docs/history/roadmap/; tracker and history readme writers lack Authority/Scope (S1b); ROADMAP.md:56 example anchor fails anchor-links; patterns/governance-checks.md links #tier-model (broken); tracker item 41 re-measure was due 2026-11-10; self-check red on nine size findings (adopt_governed_files 723/664, rotate_records 866/823, history_layout, history_migrate, budget_plan, target_map, move_sections).
 - [ ] **20261118_2108** `KEEP` from unified-network-controller (operator, 2026-11-18: keep the additions reverted, raise it here): `adopt_governed_files.py --apply`, run by every slurp, re-added a
   governed-files paragraph to that project's AGENTS.md and put a 150-line budget on its AI_NAVIGATION.md (166 lines), after the operator had trimmed AGENTS.md (2026-11-11) and moved that text to
   AI_NAVIGATION, and it baselined three records as over budget mid-run. The adoption standard should recognise text a project has moved out on purpose (a marker or a per-project opt-out), and
   not baseline a record that the same run is about to rotate. Until then each close in that project reverts it. Also open from the same session: skill-smc's seven audit lines (lines edited
   after rotation) are not traced.
-- **20261116_1752** Open (found by apn enterprise-strategy's write-back): `just check` fails on 15 review-due documents in this skill (AI_NAVIGATION.md, ARCHITECTURE.md,
-  README.md, ROADMAP.md, docs/readme.md and ten more), all due 2026-11-13; they need a real re-read before their dates move. The doc_freshness transcript fix was committed with tests green.
-- [ ] **20261110_1205** budget_plan.py audit reports `LOST` for SCRATCHPAD lines that an earlier rotation had already moved (unified-network-controller,
-  2026-11-10: "5 line(s) lost, e.g. '- [ ] **Onboarding from the Nautobot UI (operator, 2026-09-29...'", a line not in HEAD's SCRATCHPAD and present in
-  docs/trackers/open-items-20261010_1819.md; every line this rotation removed was found in an archive). The audit's reference looks older than the
-  file it rotates: compare against the pre-run file, not an earlier snapshot. Exit 1 made `just budget --apply` fail a clean run.
 
 - **Superseded 2026-10-27 (staleness audit):** done; `bootstrap` (justfile:52) and `test` (justfile:247) exist and the working-cache venv runs 210 tests green. The text below stands as the record of the gap.
   **20261019_1817** `KEEP`: this pack's justfile has no `test` recipe and no working-cache venv; `tests/` need PyYAML, so a run with the host `python3`

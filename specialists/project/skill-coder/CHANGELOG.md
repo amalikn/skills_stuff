@@ -17,6 +17,7 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261122_2044 — Write-backs from continuum 2026-11-22 night](#20261122_2044--write-backs-from-continuum-2026-11-22-night)
 - [20261122_0219 — Feature unification in tests; release size profile](#20261122_0219--feature-unification-in-tests-release-size-profile)
 - [20261122_0059 — sqlx dynamic SQL refusal; calling an axum handler directly](#20261122_0059--sqlx-dynamic-sql-refusal-calling-an-axum-handler-directly)
 - [20261122_0031 — Editor second windows; OnceLock memo; tar in memory](#20261122_0031--editor-second-windows-oncelock-memo-tar-in-memory)
@@ -76,6 +77,10 @@ Last rotated: 20261119_1601
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261122_2044 — Write-backs from continuum 2026-11-22 night
+
+Rust: age + zstd streaming pass and its finish order (learned-crates; guide-keys new section for the reader), rustic_core 0.14 API and cost, tar Complete mode without atime against git archive's commit times, fastcdc v2020; sccache measured and its CARGO_INCREMENTAL=0 limit, cargo-dist 0.34 quirks, extract-a-helper for the size gate (learned-cargo-and-builds); env reads tested through an injected value in edition 2024 (learned-async-and-tests). Git: bundles against a basis omit refs the basis reaches; gate commits on the check's exit code, again (version-control-and-review). Python: set-but-empty env vars (python.md).
+
 ## 20261122_0219 — Feature unification in tests; release size profile
 
 - languages/rust/learned-cargo-and-builds.md: feature unification hides a missing dev-dependency feature; release size with strip/LTO/codegen-units (measured).

@@ -32,6 +32,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Next actions
 
+- 2026-11-22 night: v2.3.23 write-backs from continuum (backup library vs process; incremental/chunked artefacts and retention; private-key copy on a removable drive; OpenFGA owner checks). Next: confirm prune with rustic_core before trusting it for retention.
 - 2026-11-22: v2.3.22 write-backs from continuum (OrbStack disk/endpoints/volumes, JVM perf-data crash recurrence, software WebAuthn test authenticator, Bluetooth-free guest sign-in). Next: a containers-and-platforms check that services with state in the container filesystem have a volume.
 
 - 2026-11-21: the client-authenticated recipient set entry (security-and-service-identity.md) rests on one project and Keybase; add a second source (Signal or MLS device linking) on the next E2EE design.

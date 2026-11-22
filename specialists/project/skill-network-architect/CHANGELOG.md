@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261122_2045 — One forward-auth gate for browser apps on sub-paths (v2.3.12 -> v2.3.13)
+
+- references/security-and-segmentation.md (before Patterns), Learned 2026-11-22: Caddy forward_auth sorts before handle_path, so one gate checks every app and WebSocket on its sub-path; the redir answers without the check; apps behind it accept only the edge. Live probe evidence. Source: continuum-app 8171de1.
+
 ## 20261122_1740 — Untrusted managed browsers as a front end (v2.3.11 -> v2.3.12)
 
 - references/security-and-segmentation.md (Zero-trust access), Learned 2026-11-22: 443 only, one registrable domain, WSS heartbeat and reconnect, no clipboard/upload/download reliance, hybrid needs cable.* relays and Bluetooth; a phone-approved pairing avoids both. Source: continuum TASK-404, TASK-406.

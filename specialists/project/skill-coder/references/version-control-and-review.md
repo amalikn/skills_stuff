@@ -205,3 +205,18 @@ PYTHONPATH=.:wc-local/scripts "$PY" -m unittest -q tests.test_structure_confirma
 > just test && just check && git commit -F - -- <paths>   # each step gates the next; never `just test | tail && git commit`
 > ```
 
+
+> **Learned 2026-11-22** · git bundles made against a basis (`--all ^<commit>`) · VERIFIED_PRIMARY (measured on two repositories, git 2.56.1) · Source: continuum
+> `spikes/p5-git-bundle/measure.py` (2dedfe5, 3e45de9) · Falsifier: a git release that keeps excluded refs in the bundle. git leaves out every ref whose tip the basis already
+> reaches (a merged branch, an old tag), so a target that applies the bundle cannot recreate those refs from it: send the ref list (name → commit) beside the bundle and set refs
+> from that list. `git bundle create <file> HEAD~5` makes nothing (a bundle needs ref names): bundle from a scratch clone with a ref created at that commit. `--all` also
+> carries tool namespaces (`refs/codex/...`). Size: under 1 % of the full bundle for a 554 MB repository with 1 to 100 new commits.
+
+```bash
+git -C "$repo" bundle create inc.bundle --all "^$basis"         # the target must hold $basis
+git -C "$tgt" bundle verify -q inc.bundle && git -C "$tgt" fetch -q inc.bundle 'refs/heads/*:refs/remotes/b/*'
+git -C "$repo" for-each-ref --format='%(objectname) %(refname)' refs/heads refs/tags > refs.txt   # sent beside it
+```
+
+> **Learned 2026-11-22** · commit only after the check passes, again · VERIFIED_PRIMARY (incident) · Source: continuum 2dedfe5 (fixed 3e45de9) · Falsifier: none. A run that
+> printed `check 1` and then committed in the same command line: the commit step did not read the check's exit code. Capture it (`just check; rc=$?`) and commit only on 0.

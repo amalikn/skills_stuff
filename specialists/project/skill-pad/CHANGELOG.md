@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261122_1738
+Last rotated: 20261122_2046
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261122_2046 — Bugs close with fixed; no pad search; blocked-by](#20261122_2046--bugs-close-with-fixed-no-pad-search-blocked-by)
 - [20261122_1745 — Status values per collection; `--` before dash-led comments; collections used unprompted](#20261122_1745--status-values-per-collection----before-dash-led-comments-collections-used-unprompted)
 - [20261122_0031 — Transient comment-edit refusal retried; decision store not a log; CLI traps](#20261122_0031--transient-comment-edit-refusal-retried-decision-store-not-a-log-cli-traps)
 - [20261121_1950 — label-fill and done-backfill scripts; fields as a JSON string; a refused comment edit](#20261121_1950--label-fill-and-done-backfill-scripts-fields-as-a-json-string-a-refused-comment-edit)
@@ -36,9 +37,12 @@ Last rotated: 20261122_1738
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 - [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
-- [20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders](#20261119_1820--ansible-wifi-workspace-adapted-conventions-file-one-workspace-for-three-folders)
 
 ---
+
+## 20261122_2046 — Bugs close with fixed; no pad search; blocked-by
+
+references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-progress fixed wont-fix); each collection's closing word listed; no pad search command (use item list --all | grep); blocked-by in one call. Source: continuum 2026-11-22 night (BUG-435, TASK-383).
 
 ## 20261122_1745 — Status values per collection; `--` before dash-led comments; collections used unprompted
 
@@ -185,12 +189,3 @@ markdown regenerated). Three live sessions consulted (smc-resiliency-44, ansible
 - `references/cli-reference.md`: Learned 2026-11-19 (format names per command, `item list` has no body, no `collection show`, what Pad can undo).
 - No script added: the probes run were one-off; their reusable logic is planned as padlib (G1) and pad_links.py (G7).
 - Pad read only (collections, playbooks, items, history); nothing written to Pad.
-
-## 20261119_1820 — ansible-wifi workspace: adapted conventions file, one workspace for three folders
-
-New `conventions/ansible-wifi.toml`: the apn baseline adapted for a repo without `just commit-project` or `just check` (commit style `<flavor or role>: <summary>`, pathspec commits on rise with
-cherry-picks to iridium and master, lint/syntax-check/pre-push ansible-lint gate as the done check, pad-owned-trackers without generated tracker files), applied with `--baseline` to the new
-`ansible-wifi` workspace (operator, 2026-11-19). The workspace is linked from three folders, each with its own `.pad.toml`: local-knowledge-ansible/ansible-wifi (tracked), the ansible-wifi company
-clone (a symlink to its own real file in ansible-wifi-root-governance, excluded in .git/info/exclude, so a rewrite through the clone never touches the local-knowledge file), and skill-smc inside
-skills_stuff, whose nearer `.pad.toml` overrides the skills_stuff root link for that folder only (bootstrap resolves each to the right slug, checked 2026-11-19). The startup template does not create
-Bugs, Feature Requests or Tech Debt: they were created from `conventions/collection-schemas/`.

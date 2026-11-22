@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261122_2046.md](changelog/changelog-20261122_2046.md) 1 entry, 2026-11-19 to 2026-11-19: ansible-wifi workspace: adapted conventions file, one workspace for three folders
 - [changelog-20261122_1738.md](changelog/changelog-20261122_1738.md) 5 entries, 2026-11-19 to 2026-11-19: SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it; Periodic review; 90-day review window; Workspace init from an agent shell; conventions recipe quoting; CLI traps from smc-resiliency: ...
 - [changelog-20261121_1949.md](changelog/changelog-20261121_1949.md) 2 entries, 2026-11-19 to 2026-11-19: Body layout for every collection: pad_format_spec.py; Comment edits can be refused by the server
 - [changelog-20261121_1909.md](changelog/changelog-20261121_1909.md) 1 entry, 2026-11-19 to 2026-11-19: Decision-log process rows mirrored to Pad

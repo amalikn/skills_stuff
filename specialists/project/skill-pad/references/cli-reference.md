@@ -258,6 +258,9 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > on a rerun seconds later (continuum TD-323). pad_rewrite.py, pad_links.py and pad_retry.sh now treat it like `rate_limited` and retry with backoff (`TRANSIENT`).
 > - **2026-11-22:** `pad item comment <ref> "- **What:** ..."` fails with "unknown shorthand flag: ' ' in - **What:** ...": a body starting with `-` is read as a flag. Put `--`
 > before the body (`pad item comment TD-1 --workspace w -- "- **What:** ..."`) or use `--stdin`. The failure is easy to miss inside a loop that prints only the last line.
+> - **2026-11-22 (night):** Bugs close with `fixed` and refuse `resolved` ("value \"resolved\" is not in allowed options [open confirmed in-progress fixed wont-fix]",
+> `pad item create bugs ... --status resolved`, continuum BUG-435): each collection has its own closing word (Tasks `done`, Tech Debt `resolved`, Bugs `fixed`). There is no
+> `pad search` ("unknown command"): find items with `pad item list --all | grep -i <term>`. `pad item blocked-by <src> <tgt>` records "src is blocked by tgt" in one call.
 > - **2026-11-22:** a closing comment longer than 200 characters needs both forms: item-check's `done` rule wants it to start `YYYY-MM-DD HH:MM AEDT DONE:` and its `comments`
 > rule wants a `- **Label:**` bullet, so write `<stamp> DONE:` on the first line and the text as `- **What:** ...` bullets below it.
 > - **2026-11-22:** pad_rewrite.py writes in the order items, comments, notes, decides; when the standard says "save the original as a note first", apply the notes in a spec of

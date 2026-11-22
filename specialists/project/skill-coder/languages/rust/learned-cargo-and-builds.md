@@ -96,3 +96,22 @@ Part of [rust.md](../rust.md).
 > path = "src/c7m_agent.rs"   # #[tokio::main] async fn main() -> ... { continuum_agent::run().await }
 > ```
 
+
+> **Learned 2026-11-22** · sccache 0.19 on a clean workspace build · VERIFIED_PRIMARY (measured: continuum-app `cargo build --workspace`, Mac arm64) · Source: continuum Pad TASK-380,
+> ASK-427 · Falsifier: a build where the warm run is not faster. sccache needs `CARGO_INCREMENTAL=0` (incremental artefacts are not cacheable), so it only pays where the target
+> starts empty (CI, gates, after a clean): 70 s plain, 79 s with an empty cache, 25 s warm; the warm run hit every crate it had seen; build scripts and links (224 calls) are never
+> cached. Target 3.1 GiB without incremental against 4.5 GiB with it; cache 455 MiB. Keep it out of the edit-build loop.
+
+```bash
+CARGO_INCREMENTAL=0 RUSTC_WRAPPER=sccache SCCACHE_DIR=<working-cache>/sccache CARGO_TARGET_DIR=<scratch-target> cargo build --workspace
+```
+
+> **Learned 2026-11-22** · cargo-dist 0.34 on a workspace of `publish = false` packages · VERIFIED_PRIMARY (dry run) · Source: continuum `spikes/p5-dist/README.md` (6a5aaa2) ·
+> Falsifier: a dist release where `init --target` is honoured. `dist init` finds nothing to release until each package has `[package.metadata.dist] dist = true`; it ignored
+> `--target` and wrote its five defaults (edit `targets` in `dist-workspace.toml`); GitHub hosting needs `repository = "..."` in each package; cross targets need rustup
+> (mise-managed toolchains are not found); it compiles the whole workspace; binaries are only ad-hoc signed (macOS notarisation is separate). Try it in a throwaway clone:
+> `init` edits the root Cargo.toml (`[profile.dist]`).
+
+> **Learned 2026-11-22** · a module over the size limit after a small change · VERIFIED_PRIMARY (code-size gate) · Source: continuum-app `apps/coordinator/src/userkey/rotate.rs`
+> `replay`, `approve.rs` `SELF_APPROVAL` (4e18e20) · Falsifier: none. Adding one guard pushed a handler from 58 to 64 lines; rustfmt's line splits did the rest. Extract a
+> cohesive step into a helper returning `Option<Response>` (None = carry on) and hoist long message strings to a `const`; never raise the limit for it.

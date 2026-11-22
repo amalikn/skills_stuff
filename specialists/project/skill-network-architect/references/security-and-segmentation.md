@@ -217,6 +217,21 @@ Each limit, its consequence, the design response and the evidence:
 >              (no 3rd-party cookies, heartbeat + reconnect, no clipboard/upload/download reliance)
 > ```
 
+> **Learned 2026-11-22** · one forward-auth gate in front of several browser apps on sub-paths · VERIFIED_PRIMARY (live probe: 401 without a session on `/`, `/code/` and its
+> WebSocket; 200/101 with one; 401 after the session ended) · Source: continuum-app `caddy/Caddyfile` guest port (8171de1); Caddy sub-path pattern from code-server
+> `docs/guide.md` · Falsifier: a Caddy release that orders `forward_auth` after `handle`. In Caddy's directive order `forward_auth` runs before `handle`/`handle_path`, so a site
+> block with one `forward_auth` and per-app `handle_path /app/*` blocks checks every request and WebSocket upgrade of every app. A `redir /app /app/` placed before it is answered
+> without the check (it only redirects). The apps behind it run without their own login (`--auth none`), so they must accept only the edge.
+
+```caddyfile
+https://:8445 {
+	forward_auth {$COORDINATOR_UPSTREAM} { uri /portal/guest/auth }
+	redir /code /code/
+	handle_path /code/* { reverse_proxy {$GUEST_CODE_UPSTREAM} }
+	handle { reverse_proxy {$GUEST_TERMINAL_UPSTREAM} }
+}
+```
+
 ## Patterns and anti-patterns
 
 | Pattern                            | Use when                 | Anti-pattern                     | Why it fails                                    |

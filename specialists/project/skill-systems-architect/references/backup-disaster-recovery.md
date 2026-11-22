@@ -144,6 +144,18 @@ Backup isolation: production admin must not be able to delete copy 2 or copy 3
   Legend: ---> and v data flow   ==== admin boundary
 ```
 
+> **Learned 2026-11-22** · backup tool as an in-process library or a process per call · VERIFIED_PRIMARY (spike: rustic_core 0.14 and restic 0.19.1 read each other's
+> snapshots) · Source: continuum `spikes/p5-rustic/results.md` (dfa0d76) · Falsifier: a library that writes a format the stock tool cannot restore. Choosing a library for speed
+> (0.2 ms per small read against about 0.7 s per `restic --no-cache` process) is safe for recovery only while the repository stays in the stock tool's format: then a stock binary
+> still restores and leaving the library is free. The library shares the service's crash and memory domain, so each call needs the timeout the process path had, and
+> destructive maintenance (forget, prune) stays on the proven tool until the library's version is tested for it.
+
+> **Learned 2026-11-22** · incremental and chunked artefacts couple transfer to retention · VERIFIED_SECONDARY (design review from measured spikes) · Source: continuum
+> `spikes/p5-git-bundle/README.md`, `spikes/p5-fastcdc/README.md` (3e45de9, c8f4971) · Falsifier: a restore path that never needs the basis. A bundle made against a basis, or a
+> chunk shared by several snapshots, is restorable only while its basis or every snapshot that names it is kept: retention must count references per object (keep while any live
+> envelope names it), and a restore onto a fresh machine needs the basis from the store, not from the previous target. Savings measured: under 1 % of a full bundle for a
+> 554 MB repository; 0.1 to 0.5 % of a 719 MB tree with 16 KiB chunks.
+
 ## Recovery budget arithmetic
 
 - `RTO_actual = detect + decide + provision + transfer + replay/startup + validate + client cutover`.
