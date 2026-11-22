@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261123_0021 — Correction: wrapped_lines counts characters
+
+data-first-diagrams.md: the card-height entry passed pixels to wrapped_lines(), which counts characters, so it never wrapped; corrected to convert the box width to characters (about 6.6 px each at font 11) with about 16 px a line, CORRECTION note kept (continuum journey, 2026-11-23).
+
 ## 20261123_0011 — Card line height corrected
 
 data-first-diagrams.md: the card-height entry now says 17.5 px per line; 16.5 px let a four-line card touch its border (continuum journey, 2026-11-23).
