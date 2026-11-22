@@ -282,11 +282,11 @@ card(page, cid, [text], (x, cy), kind, W, link)            # link resolved from 
 > **Learned 2026-11-22** · card heights on a page without flows · VERIFIED_PRIMARY (export reviewed; screenshot `references/screenshots/20261122-journey-one-pager/`) · Source:
 > continuum `scripts/build_journey_drawio.py` (journey one-pager) · Falsifier: `page_audit()` reporting text past a card's bottom edge. `page_audit()` checks routes,
 > overlaps and marks, not whether a card's label fits its height: the first render passed the audit with the last line of three cards below their border. Size cards
-> with a conservative wrap width (`wrapped_lines(line, width - 44)` at font 11, 16.5 px per line, 20 px padding) and always export and look before shipping.
+> with a conservative wrap width (`wrapped_lines(line, width - 44)` at font 11, 17.5 px per line, 20 px padding; 16.5 px still let a four-line card touch its border, 2026-11-23) and always export and look before shipping.
 
 ```python
 def height(lines, width=230):
-  return max(40.0, sum(wrapped_lines(line, int(width - 44)) for line in lines) * 16.5 + 20)
+  return max(40.0, sum(wrapped_lines(line, int(width - 44)) for line in lines) * 17.5 + 20)
 ```
 
 ## Checklist for a new data-first drawing

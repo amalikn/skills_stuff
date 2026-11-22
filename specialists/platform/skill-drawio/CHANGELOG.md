@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261123_0011 — Card line height corrected
+
+data-first-diagrams.md: the card-height entry now says 17.5 px per line; 16.5 px let a four-line card touch its border (continuum journey, 2026-11-23).
+
 ## 20261123_0000 — Templates kept: Ishikawa (fishbone) and story map
 
 documents/drawio-templates-20261123: the draw.io blog's Ishikawa manufacturing example (SVG with its embedded diagram extracted to .drawio) and story-map.drawio, verbatim, with a readme on what each suits (fishbone: root-cause analysis after incidents; story map: scope and releases) and how to rebuild them data first; pointer in data-first-diagrams.md.
