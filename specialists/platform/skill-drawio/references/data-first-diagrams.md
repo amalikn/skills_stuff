@@ -261,6 +261,9 @@ if any(faults.values()):
 return mxfile(pages, "build_one_pagers_drawio", banner(generator, source, "just one-pagers", "just check"))
 ```
 
+Kept templates (operator, 2026-11-23): an Ishikawa (fishbone) cause-and-effect diagram for root-cause analysis and the story map, with when to use
+each, in [documents/drawio-templates-20261123/](../documents/drawio-templates-20261123/readme.md).
+
 > **Learned 2026-11-22** · one-click links and a story map on pages built without the flow-map engine · VERIFIED_PRIMARY (export reviewed; 90 links, both pages
 > locked) · Source: continuum `scripts/journey_parts.py`, `scripts/build_journey_drawio.py` (journey.drawio) · Falsifier: a plain `Page` whose links open on one click
 > without the lock. The flow-map engine locks the base layer for you (`look.lock_base_layer`); a page made with `drawio.mxfile.Page` directly does not, so set
