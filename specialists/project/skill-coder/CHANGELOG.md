@@ -36,6 +36,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-23: references/design-patterns.md P-85 (test identity bot with software credentials driving the real flows) and P-86 (run log attached to the work item), from continuum-app devbot and runlog; index rows for P-83 to P-86.
+
 - 2026-11-23: references/design-patterns.md, P-84 (retention by membership with a time-rule fallback); references/testing.md, Learned 2026-11-23: a gate check must run in every mode it guards (continuum-app TASK-492, TASK-493).
 - 2026-11-23: languages/rust/learned-async-and-tests.md, Learned 2026-11-23: tokio task_local to carry a per-operation header (continuum TASK-492).
 - 2026-11-23: references/design-patterns.md, P-83 (trim a build cache by its own read trace before wiping it); languages/rust/learned-cargo-and-builds.md, Learned 2026-11-23: cargo 1.100 build-dir layout, fingerprint access time as last use, the three cargo locks (continuum-app TD-412); languages/rust/guide-keys.md section 20 (FromStr for a setting, TASK-454).

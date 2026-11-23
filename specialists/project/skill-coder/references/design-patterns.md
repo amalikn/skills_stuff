@@ -126,6 +126,10 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-80 | Work order withdrawn at its deadline | A queue of remote steps waited on with a deadline, where workers can be late or restart |
 | P-81 | Approval marked per item from an evidence file, with a check | A partly tested catalogue whose status must follow evidence, item by item |
 | P-82 | Encrypt before a content-addressed store: address the ciphertext | Client-side encryption over a store that checks every body hashes to its address |
+| P-83 | Trim a build cache by its own read trace before wiping it | A build cache over its cap, wiped while builds use it |
+| P-84 | Retention by membership, time rule as fallback | Keep what kept captures name, without trusting incomplete membership |
+| P-85 | Test identity bot with software credentials driving the real flows | End-to-end tests of sign-in, approval and second-factor flows without a person |
+| P-86 | Run log attached to the work item | A result whose evidence cannot be found later |
 
 ## Patterns
 
@@ -2132,5 +2136,65 @@ for cand in candidates(current)[1:]:          # proxy-ranked, current first
     n = real_cost(cand)                       # the real thing (here: route and count)
     if n < best_n:
         best, best_n = cand, n
+```
+
+### P-85 Test identity bot with software credentials driving the real flows
+
+> **Learned 2026-11-23 (a)** · design pattern, any language · VERIFIED_PRIMARY (57 end-to-end checks on a dev stack, each shown to fail on a
+> deliberate break; found 6 defects the per-gate test stacks never met) · Source: continuum-app `scripts/devbot/devbot.py`, `devbot_totp.py`,
+> `scripts/dev-stack/dev_agents.py`, `scripts/checks/*_check.py` (commits 6478802, 71d7e69) · Falsifier: a flow the bot passes that a person
+> with the same credentials cannot, or the reverse
+
+```text
+Problem:      sign-in, approval and second-factor flows (passkey, TOTP, device grant, portal step-up) need a person, so they are tested by
+              hand, rarely, and the system around them (agents, queues, policies) is never exercised end to end.
+Solution:     one test identity (a "bot") in the real identity provider, holding software credentials: a WebAuthn key pair answering
+              assertions, a TOTP secret computing codes. A small browser walks the provider's own pages and answers each form. Real
+              agents enrol as the bot's devices. Scenarios drive the product's CLI and API as the bot and assert what a person would see.
+Why it works: the flows under test are the production flows (same provider, same pages, same tokens); only the authenticator is software.
+Reuse:        any OIDC/WebAuthn product (IdP-driven step-up, admin approvals); MFA rollouts (prove the flow before staff enrol);
+              operator-facing CLIs that wrap OAuth device grants.
+Pitfalls:     (1) codes: the provider refuses a reused TOTP step; two retries in one 30 s window locked the bot (brute-force
+              protection); keep the last step used and wait for the next. (2) PKCE: a client that enforces S256 needs the challenge on
+              the device grant too. (3) audience: Keycloak's audience mapper key for a plain audience is included.custom.audience
+              (included.client.audience added nothing). (4) scope: the bot never acts on a person's devices or identity, and the realm is
+              never recreated (it would drop people's passkeys). (5) a restart of an in-memory policy store lost grants the database
+              still marked as written: resync on start. (6) dev and gate stacks differ: the bot runs on the dev stack only.
+Realised in:  Python -> continuum-app scripts/devbot/devbot_totp.py (TOTP); excerpt below
+Evidence:     VERIFIED_PRIMARY: wrong code refused, token azp/aud checked, repeat runs green
+```
+
+```python
+def code(secret: str, at: float | None = None) -> str:
+  counter = int((time.time() if at is None else at) // 30)
+  mac = hmac.new(secret.encode(), struct.pack(">Q", counter), hashlib.sha1).digest()  # Keycloak: HMAC over the secret's raw bytes
+  off = mac[-1] & 0x0F
+  return f"{(struct.unpack('>I', mac[off : off + 4])[0] & 0x7FFFFFFF) % 1_000_000:06d}"
+
+def fresh_code(secret: str) -> str:  # never reuse a step: the IdP refuses replays and locks the user after a few
+  last = int(LAST.read_text()) if LAST.exists() else 0
+  step = int(time.time() // 30)
+  if step <= last:
+    time.sleep((last + 1) * 30 - time.time() + 0.5)
+    step = int(time.time() // 30)
+  LAST.write_text(str(step))
+  return code(secret, step * 30)
+```
+
+### P-86 Run log attached to the work item
+
+> **Learned 2026-11-23 (b)** · design pattern, any language · CANDIDATE (one project, live on Pad) · Source: continuum-app
+> `scripts/checks/runlog.py` · Falsifier: a result someone needed later that the attached log did not show
+
+```text
+Problem:      results are reported in chat or a commit message; weeks later nobody can see the run that produced them.
+Solution:     a wrapper runs any command, writes a timestamped log (time, folder, commit, exact command, full output, exit, duration) and
+              attaches it to the tracker item the run serves, quoting its result lines (PASS/FAIL/summary) in a comment.
+Why it works: the evidence travels with the item, not with the session; the excerpt makes the comment readable without the file.
+Reuse:        CI-less projects, operator handovers, incident timelines, audits of who ran what.
+Pitfalls:     keep secrets out of commands (the command line is logged); cap excerpt length; the tracker CLI must run from the folder
+              that holds its workspace config.
+Realised in:  Python -> continuum-app scripts/checks/runlog.py (`just runlog REF <cmd>`, `just dev-suite REF`)
+Evidence:     CANDIDATE: attachment and comment verified on the item
 ```
 

@@ -192,6 +192,22 @@ Legend: --> issue, present or revoke   PEP = policy enforcement point
 > base level), so a CLI or agent step-up cannot be checked by name; keep `auth_time` for that path. The username step must sit outside the level sub-flows (inside one, Keycloak
 > restarts the flow after the username), and a browser with no session asking for the higher level is prompted twice.
 
+### Test identities with software authenticators
+
+> **Learned 2026-11-23** · identity design, any IdP with WebAuthn and TOTP · VERIFIED_PRIMARY (Keycloak 26, continuum dev stack: 57
+> end-to-end checks; wrong second factor refused; token azp/aud checked) · Source: continuum-app `scripts/devbot/`, `scripts/dev-stack/keycloak_sensitive.py`;
+> skill-coder design-patterns P-85 · Falsifier: a flow the test identity passes that a person with the same factors cannot
+
+- Give the test suite its own identity in the real IdP with software authenticators (a WebAuthn key pair, a TOTP secret) kept in the
+  vault, so step-up, device-grant and second-factor flows are proven end to end without a person. Scope it: its own devices and
+  workspaces only, never a person's; never recreate the realm (people's passkeys are bound to it).
+- Second factor for sensitive actions without ACR: a dedicated client whose browser flow is passkey then OTP (both REQUIRED; password
+  bootstrap disabled; the passkey sub-flow REQUIRED, not "if configured"); the resource server accepts those actions only with
+  `azp` = that client and a fresh `auth_time`. The same flow covers the device grant (its verification re-enters the client's browser flow).
+- Traps seen: the OTP required action may be unregistered in an imported realm ("credential setup required"); a client enforcing PKCE
+  needs the challenge on the device grant too; TOTP replays are refused and count towards brute-force lockout; an in-memory
+  authorisation store loses grants on restart while the database still marks them written (resync on start).
+
 ## Secrets and break-glass
 
 Lifecycle: create -> store (vault of record) -> distribute (runtime fetch, never git) -> use -> rotate -> revoke -> destroy.

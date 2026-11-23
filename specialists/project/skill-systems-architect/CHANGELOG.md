@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-23: references/security-and-service-identity.md "Test identities with software authenticators" (dedicated sensitive client: passkey then OTP, azp + fresh auth_time; realm traps), from continuum FR-502 (DL-203); see skill-coder P-85.
+
 - 2026-11-23: references/security-and-service-identity.md, Learned 2026-11-23: Keycloak shared sub-flow breaks fresh imports (BUG-464); RP-initiated logout with id_token_hint and post.logout.redirect.uris (##); ACR levels ignored by the device grant (continuum).
 - 2026-11-22 (v2.3.23 -> v2.3.24): security-and-service-identity.md, two Learned 2026-11-22: a phone as the passkey for a dev portal (secure context, domain-only RP ID, hybrid QR; UNVERIFIED pending the spec read); an authorisation model with no stored source for its relations (trace each relation to its fact and writer before relying on it). Source: continuum TASK-413, TASK-455, continuum-app cbffb5a.
 - 2026-11-22 (v2.3.22 -> v2.3.23): backup-disaster-recovery.md, two Learned 2026-11-22: a backup library in process vs a process per call (stock-format compatibility keeps exit free; timeouts; prune stays on the proven tool); incremental and chunked artefacts couple transfer to retention. security-and-service-identity.md, two Learned 2026-11-22: a private-key copy on an encrypted removable drive (write only when mounted, force 0600, restore from the other copy, keep test credentials off it); moving an owner check into OpenFGA (0.4 ms per check; compare the relation's reach). Source: continuum spikes p5-* and continuum-app 00c1f1f.
