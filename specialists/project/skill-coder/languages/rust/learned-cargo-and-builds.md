@@ -125,3 +125,11 @@ CARGO_INCREMENTAL=0 RUSTC_WRAPPER=sccache SCCACHE_DIR=<working-cache>/sccache CA
 > `.githooks/pre-push`, `justfile` (144bf3f) · Falsifier: a cargo that caches incremental artefacts. sccache needs `CARGO_INCREMENTAL=0`; running it on the dev target
 > makes the push gate and everyday builds rebuild each other's work. Give the gate its own target (`CARGO_TARGET_DIR=<cache>/target-gate`) behind sccache, and let the
 > justfile honour an exported target: `export CARGO_TARGET_DIR := env("CARGO_TARGET_DIR", "<default>")`.
+
+> **Learned 2026-11-23** · cargo 1.100 build-dir layout and trimming a target · VERIFIED_PRIMARY (measured on continuum-app targets, Mac arm64) · Source: continuum-app
+> `scripts/target_size_cap.py` (TD-412) · Falsifier: a cargo whose fresh build does not read `fingerprint/<kind>-<name>`. The target has no `deps/`: each compilation unit is
+> `<profile>/build/<package>/<hash>/` holding `fingerprint/` and `out/` (rlib, rmeta, `.d`, and `*.rcgu.o`, the unpacked macOS debug info, about 30% of the size). Variants pile up
+> per package (98 hashes of one workspace crate in a push-gate target), so the "only grows" note above still holds, but a whole unit folder can be removed safely: cargo reads
+> each unit's fingerprint on every build, so its access time says when it was last used, and a removed unit is just rebuilt. Lock while trimming: holding any of
+> `.cargo-lock`, `.cargo-build-lock`, `.cargo-artifact-lock` in `<profile>/` makes cargo print "Blocking waiting for file lock". Pattern: design-patterns.md P-83.
+

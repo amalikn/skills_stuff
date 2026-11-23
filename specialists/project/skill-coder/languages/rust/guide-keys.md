@@ -4,7 +4,7 @@ Category: reference
 Status: current
 Authority: local-supplement
 Scope: Human-readable Rust guide for the operator, parts 15 to 19 (enums that carry data, implementing a library's trait, let chains, keeping secrets out of sight, a module split into a folder), from continuum-app's FR-237 and FR-308 code
-Last reviewed: 2026-11-21
+Last reviewed: 2026-11-23
 Summary: >-
   The third part of the operator's Rust guide, from the device-side encryption code built on 2026-11-21: one enum for two kinds of device key, a trait the age library calls back into,
   let chains in a guard, secrets that never reach logs or arguments, and a module that became a folder. Read parts 1 and 2 first.
@@ -21,7 +21,8 @@ Written for: you, learning Rust. Parts 1 and 2 are [guide-basics.md](guide-basic
 - [17. Let chains: a condition and a pattern in one if](#17-let-chains-a-condition-and-a-pattern-in-one-if)
 - [18. Keeping a secret out of sight](#18-keeping-a-secret-out-of-sight)
 - [19. A module that became a folder](#19-a-module-that-became-a-folder)
-- [20. Further reading](#20-further-reading)
+- [20. Reading a setting into an enum: FromStr](#20-reading-a-setting-into-an-enum-fromstr)
+- [21. Further reading](#21-further-reading)
 
 ## 15. An enum whose variants carry different data
 
@@ -115,7 +116,32 @@ std::io::copy(&mut input, &mut z)?;   // compress, then encrypt, piece by piece
 z.finish()?.finish()?;                // zstd's tail, then age's tail
 ```
 
-## 20. Further reading
+## 20. Reading a setting into an enum: FromStr
+
+An environment variable is a string; the code wants one of a few named choices. Implementing the standard `FromStr` trait gives you `"text".parse::<Engine>()`, and returning an
+error for anything unknown means a typo stops the program at startup instead of silently picking a default. From continuum-app `crates/continuum-store/src/restic/mod.rs` (TASK-454):
+
+```rust
+impl std::str::FromStr for Engine {
+  type Err = String;
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match s {
+      "cli" => Ok(Self::Cli),
+      "rustic" => Ok(Self::Rustic),
+      "rustic-only" => Ok(Self::RusticOnly),
+      other => Err(format!("RESTIC_ENGINE must be cli, rustic or rustic-only, not {other}")),
+    }
+  }
+}
+
+// unset means the default; set means it must be valid (the ? passes the error up and startup fails)
+let engine = std::env::var("RESTIC_ENGINE").ok().map_or(Ok(Engine::Rustic), |v| v.parse())?;
+```
+
+`.ok()` turns "not set" into `None`; `map_or(default, f)` uses the default for `None` and calls `f` on a value. Python's equivalent is `Engine(os.environ.get(...))` on an `Enum`,
+which also raises on an unknown value.
+
+## 21. Further reading
 
 - [Defining an enum](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html) and [traits](https://doc.rust-lang.org/book/ch10-02-traits.html) in the book.
 - [Let chains in Rust 2024](https://doc.rust-lang.org/edition-guide/rust-2024/let-chains.html).

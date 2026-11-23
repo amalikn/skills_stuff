@@ -2049,6 +2049,37 @@ let envelope = json!({"schema": "continuum.envelope.v1", "workspace_json": text,
 let address = transfer::put_bytes(http, edge, capsule, epoch, keys::encrypt(&k.recipient, &serde_json::to_vec(&envelope)?)?).await?;
 ```
 
+### P-83 Trim a build cache by its own read trace before wiping it
+
+> **Learned 2026-11-23** · continuum-app TD-412 Cargo target cap · CANDIDATE (one project) · Source: continuum-app `scripts/target_size_cap.py` (TD-412 commit after 48e4e3c) · Falsifier: a
+> fresh build that reads no per-unit file, or a volume mounted `noatime` (access times then never move and every unit looks unused).
+
+Problem:      a cache only grows (a Cargo target reached 31 GiB in a day of builds); wiping it at a cap makes the next builds cold (650 to 700 s against 160 s warm), and file ages cannot tell a
+              unit that is old but still used from one nothing needs
+Solution:     find the per-unit file the tool reads on every run, even when the unit is fresh (cargo's fingerprint hash), and take its access time as "last used"; over the cap, remove the units
+              not used for a window, holding the tool's own lock, and wipe only if still over
+Why it works: the tool's freshness check is the use trace, so a unit some build still needs is read and kept; the units it depends on are checked in the same pass, so a kept unit never loses a
+              dependency; removing a whole unit with its fingerprint can only cause a rebuild of that unit
+Reuse:        any cache whose tool checks freshness per entry (build systems, package caches, CI layer caches); pick the window from the pipeline that uses it (2 h after a gate run, a day for a
+              shared dev cache)
+Pitfalls:     prove the volume updates atime on read first (a two-read probe), never infer it from mount flags; the first test forced a 1 GiB cap, so the trim was not enough and the wipe ran: test
+              the trim alone (a trim-only flag) with the cutoff at the start of the build that must stay fresh; delete under the tool's lock or a concurrent build fails mid-link
+Realised in:  Python -> continuum-app scripts/target_size_cap.py (excerpt)
+Evidence:     CANDIDATE: one project; after the trim a coordinator build compiled 0 units, the trimmed store build recompiled its 85 and passed; after a push 2162 of 2943 gate units (11.1 of
+              18.7 GiB) were unread
+
+```python
+def last_use(unit: Path) -> float:
+  fp = unit / "fingerprint"
+  newest = fp.stat().st_mtime
+  for f in fp.iterdir():
+    st = f.stat()
+    newest = max(newest, st.st_atime, st.st_mtime)
+  return newest
+
+stale = [u for u in root.glob("*/build/*/*") if (u / "fingerprint").is_dir() and last_use(u) < cutoff]
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project
