@@ -140,3 +140,17 @@ class Split(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LinkBodies(unittest.TestCase):
+    """Mirrored bodies carry wiki-links (2026-11-23: decision items had bare refs, which each sync overwrote)."""
+
+    def test_refs_and_other_decisions_become_links_but_not_self(self):
+        want = [{"ref": "DL-191", "body": "**Serves:** DECISION-LOG.md (DL-191)\n\n**Decision:** Operator (FR-275), after DL-190; FR-999 unknown; `TASK-1` code."}]
+        out = pdm.link_bodies(want, {"DL-191": "DEC-7"}, {"FR-275", "TASK-1", "DEC-7", "DEC-6"}, {"DL-191": "DEC-7", "DL-190": "DEC-6"})
+        body = out[0]["body"]
+        self.assertIn("[[FR-275]]", body)
+        self.assertIn("[[DEC-6|DL-190]]", body)
+        self.assertIn("(DL-191)", body, "never links to itself")
+        self.assertNotIn("[[FR-999]]", body, "only refs that exist")
+        self.assertIn("`TASK-1`", body, "code spans left alone")

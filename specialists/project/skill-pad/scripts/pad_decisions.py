@@ -16,6 +16,8 @@ Options: --decision-log PATH (default docs/architecture-review/DECISION-LOG.md; 
     --architecture PATH (2026-11-20): also mirror the decision bullets of that document's `## Key decisions` section (unc keeps its decisions in
     ARCHITECTURE.md, not a DL log); refs are register ids (D17, S20, X2) or ARCH-<slug>;
     a renamed bullet gets a new slug, so items whose ref left the source are listed as orphaned (never changed).
+    Bodies are written with wiki-links (2026-11-23): item refs as [[FR-275]], other decisions as [[<mirror ref>|DL-nnn]] (pad_links.linked, the same
+    rewrite as `just links`); --no-links writes plain bodies. The first run after this change re-mirrors every linked body once.
 Safety: plan by default; writes to Pad only with --apply; reads the project files only. Runtime budget: 60 s for about 110 items (rate-limited writes back off).
 """
 
@@ -28,6 +30,9 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import pad_links  # noqa: E402  (same folder: wiki-link rewriting shared with `just links`)
 
 DL_ROW = re.compile(r"^\| (DL-\d{3}) \| (\d{4}-\d{2}-\d{2}) \| (architecture|process) \| (.+?) \| (.*?) \| .*\|$")
 
@@ -246,6 +251,28 @@ def architecture_items(path: Path, section: str = "## Key decisions") -> tuple[l
     return items, skipped
 
 
+def link_bodies(want: list[dict], have: dict, refs: set[str], decisions: dict[str, str]) -> list[dict]:
+    """Rewrite each desired body's bare references as Pad wiki-links (pad_links.linked), so the mirror keeps the workspace rule that every
+    reference in an item is a [[REF]] link (2026-11-23: mirrored decisions had none, and each sync overwrote any link added by hand).
+
+    A decision never links to itself; a decision created in this run becomes a link target on the next run.
+
+    Args:
+        want: desired items (bodies replaced in place).
+        have: decision_ref -> Pad item ref already present.
+        refs: every existing Pad item ref.
+        decisions: decision id -> mirror item ref.
+
+    Returns:
+        want, with linked bodies.
+    """
+    for w in want:
+        own = have.get(w["ref"], "")
+        others = {k: v for k, v in decisions.items() if k != w["ref"]}
+        w["body"] = pad_links.linked(w["body"], own, refs, others)
+    return want
+
+
 def plan(want: list[dict], have: dict, body_of) -> tuple[list[dict], list[dict]]:
     """Split desired items into creates and updates.
 
@@ -320,7 +347,7 @@ def apply(binary: str, timeout: int, creates: list[dict], updates: list[dict], h
         fields += [f"decision_date={w['date']}"] if w["date"] else []
         pad(binary, timeout, "item", "create", "decisions", w["title"], "--content", w["body"], *[x for f in fields for x in ("--field", f)], "--op-key", f"{prefix}-decision-{w['ref']}")
     for w in updates:
-        pad(binary, timeout, "item", "update", have[w["ref"]], "--content", w["body"], "--field", f"status={w['status']}", "--replace", "--comment", "Source changed; re-mirrored by pad_decisions.py")
+        pad(binary, timeout, "item", "update", have[w["ref"]], "--content", w["body"], "--field", f"status={w['status']}", "--replace", "--comment", "Source or links changed; re-mirrored by pad_decisions.py")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -340,6 +367,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--timeout", type=int, default=60)
     ap.add_argument("--limit", type=int, help="create at most N items (canary)")
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--no-links", action="store_true", help="mirror bodies without wiki-links (as before 2026-11-23)")
     a = ap.parse_args(argv)
     root = a.project_root.resolve()
     try:
@@ -350,6 +378,10 @@ def main(argv: list[str] | None = None) -> int:
             want += arch
             for head in skipped:
                 print(f"skipped (not a decision): {head[:90]}")
+
+        if not a.no_links:
+            items, decisions = pad_links.index(a.pad, a.timeout)
+            link_bodies(want, have, {it["ref"] for it in items}, decisions)
 
         def body_of(ref: str) -> str:
             """Read one Pad item's current body.

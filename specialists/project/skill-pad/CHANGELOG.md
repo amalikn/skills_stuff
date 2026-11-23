@@ -16,6 +16,7 @@ Last rotated: 20261123_1422
 
 ## Contents
 
+- [20261123_1840 — Mirrored decisions carry wiki-links](#20261123_1840--mirrored-decisions-carry-wiki-links)
 - [20261123_1422 — Status values per collection](#20261123_1422--status-values-per-collection)
 - [20261122_2341 — Decision links looked up, not recalled](#20261122_2341--decision-links-looked-up-not-recalled)
 - [20261122_2046 — Bugs close with fixed; no pad search; blocked-by](#20261122_2046--bugs-close-with-fixed-no-pad-search-blocked-by)
@@ -40,6 +41,14 @@ Last rotated: 20261123_1422
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 
 ---
+
+## 20261123_1840 — Mirrored decisions carry wiki-links
+
+- Operator, 2026-11-23 (continuum): "Why links are missing in the decisions?" Cause: `pad_decisions.py` wrote bodies as plain text and every sync replaced the body, so the `[[REF]]` rule
+  never held for the `decisions` collection and a link added by `just links` was overwritten on the next sync.
+- Fix: `link_bodies` runs each mirrored body through `pad_links.linked` before the compare and write: item refs become `[[FR-275]]`, other decisions `[[<mirror ref>|DL-nnn]]`, never a
+  self-link, code spans untouched. `--no-links` keeps the old plain bodies. A decision created in a run becomes a link target on the next run.
+- Evidence: new test `LinkBodies` (red with linking stubbed out), `test_pad_decisions` 6/6, `just check` green; continuum plan 167 of 297 bodies to re-mirror (49 s).
 
 ## 20261123_1422 — Status values per collection
 
