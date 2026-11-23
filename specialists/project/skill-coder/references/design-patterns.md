@@ -2080,6 +2080,33 @@ def last_use(unit: Path) -> float:
 stale = [u for u in root.glob("*/build/*/*") if (u / "fingerprint").is_dir() and last_use(u) < cutoff]
 ```
 
+
+### P-84 Retention by membership, falling back to the time rule when membership is incomplete
+
+> **Learned 2026-11-23** · continuum-app TASK-492, TASK-493 · CANDIDATE (one project) · Source: continuum-app `apps/coordinator/src/retention.rs` (96839e1), `artefact/present.rs`
+> (1cc80dd) · Falsifier: a kept capture whose objects lack membership rows and still lose an object under the new rule.
+
+Problem:      a store must keep "the newest N captures plus one a day" with every object each kept capture uses, but objects are shared across captures, their
+              manifests are encrypted on the device, and older captures were taken before anyone recorded which objects they used
+Solution:     record membership at write time (the client names the capture on every put and reuse; the server stores capture-to-object rows), choose the
+              kept captures with window functions, keep the union of their members plus anything stamped since the newest capture started, and when any kept
+              capture has no membership rows fall back to the old time rule, which keeps more
+Why it works: the decision rests on facts recorded when the object was used, not on reading the (encrypted) manifest; the fallback makes the change safe
+              for history recorded before the membership existed; the in-flight guard protects an upload racing the prune
+Reuse:        backup retention over deduplicated stores, artefact caches keyed by build, any GC over shared blobs where the reference graph is opaque
+Pitfalls:     prove membership is complete in a real run (count members against objects stamped during the capture), not only in a unit test; days are the
+              database's time zone (UTC); a client that forgets the header silently pushes every capture onto the fallback
+Realised in:  SQL (Postgres window functions) -> continuum-app retention.rs (excerpt)
+Evidence:     CANDIDATE: one project; retention tests 3/3; P4 gate case "capture membership from the real agent" (members equal stamped objects)
+
+```sql
+WITH caps AS (SELECT id, at, row_number() OVER (ORDER BY at DESC) AS n,
+                     row_number() OVER (PARTITION BY at::date ORDER BY at DESC) AS day_n FROM captures WHERE capsule_id = $1),
+kept AS (SELECT id FROM caps WHERE n <= 5 OR (day_n = 1 AND at >= now() - interval '14 days'))
+SELECT r.digest FROM refs r WHERE r.capsule_id = $1 AND r.last_referenced_at < (SELECT max(at) FROM caps)
+  AND NOT EXISTS (SELECT 1 FROM members m JOIN kept ON kept.id = m.capture_id WHERE m.digest = r.digest)
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

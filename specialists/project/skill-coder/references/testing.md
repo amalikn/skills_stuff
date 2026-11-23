@@ -189,6 +189,11 @@ check: _require-venv
 >
 > The helper that performs the rescue returns why it acted (`""`, `"cut"` for a fault injected on purpose, `"rescue"`), so a wanted fault is not counted as help.
 
+> **Learned 2026-11-23** · a gate check must run in every mode it guards · VERIFIED_PRIMARY (continuum-app p4-gate) · Source: continuum-app `justfile` p4-gate
+> (1cc80dd) · Falsifier: none. A "no fallback line in the log" check was added and proved only under the strict engine (where fallback never logs), so its first
+> run under the default engine failed on a fault case that deletes data on purpose. Before trusting a new gate check, run it once in each mode the gate is
+> used in, and narrow it to what no case may legitimately do (a write fallback), counting what a case may cause (a read fallback during a deletion test).
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one; a read-only proof may run against production where the project authorises it, leaving nothing on the
