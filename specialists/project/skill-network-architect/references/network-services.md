@@ -137,6 +137,22 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
 | Receive path tuned before CPU           | Hot resolver, idle cores     | Add vCPUs first                           | Single queue keeps every packet on one CPU |
 | Edge recovery image keeps DHCP and DNS  | Site devices lease from the edge box | Rollback image without site services | Rollback takes the site management plane down |
 
+### Reaching a home or lab service from a phone with passkeys
+
+> **Learned 2026-11-23** · LAN exposure of a WebAuthn sign-in · VERIFIED_PRIMARY (W3C WebAuthn L3 RP ID validation; Apple support 102390 and
+> 103769; OpenSSL refuses a leaf outside the root's name constraint, verify error 47) · Source: continuum FR-510 options record and
+> spikes/fr-510-lan-passkey (DL-196) · Falsifier: a browser that creates a passkey on an IP-address origin
+
+- A passkey cannot be bound to an IP address (WebAuthn rejects an effective domain that is not a valid domain) and needs HTTPS (only
+  localhost is exempt), so a LAN service signed into with passkeys needs a name. Without local DNS records, mDNS gives one (`<host>.local`).
+- The certificate: a private root with an X.509 name constraint permitting only that host, so a leaked root key cannot impersonate other
+  sites; the leaf within Apple's rules (DNS name in the SAN, serverAuth EKU, at most 825 days, SHA-2). iOS trusts a manually installed root
+  only after Settings > General > About > Certificate Trust Settings; whether iOS enforces name constraints is to be tested with a
+  deliberate out-of-constraint leaf.
+- The RP ID moves with the name: passkeys made for `localhost` cannot be used from the phone; plan one new registration.
+- Bind the listener to the LAN address only, route only the sign-in and the pages needed (never the IdP admin console), and turn on the
+  host firewall: a laptop with the firewall off exposed every 0.0.0.0 service to the home LAN.
+
 ## Failure modes and tests
 
 | Failure                                    | Symptom                               | Blast radius                | Test that proves the design handles it             |
