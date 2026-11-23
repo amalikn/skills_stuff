@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261123_2240 — Reaching a LAN service from a phone with passkeys (v2.3.14 -> v2.3.15)
+
+- references/network-services.md (before Failure modes), Learned 2026-11-23: WebAuthn needs a name and HTTPS (no IP origin), mDNS name plus a name-constrained private root, iOS trust steps, host firewall; from continuum FR-510 (DL-196, DL-197).
+
 ## 20261123_1430 — Caddy deferred headers and Clear-Site-Data for guest edges (v2.3.13 -> v2.3.14)
 
 - references/security-and-segmentation.md, Learned 2026-11-23: Caddy `header >` (deferred) overrides upstream cache headers; a forward_auth refusal carries Clear-Site-Data to the browser; guest leave-no-trace set (continuum DL-177).
