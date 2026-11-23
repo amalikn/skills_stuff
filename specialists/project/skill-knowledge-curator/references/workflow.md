@@ -90,7 +90,7 @@ official repository). Fetch blocked pages with all-scraper (`just -f /Volumes/Da
 checked, the upstream excerpt and a verdict (`VERIFIED_PRIMARY`, `VERIFIED_SECONDARY`, `CONTRADICTED`, `UNVERIFIED`), and keep the capture in the project. A `CONTRADICTED` external fact becomes a
 conflict for the operator; it never silently rewrites the source claim. First run: the Continuum corpus, 2026-10-30.
 
-Reference implementation for the future `kc links`: `/Volumes/Data/_ai/_tool/tools_stuff/continuum/scripts/check_links.py` (stdlib, read-only; run there as `just check-links`). Design points worth
+Reference implementation for the future `kc links`: `/Volumes/Data/_ai/_tool/tools_stuff/continuum/scripts/checks/check_links.py` (stdlib, read-only; run there as `just check-links`). Design points worth
 keeping when porting it: GET, not HEAD (many documentation sites answer HEAD wrongly); every request timed out (15 s) with one retry on 429/5xx; bounded parallelism (8 workers, at most 2 per host);
 each URL carries every citing `path:line`, which in the kernel becomes the citing claims and sections; outcomes `ok`, `redirected`, `blocked` (401/403/429, often a bot wall: retry through all-scraper
 before calling it dead), `broken`, `unreachable`; exit 1 on any non-ok outcome. A 200 proves only that the page exists today, not that it still says what the claim cites; that is the external-fact

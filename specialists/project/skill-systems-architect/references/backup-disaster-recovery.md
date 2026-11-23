@@ -109,7 +109,7 @@ orders of magnitude (UNVERIFIED as targets); measure your own in a drill.
 > ```
 
 > **Learned 2026-11-19** · off-site copy of a content-addressed backup repository · VERIFIED_PRIMARY (restic 0.19.1 docs, References, Repository Format; SeaweedFS wiki
-> S3-Configuration, edited 2026-10-31; both read 2026-11-19) · Source: Continuum TASK-30 design `docs/architecture-review/nas-pull-design-20261118_2206.md` (tools_stuff 6fec9a4) · Falsifier: a
+> S3-Configuration, edited 2026-10-31; both read 2026-11-19) · Source: Continuum TASK-30 design `docs/architecture-review/design/nas-pull-design-20261118_2206.md` (tools_stuff 6fec9a4) · Falsifier: a
 > restic file whose name is not the SHA-256 of its bytes; a SeaweedFS S3 gateway that denies anonymous access with no config file.
 > restic names every repository file except `config` by the SHA-256 of its content and never rewrites a file, so a pulled copy can be checked with `sha256sum` against the file names without
 > the repository key: the off-site side can verify integrity while holding ciphertext only, keeping the key apart (escrow rule above). Pull with copy-never-delete so a compromised primary

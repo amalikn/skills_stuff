@@ -5,7 +5,7 @@ Status: current
 Authority: record
 Scope: Screenshot for the Learned 2026-11-22 entry on card heights in page layouts without flows
 Last reviewed: 20261122_2350
-Summary: The continuum journey page after the height fix; rendered from journey.yaml by scripts/build_journey_drawio.py and exported with drawio_export.py.
+Summary: The continuum journey page after the height fix; rendered from journey.yaml by scripts/render/build_journey_drawio.py and exported with drawio_export.py.
 ---
 
 # Journey one-pager screenshots
