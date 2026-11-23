@@ -94,8 +94,8 @@ Remote site during WAN loss: what must keep working locally (X = failed WAN)
 
 ## Resolver receive path
 
-A busy recursive resolver that looks CPU-bound is often a single receive path: one NIC queue, one interrupt on one CPU,
-and UDP datagrams dropped at a full socket buffer while the other cores idle. Adding vCPUs does not reach that path.
+A busy recursive resolver that looks CPU-bound is often a single receive path: one NIC queue, one interrupt on one CPU, and UDP datagrams dropped at a full socket buffer while the other cores idle.
+Adding vCPUs does not reach that path.
 
 ```text
 RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
@@ -108,50 +108,56 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
  member              udp_rmem_min         every interrupt      squeeze              on many threads
 ```
 
-| Step | Check | Lever | Evidence |
-| ---- | ----- | ----- | -------- |
-| 1. Distribution | Per-member query rate behind the balancer | Fix hashing or stickiness first; one CGNAT or satellite source can land on one member | UNVERIFIED (method) |
-| 2. Socket buffer | UDP receive errors growing (`netstat -su`) | Raise `rmem_*`, `udp_rmem_min` in a sysctl drop-in; watch growth | VERIFIED_PRIMARY [net][k-net], [ip-sysctl][k-ipsysctl] |
-| 3. NIC queues | `ethtool -l` shows one combined queue | Enable multiqueue so RSS spreads flows across queues and CPUs | VERIFIED_PRIMARY [kernel scaling][k-scaling] |
-| 4. IRQ spread | `/proc/interrupts` shows the NIC interrupt on one CPU; softirq time squeeze | Queue-to-CPU affinity, or RPS for a single-queue device | VERIFIED_PRIMARY [kernel scaling][k-scaling] |
-| 5. CPU | Daemon busy across many worker threads, not one ingress socket | Add CPU only now | UNVERIFIED (design method) |
+| Step             | Check                                                               | Lever                                                                     | Evidence                        |
+| ---------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------- |
+| 1. Distribution  | Per-member query rate behind the balancer                           | Fix hashing or stickiness first; one CGNAT or satellite source can land   | UNVERIFIED (method)             |
+|                  |                                                                     |   on one member                                                           |                                 |
+| 2. Socket buffer | UDP receive errors growing (`netstat -su`)                          | Raise `rmem_*`, `udp_rmem_min` in a sysctl drop-in; watch growth          | VERIFIED_PRIMARY [net][k-net], [ip-sysctl][k-ipsysctl] |
+| 3. NIC queues    | `ethtool -l` shows one combined queue                               | Enable multiqueue so RSS spreads flows across queues and CPUs             | VERIFIED_PRIMARY [kernel scaling][k-scaling] |
+| 4. IRQ spread    | `/proc/interrupts` shows the NIC interrupt on one CPU; softirq      | Queue-to-CPU affinity, or RPS for a single-queue device                   | VERIFIED_PRIMARY [kernel scaling][k-scaling] |
+|                  |   time squeeze                                                      |                                                                           |                                 |
+| 5. CPU           | Daemon busy across many worker threads, not one ingress socket      | Add CPU only now                                                          | UNVERIFIED (design method)      |
 
 - Whether a running resolver picks up a larger socket buffer without a restart depends on how the daemon sets `SO_RCVBUF`. Check that version's documentation before claiming the effect.
-- On a virtual machine the queue count is a hypervisor setting, not a guest setting. In libvirt the `<interface>` `queues` attribute sets
-  virtio-net multiqueue and needs `<model type='virtio'/>` (VERIFIED_PRIMARY [libvirt domain XML][libvirt-fd]). A changed definition takes effect
-  at the next boot of the domain (VERIFIED_PRIMARY [virsh][virsh]). Field experience: a reboot from inside the guest keeps the running process,
-  so plan a full shutdown and start, a maintenance window and a saved copy of the old definition for rollback (UNVERIFIED).
+- On a virtual machine the queue count is a hypervisor setting, not a guest setting. In libvirt the `<interface>` `queues` attribute sets virtio-net multiqueue and needs `<model type='virtio'/>`
+  (VERIFIED_PRIMARY [libvirt domain XML][libvirt-fd]). A changed definition takes effect at the next boot of the domain (VERIFIED_PRIMARY [virsh][virsh]). Field experience: a reboot from inside the
+  guest keeps the running process, so plan a full shutdown and start, a maintenance window and a saved copy of the old definition for rollback (UNVERIFIED).
 - The guest may also need `ethtool -L <if> combined N` to use the queues (VERIFIED_SECONDARY [KVM multiqueue page][kvm-mq]).
 - Template packet-heavy VMs (resolvers, gateways, collectors) with explicit multiqueue and a single-socket CPU topology from the start.
 
 ## Patterns and anti-patterns
 
-| Pattern                                 | Use when                     | Anti-pattern                              | Why it fails                               |
-| --------------------------------------- | ---------------------------- | ----------------------------------------- | ------------------------------------------ |
-| Local caching resolver with serve-stale | Satellite or radio sites     | Clients query a central resolver over WAN | WAN loss stops all name resolution         |
-| Four diverse NTP sources                | Any site                     | Two upstream servers                      | Two cannot outvote a bad source            |
-| RADIUS inside TLS or a protected path   | Any AAA over shared networks | RADIUS/UDP across the WAN                 | On-path forgery (Blast-RADIUS)             |
-| DNS allowed on UDP and TCP 53           | Every firewall               | UDP-only DNS rules                        | Large answers and DNSSEC break             |
-| Readiness-depth health checks           | Load-balanced services       | TCP port check only                       | Traffic sent to broken backends            |
-| Decided DoH policy                      | Managed clients              | Ignore browser DoH                        | Split-horizon names and filtering bypassed |
-| Receive path tuned before CPU           | Hot resolver, idle cores     | Add vCPUs first                           | Single queue keeps every packet on one CPU |
-| Edge recovery image keeps DHCP and DNS  | Site devices lease from the edge box | Rollback image without site services | Rollback takes the site management plane down |
+| Pattern                                 | Use when                             | Anti-pattern                              | Why it fails                                  |
+| --------------------------------------- | ------------------------------------ | ----------------------------------------- | --------------------------------------------- |
+| Local caching resolver with serve-stale | Satellite or radio sites             | Clients query a central resolver over WAN | WAN loss stops all name resolution            |
+| Four diverse NTP sources                | Any site                             | Two upstream servers                      | Two cannot outvote a bad source               |
+| RADIUS inside TLS or a protected path   | Any AAA over shared networks         | RADIUS/UDP across the WAN                 | On-path forgery (Blast-RADIUS)                |
+| DNS allowed on UDP and TCP 53           | Every firewall                       | UDP-only DNS rules                        | Large answers and DNSSEC break                |
+| Readiness-depth health checks           | Load-balanced services               | TCP port check only                       | Traffic sent to broken backends               |
+| Decided DoH policy                      | Managed clients                      | Ignore browser DoH                        | Split-horizon names and filtering bypassed    |
+| Receive path tuned before CPU           | Hot resolver, idle cores             | Add vCPUs first                           | Single queue keeps every packet on one CPU    |
+| Edge recovery image keeps DHCP and DNS  | Site devices lease from the edge box | Rollback image without site services      | Rollback takes the site management plane down |
 
 ### Reaching a home or lab service from a phone with passkeys
 
 > **Learned 2026-11-23** · LAN exposure of a WebAuthn sign-in · VERIFIED_PRIMARY (W3C WebAuthn L3 RP ID validation; Apple support 102390 and
-> 103769; OpenSSL refuses a leaf outside the root's name constraint, verify error 47) · Source: continuum FR-510 options record and
-> spikes/fr-510-lan-passkey (DL-196) · Falsifier: a browser that creates a passkey on an IP-address origin
+> 103769; OpenSSL refuses a leaf outside the root's name constraint, verify error 47) · Source: continuum FR-510 options record and spikes/fr-510-lan-passkey (DL-196) · Falsifier: a browser that
+> creates a passkey on an IP-address origin
 
-- A passkey cannot be bound to an IP address (WebAuthn rejects an effective domain that is not a valid domain) and needs HTTPS (only
-  localhost is exempt), so a LAN service signed into with passkeys needs a name. Without local DNS records, mDNS gives one (`<host>.local`).
-- The certificate: a private root with an X.509 name constraint permitting only that host, so a leaked root key cannot impersonate other
-  sites; the leaf within Apple's rules (DNS name in the SAN, serverAuth EKU, at most 825 days, SHA-2). iOS trusts a manually installed root
-  only after Settings > General > About > Certificate Trust Settings; whether iOS enforces name constraints is to be tested with a
-  deliberate out-of-constraint leaf.
+- A passkey cannot be bound to an IP address (WebAuthn rejects an effective domain that is not a valid domain) and needs HTTPS (only localhost is exempt), so a LAN service signed into with passkeys
+  needs a name. Without local DNS records, mDNS gives one (`<host>.local`).
+- The certificate: a private root with an X.509 name constraint permitting only that host, so a leaked root key cannot impersonate other sites; the leaf within Apple's rules (DNS name in the SAN,
+  serverAuth EKU, at most 825 days, SHA-2). iOS trusts a manually installed root only after Settings > General > About > Certificate Trust Settings; whether iOS enforces name constraints is to be
+  tested with a deliberate out-of-constraint leaf.
+- Getting the root onto the phone is a step of its own (Learned 2026-11-24, continuum FR-510 rerun, VERIFIED_PRIMARY on the device): serve only the public root certificate over plain HTTP on the LAN,
+  open it in Safari (Allow), install it under Settings > Profile Downloaded, then turn it on in Certificate Trust Settings. An empty Certificate Trust Settings list means no root is installed, so any
+  HTTPS page reached was a hand-accepted warning. A page cannot tell the two apart: `window.isSecureContext` is true either way, so a probe page must not claim "trusted"; check Safari's padlock
+  (Connection Security Details: "This certificate is valid").
+- Compare the fingerprint by the certificate's DER hash, or `openssl x509 -noout -fingerprint -sha256` with no other option: OpenSSL 4.1.0 printed a different SHA-256 when `-ext nameConstraints` was
+  on the same command line. The serial number is a second, easy check on iOS.
 - The RP ID moves with the name: passkeys made for `localhost` cannot be used from the phone; plan one new registration.
-- Bind the listener to the LAN address only, route only the sign-in and the pages needed (never the IdP admin console), and turn on the
-  host firewall: a laptop with the firewall off exposed every 0.0.0.0 service to the home LAN.
+- Bind the listener to the LAN address only, route only the sign-in and the pages needed (never the IdP admin console), and turn on the host firewall: a laptop with the firewall off exposed every
+  0.0.0.0 service to the home LAN.
 
 ## Failure modes and tests
 
