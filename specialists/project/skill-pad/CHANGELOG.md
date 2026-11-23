@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261122_2046
+Last rotated: 20261123_1422
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261123_1422 — Status values per collection](#20261123_1422--status-values-per-collection)
 - [20261122_2341 — Decision links looked up, not recalled](#20261122_2341--decision-links-looked-up-not-recalled)
 - [20261122_2046 — Bugs close with fixed; no pad search; blocked-by](#20261122_2046--bugs-close-with-fixed-no-pad-search-blocked-by)
 - [20261122_1745 — Status values per collection; `--` before dash-led comments; collections used unprompted](#20261122_1745--status-values-per-collection----before-dash-led-comments-collections-used-unprompted)
@@ -37,9 +38,12 @@ Last rotated: 20261122_2046
 - [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
 - [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
-- [20261119_1849 — Markdown and Pad sync plan; peer sessions consulted](#20261119_1849--markdown-and-pad-sync-plan-peer-sessions-consulted)
 
 ---
+
+## 20261123_1422 — Status values per collection
+
+- references/cli-reference.md, Learned 2026-11-23: status values of each default collection, from the CLI's own refusals (continuum).
 
 ## 20261122_2341 — Decision links looked up, not recalled
 
@@ -183,14 +187,3 @@ the pack's item-check (TASK-103 and TASK-104, 0 findings) all worked as on 0.21.
 - scripts/pad_tracker.py `from_pad`: an item created in Pad (its title differs from its body's first line) is rendered with the title as the line and the whole body under it; before, the body's first
   line (`**Serves:** ...`) stood in for the item (smc-resiliency features-to-add, FR-95). Imported items are unchanged. Two tests in tests/test_pad_tracker.py (9 pass; the first fails on the old
   code).
-
-## 20261119_1849 — Markdown and Pad sync plan; peer sessions consulted
-
-Operator asked whether skill-pad has the scripts projects need to work with Pad, whether markdown needs a mapping to Pad items, and for a plan with a reversible script (markdown edited, Pad updated,
-markdown regenerated). Three live sessions consulted (smc-resiliency-44, ansible-wifi-47, continuum-32) on sync, revert and script gaps.
-
-- New `docs/pad-markdown-sync-plan-20261119_1845.md` (proposed): one owner per record type, keys in the markdown, sync cycle, journal and revert, conflicts, link checks, script constraints,
-  collections review (keep, leave empty, add Asks, Decisions, Risks, Handoffs, Runs), gaps G1-G18, stages S0-S6, decisions D1-D9. Indexed in README and SKILL.md.
-- `references/cli-reference.md`: Learned 2026-11-19 (format names per command, `item list` has no body, no `collection show`, what Pad can undo).
-- No script added: the probes run were one-off; their reusable logic is planned as padlib (G1) and pad_links.py (G7).
-- Pad read only (collections, playbooks, items, history); nothing written to Pad.

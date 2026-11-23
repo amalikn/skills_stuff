@@ -172,6 +172,26 @@ Legend: --> issue, present or revoke   PEP = policy enforcement point
 > code and QR, the phone (already signed in with its passkey) approves it after a step-up while showing the guest's browser and address, and the guest gets a first-party session
 > cookie. It has the device-code phishing exposure, so: one use, two minutes, the code and requester shown on the phone.
 
+> **Learned 2026-11-23** · Keycloak: a sub-flow shared by two top-level flows breaks sign-in on a fresh import · VERIFIED_PRIMARY (Keycloak 26.8.2 debug log; fresh import
+> FAIL before, PASS after) · Source: continuum BUG-464; continuum-app `keycloak/realm/continuum.json` (300a38d) · Falsifier: a fresh import where two top-level flows share one
+> sub-flow and the username step still moves on. When the browser flow and another top-level flow (here device approval) both reference the same sub-flow, the form post after
+> the username resolves through the wrong parent ("Cannot find execution in the authentication flow, reseting flow") and the username page simply returns, with no error and no
+> login event. A live realm built by scripts can work while the realm file does not: give each top-level flow its own copies in the file, and compare a fresh import with the live
+> realm (continuum-app `scripts/keycloak_realm_diff.py`, a partial export of each, flattened).
+
+> **Learned 2026-11-23** · Keycloak RP-initiated logout from a backend-for-frontend portal · VERIFIED_PRIMARY (keycloak/keycloak main: server_admin sso-protocols, LogoutEndpoint.java;
+> live probe) · Source: continuum BUG-463; continuum-app `apps/coordinator/src/portal/login.rs` (07e6a89) · Falsifier: a sign-out that clears only the portal cookie and still ends the
+> session. Clearing the portal's own session is not a sign-out: the Keycloak SSO session signs the person straight back in (one token exchange per click in the log). Keep the ID
+> token from the code exchange, redirect to `/protocol/openid-connect/logout` with `client_id`, `id_token_hint` (no confirmation page) and `post_logout_redirect_uri`, which must be
+> listed in the client attribute `post.logout.redirect.uris`; several values join with `##` (live: listed 302, unlisted 400). Ending the SSO session also ends tokens other clients
+> got through it (a device-grant CLI approved in the same browser asked to sign in again).
+
+> **Learned 2026-11-23** · Keycloak levels of authentication (ACR) for a fresh-passkey step-up · VERIFIED_PRIMARY (throwaway Keycloak 26.8.2, software passkey) · Source: continuum
+> `spikes/p5-acr` (2d2a654), DL-174 · Falsifier: a device-grant token carrying the requested acr. With `acr.loa.map` and 'Condition - Level of Authentication' sub-flows, the code
+> flow honours `acr_values` and essential `claims` (token `acr` names the level, max-age 0 prompts every time), but the device authorization grant ignores both (token keeps the
+> base level), so a CLI or agent step-up cannot be checked by name; keep `auth_time` for that path. The username step must sit outside the level sub-flows (inside one, Keycloak
+> restarts the flow after the username), and a browser with no session asking for the higher level is prompted twice.
+
 ## Secrets and break-glass
 
 Lifecycle: create -> store (vault of record) -> distribute (runtime fetch, never git) -> use -> rotate -> revoke -> destroy.

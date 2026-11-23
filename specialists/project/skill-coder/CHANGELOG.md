@@ -36,6 +36,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-23: languages/rust/learned-async-and-tests.md, Learned 2026-11-23: tokio task_local to carry a per-operation header (continuum TASK-492).
 - 2026-11-23: references/design-patterns.md, P-83 (trim a build cache by its own read trace before wiping it); languages/rust/learned-cargo-and-builds.md, Learned 2026-11-23: cargo 1.100 build-dir layout, fingerprint access time as last use, the three cargo locks (continuum-app TD-412); languages/rust/guide-keys.md section 20 (FromStr for a setting, TASK-454).
 - 2026-11-22: languages/rust/learned-async-and-tests.md, Learned 2026-11-22: per-test databases dropped on Drop unless panicking (765 leaked in continuum-app); languages/rust/learned-cargo-and-builds.md, Learned 2026-11-22: one program under two binary names (lib + thin bins or #[path] wrapper; default-run).
 - 2026-11-21: references/errors-and-timeouts.md (Timeouts), Learned 2026-11-21: upload timeouts scale with size when the server answers after storing.

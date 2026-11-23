@@ -458,3 +458,10 @@ No screenshot: the output is text in the document itself.
 > A renderer change (the base-layer lock default of 2026-11-11, renamed edge ids, layout and title changes) turns every consumer's `flows-check` red without any change to its map. Before re-rendering
 > over the committed drawing, run `just compare-drawings committed.drawio scratch.drawio` against a render into a scratch copy: exit 0 means no label text changed; on exit 1 read the listed labels.
 > Both consumers' only text changes were the renderer's own generated titles ("End-to-end flow" -> "E2E flow").
+
+> **Learned 2026-11-23** · Ishikawa (fishbone) page built data first with the page builder · VERIFIED_PRIMARY (page_audit clean; PNG export reviewed) · Source: continuum
+> `scripts/build_fishbone_drawio.py` (f953b4b) · Falsifier: a fishbone page whose routes need a free-floating point (the router wants vertex ends). Give the spine real ends:
+> a tiny tail vertex, one small joint vertex per bone on the spine, the effect box at the head; route each bone as a straight line from its label to its joint and the spine as
+> segments joint to joint with no arrowheads, one arrow only into the effect (arrowheads at every joint read as clutter). Four bones above, three below, cause cards stacked to the
+> right of each bone line so no line crosses a card; an empty bone shows a dashed "nothing recorded" card instead of being dropped.
+

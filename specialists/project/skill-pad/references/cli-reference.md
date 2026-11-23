@@ -268,3 +268,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > - **2026-11-22:** pad_rewrite.py writes in the order items, comments, notes, decides; when the standard says "save the original as a note first", apply the notes in a spec of
 > their own before the comments (continuum TD-323: two passes).
 
+> **Learned 2026-11-23** · status values per collection (default collections, Pad as used by continuum) · VERIFIED_PRIMARY (the CLI's own refusals) · Source: continuum session
+> 2026-11-23 · Falsifier: a collection accepting a value outside its list. Tasks: open, in-progress, done, cancelled (no blocked: a paused task stays open with a comment);
+> Bugs: open, confirmed, in-progress, fixed, wont-fix; Feature Requests: submitted, under-review, planned, building, shipped, declined; Ideas: new, exploring, implemented (others
+> unseen); Plans: planned, completed; Asks: answered; Tech Debt: identified, in-progress, resolved. A refused value prints the allowed list: read it rather than guess.
+

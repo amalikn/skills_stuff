@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## 20261123_1430 — Caddy deferred headers and Clear-Site-Data for guest edges (v2.3.13 -> v2.3.14)
+
+- references/security-and-segmentation.md, Learned 2026-11-23: Caddy `header >` (deferred) overrides upstream cache headers; a forward_auth refusal carries Clear-Site-Data to the browser; guest leave-no-trace set (continuum DL-177).
+
 ## 20261122_2045 — One forward-auth gate for browser apps on sub-paths (v2.3.12 -> v2.3.13)
 
 - references/security-and-segmentation.md (before Patterns), Learned 2026-11-22: Caddy forward_auth sorts before handle_path, so one gate checks every app and WebSocket on its sub-path; the redir answers without the check; apps behind it accept only the edge. Live probe evidence. Source: continuum-app 8171de1.

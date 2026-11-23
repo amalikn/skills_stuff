@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261123_1422 — Ishikawa page data first
+
+- references/data-first-diagrams.md, Learned 2026-11-23: Ishikawa page data first: joints as tiny vertices so every route has ends, one arrow only into the effect (continuum IDEA-456).
+
 ## 20261123_0021 — Correction: wrapped_lines counts characters
 
 data-first-diagrams.md: the card-height entry passed pixels to wrapped_lines(), which counts characters, so it never wrapped; corrected to convert the box width to characters (about 6.6 px each at font 11) with about 16 px a line, CORRECTION note kept (continuum journey, 2026-11-23).

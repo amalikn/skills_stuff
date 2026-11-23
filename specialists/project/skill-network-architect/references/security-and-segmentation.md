@@ -348,3 +348,11 @@ Controls frameworks:
 [tp-auth]: https://goteleport.com/docs/reference/architecture/authentication/
 [ssh1]: https://man.openbsd.org/ssh.1
 [ipt-ext]: https://ipset.netfilter.org/iptables-extensions.man.html
+
+> **Learned 2026-11-23** · Caddy edge in front of a browser-only guest: overriding upstream cache headers and wiping site data · VERIFIED_PRIMARY (Caddy header directive docs; live
+> curl through Caddy 2.11.9) · Source: continuum DL-177; continuum-app `caddy/Caddyfile`, `apps/coordinator/src/portal/guest.rs` (d85d4b3) · Falsifier: an upstream Cache-Control
+> surviving `header >Cache-Control`. `header Cache-Control no-store` alone loses to what a proxied upstream sends; `header >Cache-Control "no-store"` (the `>` prefix defers the set
+> until the response is written) overrides it. A forward_auth refusal is passed to the browser with its headers, so the auth endpoint can add `Clear-Site-Data: "cache", "cookies",
+> "storage"` when it refuses a stale session cookie, wiping the edge origin's data; note that cookies do not separate by port, so on one host it also clears the portal's cookies.
+> Leave-no-trace on someone else's PC: no-store everywhere, session cookies (no Max-Age), Clear-Site-Data at sign-out; a normal window's history stays out of the server's reach.
+

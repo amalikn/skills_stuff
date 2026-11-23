@@ -65,3 +65,9 @@ Part of [rust.md](../rust.md).
 > Source: continuum-app `apps/coordinator/tests/handoff_kit/mod.rs` (cbffb5a) · Falsifier: a std release with that conversion. A test helper returning `Box<dyn Error>`
 > cannot `?` a library error typed `Box<dyn Error + Send + Sync>`; convert through a string (`.map_err(|e| e.to_string())?`) or make the helper's error type
 > `Send + Sync` too. Related: clippy's `large_enum_variant` fired when one field grew a struct; box that field (`Box<Restic>`) rather than allow the lint.
+
+> **Learned 2026-11-23** · tokio task_local for a value every request in one operation must carry · VERIFIED_PRIMARY (cargo build, artefact tests 9/9) · Source: continuum-app
+> `apps/agent/src/transfer.rs`, `steps.rs` (TASK-492) · Falsifier: a nested spawn inside the scope losing the value (task_local does not cross `tokio::spawn`). To add a header
+> to every upload of one capture without threading a parameter through five call sites, declare `tokio::task_local! { pub static CAPTURE: String; }`, wrap the operation in
+> `CAPTURE.scope(id, fut).await`, and read it where the request is built with `CAPTURE.try_with(Clone::clone).unwrap_or_default()` (outside a scope: empty, the server ignores it).
+
