@@ -257,6 +257,21 @@ for _ in range(60):
     break
 ```
 
+> **Learned 2026-11-25** · OpenBao raft snapshot jobs (adds to the 2026-11-24 entry above) · VERIFIED_PRIMARY (OpenBao 2.7.2, a throwaway server 2026-11-25 and the restore
+> drill taking its snapshot with a token holding only this policy) · Source: continuum-app `deploy/nas/openbao/continuum-raft-snapshot.hcl`,
+> `scripts/dev-stack/bao_snapshot_drill.py` (83c156b), continuum FR-248 · Falsifier: an OpenBao release refusing `GET sys/storage/raft/snapshot` without `sudo`.
+> The original-shares rule held again on 2.7.2. `GET sys/storage/raft/snapshot` needs only `read` on that path, not `sudo`, so a scheduled snapshot job gets a
+> token with one read rule and no secret access (the drill checks it cannot read a stored password). `auth/token/renew-self` comes with the `default` policy, so a
+> periodic token (`-period=72h`, renewed by every run) lives while the timer runs and lapses after the job stops. Restore (`snapshot-force`) is never granted to a
+> host token: it is an operator step with a root or recovery token.
+>
+> ```hcl
+> # bao token create -orphan -policy=continuum-raft-snapshot -period=72h -field=token
+> path "sys/storage/raft/snapshot" {
+>   capabilities = ["read"]
+> }
+> ```
+
 ## Failure modes and tests
 
 | Failure                                  | Symptom                              | Blast radius                     | Proving test                                                        |

@@ -278,6 +278,12 @@ def _usable(path, drive):  # drive None: always-present disk
 > a check into a relationship authoriser, trace each relation back to the stored fact and the code that writes its tuple; write tuples from that fact by the same
 > consumer that writes the others, and backfill existing rows.
 
+> **Learned 2026-11-25** · a hypervisor vTPM as a key store (Proxmox VE swtpm) · VERIFIED_SECONDARY (reasoning from Proxmox storing the vTPM state as a VM disk volume,
+> `tpmstate0`; no extraction tried) · Source: continuum TD-606, DL-232 · Falsifier: a restored or cloned VM whose vTPM refuses to unseal keys sealed in the original.
+> A software vTPM's state is a file (a disk volume) on the host. Host root, VM backups and snapshots, and restores or clones all copy it, so a key sealed in a vTPM
+> is held by whoever holds the host or any backup of the VM. A vTPM proves the code path (seal, unseal, attestation calls) and not key custody. Treat VM backups that
+> include vTPM state as secrets, and prove custody on real TPM hardware before trusting real workloads to it.
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.

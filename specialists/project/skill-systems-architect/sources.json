@@ -1119,6 +1119,14 @@
    "generated": true
   },
   {
+   "id": "C-4cbbf078",
+   "title": "docs.immich.app",
+   "url": "https://docs.immich.app/install/requirements",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true
+  },
+  {
    "id": "C-0da7ccb0",
    "title": "Linux PSI",
    "url": "https://docs.kernel.org/accounting/psi.html",
@@ -2185,6 +2193,22 @@
    "generated": true,
    "local": "sources/web/raw.githubusercontent.com/netbox-community-netbox-main-LICENSE.txt-b0f9d406.md.txt",
    "checked": "2026-10-29"
+  },
+  {
+   "id": "C-8cf8d699",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/nextcloud/all-in-one/main/readme.md",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true
+  },
+  {
+   "id": "C-b487698a",
+   "title": "raw.githubusercontent.com",
+   "url": "https://raw.githubusercontent.com/nextcloud/docker/master/README.md",
+   "evidence": "CITED",
+   "note": "cited in references/containers-and-platforms.md",
+   "generated": true
   },
   {
    "id": "C-4a6a5a63",

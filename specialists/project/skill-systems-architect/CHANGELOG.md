@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 (v2.3.25 -> v2.3.26): references/security-and-service-identity.md, Learned 2026-11-25: a hypervisor vTPM proves the code path, not key custody (continuum TD-606, DL-232); references/backup-disaster-recovery.md, Learned 2026-11-25: OpenBao snapshot API needs only `read`, renew-self from the default policy, restore never on a host token (continuum-app 83c156b).
+
 - 2026-11-25 references/containers-and-platforms.md (c): LXC vs VM placement for home NAS functions.
 
 - 2026-11-24 references/containers-and-platforms.md: Immich Docker-only in a VM (x86-64-v2, SSD Postgres), Nextcloud AIO official vs community image (home NAS project). Entry (b): when the plain image with Compose fits better.

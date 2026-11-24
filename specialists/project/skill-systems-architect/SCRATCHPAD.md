@@ -37,6 +37,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 - 2026-11-22: v2.3.22 write-backs from continuum (OrbStack disk/endpoints/volumes, JVM perf-data crash recurrence, software WebAuthn test authenticator, Bluetooth-free guest sign-in). Next: a containers-and-platforms check that services with state in the container filesystem have a volume.
 
 - 2026-11-21: the client-authenticated recipient set entry (security-and-service-identity.md) rests on one project and Keybase; add a second source (Signal or MLS device linking) on the next E2EE design.
+- 2026-11-25: v2.3.26 write-backs from continuum (vTPM proves the code path, not key custody; OpenBao snapshot token needs only read).
 - 2026-11-11 (v2.3.7): edge-appliances read-only root entry is design reasoning; promote to VERIFIED once smc-resiliency records the R28 outcome with scheduled writers run in a trial.
 
 1. Operator: push skills_stuff (see the network pack SCRATCHPAD).
