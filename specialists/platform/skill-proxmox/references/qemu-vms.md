@@ -207,3 +207,19 @@ agent: enabled=0,...
 > printf '[Manager]\nRuntimeWatchdogSec=%s\n' "$SEC" >/run/systemd/system.conf.d/90-smc-x1.conf
 > timeout 60 systemctl daemon-reexec
 > ```
+
+> **Learned 2026-11-25** · Proxmox VE 9.2, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY for the resources and attributes (bpg docs `virtual_environment_vm` virtiofs block,
+> `hardware_mapping_dir`; offline `tofu validate` against the provider schema); privilege names from the provider's sample role (VERIFIED_SECONDARY) · Source: home NAS
+> project `tofu/apps_vm.tf`, `tofu/host/main.tf`, `scripts/host/pve_api_identity.sh` (2026-11-25) · Falsifier: a privilege-separated token without Mapping.Use attaching a
+> directory mapping to a VM
+> Sharing a host ZFS dataset into a VM with virtiofs as code takes two objects: a cluster directory mapping (`proxmox_hardware_mapping_dir`, name plus node and path; needs
+> `Mapping.Modify`, so it belongs to a host-level token) and a `virtiofs { mapping = "<name>" }` block on the VM (the VM's token needs `Mapping.Use` on `/mapping/dir`).
+> An encrypted dataset behind the mapping must be unlocked before the VM starts: keep `on_boot = false` for such VMs. Not yet run on a node: screenshot pending
+> (Datacenter > Directory Mappings, after the home NAS apps VM exists).
+> ```hcl
+> # home NAS tofu/apps_vm.tf (2026-11-25)
+> virtiofs {
+>   mapping = "nas-photos"
+>   cache   = "auto"
+> }
+> ```
