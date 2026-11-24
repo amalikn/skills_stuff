@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-24: references/security-and-service-identity.md, Learned 2026-11-24 (three): step-up sign-in bound through the login state; secrets off the command line and where a short-lived token may rest; Keycloak device grant needs PKCE on an enforcing client (continuum TASK-535, BUG-548, FR-546, TASK-536)
+
 - 2026-11-23: references/security-and-service-identity.md "Test identities with software authenticators" (dedicated sensitive client: passkey then OTP, azp + fresh auth_time; realm traps), from continuum FR-502 (DL-203); see skill-coder P-85.
 
 - 2026-11-23: references/security-and-service-identity.md, Learned 2026-11-23: Keycloak shared sub-flow breaks fresh imports (BUG-464); RP-initiated logout with id_token_hint and post.logout.redirect.uris (##); ACR levels ignored by the device grant (continuum).

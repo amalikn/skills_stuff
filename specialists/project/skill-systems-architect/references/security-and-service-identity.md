@@ -392,3 +392,33 @@ Baselines:
 - [CIS Benchmarks](https://www.cisecurity.org/cis-benchmarks) - read this for per-OS hardening baselines (pointer).
 
 [t1url]: https://goteleport.com/docs/reference/architecture/authentication/
+
+> **Learned 2026-11-24** · a step-up sign-in that returns to an existing session through a cross-site redirect · VERIFIED_PRIMARY (portal tests and live devbot check) ·
+> Source: continuum TASK-535; continuum-app `apps/coordinator/src/portal/sensitive.rs` (5ba11ac) · Falsifier: a browser that sends a SameSite=Strict cookie on the IdP's redirect back.
+> The callback of a second sign-in (e.g. passkey plus TOTP through a dedicated client) cannot read the session cookie, for the same cross-site reason as the
+> 2026-11-22 entry above, so it cannot tell which session to mark. Bind it in the single-use login state instead: the start, a same-site request that carries the
+> cookie, stores the session's digest with the state; the callback accepts only a state that names a session, checks the token's `azp` is the step-up client and
+> its subject is the session's own, and updates that session. Keep the two logins' states apart (a normal callback refuses a step-up state and the reverse).
+
+```rust
+// continuum-app apps/coordinator/src/portal/sensitive.rs (5ba11ac): consume the state that names the session, then mark it
+let row = sqlx::query("DELETE FROM portal_login WHERE state = $1 AND session_sha256 IS NOT NULL AND created_at > now() - interval '10 minutes' RETURNING verifier, return_to, session_sha256")
+// ... exchange as the public step-up client, require azp == continuum-sensitive, then:
+"UPDATE portal_session SET sensitive_auth_time = to_timestamp($3), auth_time = GREATEST(auth_time, to_timestamp($3))
+   WHERE session_sha256 = $1 AND subject = $2 AND expires_at > now()"
+```
+
+> **Learned 2026-11-24** · secrets on a command line, and where a short-lived token may rest · VERIFIED_PRIMARY (macOS 27.2: `ps -axo user,args` shows another
+> account's full arguments; continuum-app `apps/cli/src/keystore.rs` 16fa9e0) · Source: continuum BUG-548, FR-546 options record
+> docs/architecture-review/options/fr-546-agent-sensitive-window-options-20261124_1319.md, DL-210 · Falsifier: a host where another user cannot list arguments.
+> A token passed as an argument (`security add-generic-password ... -w <token>`) is readable by every local user while the process runs; send it on stdin
+> (`security -i` with the command on stdin, `secret-tool store` reads stdin) and refuse values that could change the parsed command. For a token the server
+> refuses after a short window (auth_time + 300 s), backup, sync and swap exposure are moot; what decides the place is same-user access, which every reuse
+> option grants equally: a 0600 file in the per-user runtime folder (macOS `getconf DARWIN_USER_TEMP_DIR`, 0700 and outside Time Machine; Linux
+> `$XDG_RUNTIME_DIR`) was chosen over the OS keystore and an agent socket, used only while `now < min(exp, auth_time + 300) - 15 s`.
+
+> **Learned 2026-11-24** · Keycloak device authorization grant on a client that enforces PKCE · VERIFIED_PRIMARY (Keycloak 26.8.2, dev realm) ·
+> Source: continuum TASK-536; continuum-app `apps/agent/src/enrol.rs` (80a65ce) · Falsifier: the same client accepting a device-grant start without `code_challenge`.
+> A public client with `pkce.code.challenge.method = S256` refuses the device-grant start (`/protocol/openid-connect/auth/device`) with 400 unless it carries
+> `code_challenge` and `code_challenge_method`, and the token poll then needs `code_verifier`; a wrong verifier gets `invalid_grant`. Send PKCE on every device
+> grant: a client without enforcement accepts it too.

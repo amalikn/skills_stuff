@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261123_1422
+Last rotated: 20261124_1451
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261124_1451 — Write-back from continuum 2026-11-24: bulk standard pass](#20261124_1451--write-back-from-continuum-2026-11-24-bulk-standard-pass)
 - [20261123_1840 — Mirrored decisions carry wiki-links](#20261123_1840--mirrored-decisions-carry-wiki-links)
 - [20261123_1422 — Status values per collection](#20261123_1422--status-values-per-collection)
 - [20261122_2341 — Decision links looked up, not recalled](#20261122_2341--decision-links-looked-up-not-recalled)
@@ -38,9 +39,12 @@ Last rotated: 20261123_1422
 - [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
 - [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
-- [20261120_0300 — Tracker export: an item made in Pad renders its title](#20261120_0300--tracker-export-an-item-made-in-pad-renders-its-title)
 
 ---
+
+## 20261124_1451 — Write-back from continuum 2026-11-24: bulk standard pass
+
+- references/items-and-edits.md, Learned 2026-11-24: the order for a bulk writing-standard pass and three traps (label-fill filler passes the check, a word check does not validate labels, links lengthen comments past the bullet threshold); continuum TD-541, TD-542.
 
 ## 20261123_1840 — Mirrored decisions carry wiki-links
 
@@ -190,9 +194,3 @@ workspace (ASK-105 after TASK-104); no collection get. docs/pad-usage-guidelines
 
 SKILL.md: the installed Pad CLI is 0.21.1 (pad --version, 2026-11-20, build 0d76fda of 2026-11-18). Used from smc-resiliency with no change in behaviour seen: bootstrap, item create with --op-key, and
 the pack's item-check (TASK-103 and TASK-104, 0 findings) all worked as on 0.21.0. Learned from the enterprise-strategy slurp close of 20 Nov 2026.
-
-## 20261120_0300 — Tracker export: an item made in Pad renders its title
-
-- scripts/pad_tracker.py `from_pad`: an item created in Pad (its title differs from its body's first line) is rendered with the title as the line and the whole body under it; before, the body's first
-  line (`**Serves:** ...`) stood in for the item (smc-resiliency features-to-add, FR-95). Imported items are unchanged. Two tests in tests/test_pad_tracker.py (9 pass; the first fails on the old
-  code).

@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261124_1451.md](changelog/changelog-20261124_1451.md) 1 entry, 2026-11-20 to 2026-11-20: Tracker export: an item made in Pad renders its title
 - [changelog-20261123_1422.md](changelog/changelog-20261123_1422.md) 1 entry, 2026-11-19 to 2026-11-19: Markdown and Pad sync plan; peer sessions consulted
 - [changelog-20261122_2046.md](changelog/changelog-20261122_2046.md) 1 entry, 2026-11-19 to 2026-11-19: ansible-wifi workspace: adapted conventions file, one workspace for three folders
 - [changelog-20261122_1738.md](changelog/changelog-20261122_1738.md) 5 entries, 2026-11-19 to 2026-11-19: SKILL.md names installed CLI 0.21.0; --op-key rule names the commands that take it; Periodic review; 90-day review window; Workspace init from an agent shell; conventions recipe quoting; CLI traps from smc-resiliency: ...

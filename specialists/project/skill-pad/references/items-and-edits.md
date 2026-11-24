@@ -128,3 +128,12 @@ There is no attachment delete or replace, and an upload sniffed as application/o
 
 `pad collection list` (add `--format json` for `traits`), `create "Name" --fields "key:type[:opts];..."` for simple schemas or `--schema JSON|@file|-` for the full one (`terminal_options`,
 `abandoned_options`, defaults, computed and relation fields; the two flags are exclusive), `update <slug>`, `delete` (archives, owner-only), `archived`, `restore`.
+
+> **Learned 2026-11-24** · bringing a workspace to the writing standard in bulk · VERIFIED_PRIMARY (continuum TD-541: item-check 202 findings to 0 on 309 items) ·
+> Source: continuum Pad TD-541, TD-542; side-agent notes relayed by the operator 2026-11-24 · Falsifier: a bulk pass whose filler and labels a reader cannot tell from real content.
+> Order that worked: `just links` for refs, `pad_format_spec.py` then `pad_label_fill.py` then `just rewrite` for labels, `pad_done_backfill.py` for closed items,
+> then long comments rewritten into the bullet form with a word-multiset check against the originals (keep the originals as an attachment: the rewrite replaces
+> them in place). Three traps: (1) label-fill's "not recorded" passes item-check while saying nothing; on open items write the real sections from their sources
+> before work starts (track the rest in one tech-debt item). (2) A word check proves nothing was lost, not that a label is right: read every bullet labelled
+> Decision against the decision log (two of eleven were agent advice). (3) `just links` lengthens comments, so one just under 200 characters can cross into the
+> bullet-form rule: rerun item-check after links. Closing a plan refuses while a child is open (`open_children`); do not `--force` a DONE onto it.
