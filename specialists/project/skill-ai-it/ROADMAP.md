@@ -162,6 +162,8 @@ and records tooling, the `promote` mode, and the rest of the target-map standard
   Also 2026-10-26 (ansible-wifi-root-governance, twice): `just budget --apply` printed "LOST SCRATCHPAD.md: 85 line(s) lost, e.g.
   '**Newest thread (2026-10-07, 13:36) - RISE journald ...'" although that line is in `docs/history/scratchpad-20261023_1739.md` and every
   line of the committed SCRATCHPAD/CHANGELOG was found in the records or `docs/history` (checked by hand); the audit's baseline looks stale.
+  Recurred 2026-11-24 19:46 (skill-pad, `just budget --apply` on CHANGELOG.md): "34 line(s) lost, e.g. '- `scripts/pad_link_opener.py`: a localhos...'", exit 1; every
+  line this rotation removed is in the new changelog-20261124_1946.md, and the example line is in the older changelog-20261120_1408.md, so nothing was lost (checked line by line).
 
 - [ ] **`audit` mode refinement** — structured output format for audit findings (missing files, stale sections, routing gaps, drift) so agents can act on audit output without ambiguity.
 - [ ] **Context-preflight validation** — extend `templates/context_preflight.sh` to check for `ARCHCORE_PROMOTION_CANDIDATES.md` freshness and warn if candidates are stale relative to governance files.
