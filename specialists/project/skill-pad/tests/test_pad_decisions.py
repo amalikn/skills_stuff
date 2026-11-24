@@ -96,7 +96,7 @@ class WrappedAndStatus(unittest.TestCase):
             path = Path(tmp) / "decision-log.md"
             path.write_text(log)
             item = pdm.log_items(path)[0]
-        self.assertIn("**Decision:** \nTwo answers:\n\n- one: A.\n- two: B.\n\nAdvice followed.\n\n**Reason:** Why.", item["body"])
+        self.assertIn("**Decision:**\nTwo answers:\n\n- one: A.\n- two: B.\n\nAdvice followed.\n\n**Reason:** Why.", item["body"])
         self.assertEqual(item["title"], "DL-009: Two answers:")
         self.assertNotIn("<br>", item["body"])
 
