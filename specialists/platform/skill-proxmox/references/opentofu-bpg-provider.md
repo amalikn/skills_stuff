@@ -167,7 +167,7 @@ and IDs 900 to 909.
 >   or give the node a publicly trusted certificate (ACME). Host objects (APT repositories, ACME plugin and certificate, network, storage, firewall, DNS) have resources;
 >   notification targets and matchers have none (negative finding in `docs/resources`).
 > ```hcl
-> # home NAS project tofu/versions.tf (2026-11-24)
+> # home NAS project tofu/encryption.tofu (2026-11-24; a .tofu file so Terraform tooling skips it: skill-coder languages/hcl.md)
 > encryption {
 >   key_provider "pbkdf2" "state" {
 >     passphrase = var.state_passphrase

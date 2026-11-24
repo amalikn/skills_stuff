@@ -54,3 +54,26 @@ bpg/proxmox, through skill-proxmox).
 > ```
 > A `validation` block on the VM map (`vm_id` 900 to 909, names `smc-x86-*`) keeps the token's allowed range in the code as well as in the server's ACLs. A `dynamic "network_device"` block adds an
 > optional second NIC per VM without a second resource type.
+
+> **Learned 2026-11-24** · OpenTofu 1.13.10, tflint 0.65.0, VS Code HashiCorp Terraform extension 2.40.1 · VERIFIED_PRIMARY · Source: home NAS project `tofu/encryption.tofu`
+> (2026-11-24); OpenTofu v1.13.9 docs, Files and Directories, "Extension Precedence"; open-vsx `OpenTofu/vscode-opentofu` 0.6.3 · Falsifier: tflint reporting a finding inside
+> a `.tofu` file, or the HashiCorp extension parsing one
+> OpenTofu-only syntax (`terraform { encryption { ... } }`) shows as "Blocks of type encryption are not expected here" in the HashiCorp Terraform extension. Put it in a
+> `.tofu` file: OpenTofu loads `.tofu` with the `.tf` files (a same-named `.tofu` replaces its `.tf`), Terraform tools skip it. Move the variables only that block uses into
+> the same file, or tflint (which reads `.tf` only) reports them as unused. `tofu fmt -check` and `tofu validate` read `.tofu`, so they stay the authority; tflint covers
+> the `.tf` files. Editor: the official extension is `OpenTofu.vscode-opentofu` ("OpenTofu (official)"); recommend it and mark `hashicorp.terraform` unwanted in
+> `.vscode/extensions.json`. Proof the file is loaded: a deliberate syntax error in it fails `tofu validate` (a wrong reference inside `encryption` does not).
+> ```hcl
+> # tofu/encryption.tofu (home NAS, 2026-11-24)
+> terraform {
+>   encryption {
+>     key_provider "pbkdf2" "state" {
+>       passphrase = var.state_passphrase
+>     }
+>   }
+> }
+> variable "state_passphrase" {
+>   type      = string
+>   sensitive = true
+> }
+> ```

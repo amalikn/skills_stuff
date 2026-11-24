@@ -39,6 +39,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-24 languages/hcl.md: OpenTofu-only blocks in `.tofu` files (HashiCorp tooling and tflint skip them), their variables with them, official OpenTofu VS Code extension (home NAS project).
+
 - 2026-11-24 languages/shell/learned-format-and-lint.md: `# shellcheck source=SCRIPTDIR/...` for siblings sourced via dirname (home NAS project).
 
 - 2026-11-24: scripts/agent_timing_backfill.py (promoted from a continuum one-off, operator request: any project, any past days); references/efficiency-and-measurement.md, Learned 2026-11-24: time every activity, the agent included (continuum DL-213)
