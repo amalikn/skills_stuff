@@ -71,3 +71,26 @@ Part of [rust.md](../rust.md).
 > to every upload of one capture without threading a parameter through five call sites, declare `tokio::task_local! { pub static CAPTURE: String; }`, wrap the operation in
 > `CAPTURE.scope(id, fut).await`, and read it where the request is built with `CAPTURE.try_with(Clone::clone).unwrap_or_default()` (outside a scope: empty, the server ignores it).
 
+> **Learned 2026-11-24** · cargo-nextest test groups cap tests that share one external service · VERIFIED_PRIMARY (native gate timed out a handoff's first order
+> at 20 s twice with 12 parallel tests on one Temporal dev server; capped at 4 the suite passed, 52-59 s to 68 s) · Source: continuum-app `.config/nextest.toml` (ba8e041) ·
+> Falsifier: a nextest release renaming `test-groups`. `cargo nextest show-config test-groups` lists the members. A failure that appears only in the busier gate and
+> never alone (10/10, 30/30) is contention until shown otherwise; do not raise the test's wait first.
+
+```toml
+[test-groups]
+temporal = { max-threads = 4 }
+
+[[profile.default.overrides]]
+filter = 'binary(handoff) | binary(workflow) | binary(checkpoint)'
+test-group = 'temporal'
+```
+
+> **Learned 2026-11-24** · a "nothing goes to X" assertion races a follow-up added later · VERIFIED_PRIMARY (passed locally, failed in the Linux gate) · Source:
+> continuum-app `tests/handoff/recover.rs` (3f988ff) · Falsifier: none (test design). The test counted every order to the lost device and expected 0; a later change
+> sent it one reconcile order just after COMMITTED, so the count depended on timing. Assert exactly what the claim is (`kind <> 'reconcile'`: no *step* order), and when
+> you add a follow-up action, grep the tests for absence assertions on the same rows.
+
+> **Learned 2026-11-24** · `macro_rules!` used in a child module resolves paths at the use site · VERIFIED_PRIMARY (E0433 for `HandoffActs`, `Duration` in
+> `flow/recover.rs`) · Source: continuum-app `apps/coordinator/src/handoff/flow/recover.rs` (388a69f) · Falsifier: none (macro hygiene). A macro defined before
+> `mod child;` is visible in the child by textual scope, but the paths in its body are not hygienic: the child needs the same `use` lines as the parent (the
+> activity type, `Duration`, `ActivityOptions`), and the macro is not imported with `use super::act`.

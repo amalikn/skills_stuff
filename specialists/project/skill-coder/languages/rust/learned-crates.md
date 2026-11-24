@@ -143,3 +143,21 @@ let mut snap = SnapshotOptions::default().add_tags(&format!("{digest},capsule:{c
 snap.host = Some("continuum-coordinator".into());
 r.backup(&opts, &PathList::from_string(&staged.to_string_lossy())?.sanitize()?, snap.to_snapshot()?)?;
 ```
+
+> **Learned 2026-11-24** · PostgreSQL row locks: `FOR UPDATE` deadlocks with FK inserts, `FOR NO KEY UPDATE` does not · VERIFIED_PRIMARY (gate body "deadlock
+> detected"; a test that holds the lock and inserts an FK row under `lock_timeout` fails 55P03 on FOR UPDATE and passes on NO KEY UPDATE) · Source: continuum-app
+> `apps/coordinator/src/checkpoints/settle.rs`, `tests/handoff/lock_modes.rs` (5e7c46c, BUG-570) · Falsifier: a PostgreSQL release changing the row-lock conflict table.
+> Every insert into a table with a foreign key takes `FOR KEY SHARE` on the referenced row, and `FOR UPDATE` conflicts with it. A transaction that locked the parent
+> `FOR UPDATE` and then waited on a unique index (another transaction's uncommitted row) deadlocked with that other transaction's FK insert (outbox) waiting on the parent
+> lock; Postgres aborted one and the API answered 500 instead of 409. A serialising lock that does not change the key wants `FOR NO KEY UPDATE`: it still excludes another
+> `FOR NO KEY UPDATE` / `FOR UPDATE` but lets FK inserts through. Prove the mode with a test that holds the lock and tries an FK insert under `SET LOCAL lock_timeout`.
+
+```rust
+// BUG-570: NO KEY UPDATE, not UPDATE: still excludes the other start and a checkpoint record, but no longer blocks an FK insert's FOR KEY SHARE.
+sqlx::query("SELECT 1 FROM capsule WHERE capsule_id = $1 FOR NO KEY UPDATE").bind(capsule).execute(&mut **tx).await?;
+```
+
+> **Learned 2026-11-24** · sqlx 0.8 refuses `query(&format!(...))` · VERIFIED_PRIMARY (compile error E0277 "dynamic SQL strings should be audited for possible
+> injections", `SqlSafeStr` not implemented for `&String`) · Source: continuum-app `apps/coordinator/src/lost.rs` and `tests/handoff/recover.rs` (3f988ff) ·
+> Falsifier: an sqlx release relaxing `SqlSafeStr`. Write the SQL as a literal and pass values with `.bind()`, intervals as `make_interval(days => $n)`; a shared
+> fragment (a `to_char` timestamp) is repeated in each literal rather than spliced. Tests too: fixtures built with `format!` fail to compile.

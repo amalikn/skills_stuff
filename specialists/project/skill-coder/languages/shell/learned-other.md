@@ -23,6 +23,8 @@ Part of [shell.md](../shell.md).
 > exiting at the first match) · Source: ansible-wifi `roles/smc_application/tasks/ubuntu-php-cve-2026-109618.yml` review, commit fb6ae80b · Falsifier: `set -o pipefail; yes | grep -q y` returning 0
 > `grep -q` (and `head`) exits at the first match; the writer then dies of SIGPIPE (141), and with `pipefail` the pipeline fails on a match: a check that passes turns into a failure. Adding `pipefail`
 > because a linter asks is wrong there. Drop the pipe (`grep -q X <<<"$(cmd)"`, or capture first: `out=$(cmd); grep -q X <<<"$out"`), or keep `pipefail` only where every stage reads all its input.
+> Recurred 2026-11-24 in a Dockerfile `RUN` under `SHELL ["/bin/bash", "-eo", "pipefail", "-c"]`: `opa version | head -1` failed the image build at random
+> (continuum-app `scripts/ci/image/Dockerfile`, 2227449); the first failure was taken for a download blip and cost a 13-minute rebuild.
 
 > **Learned 2026-11-09** · shell, ssh and macOS tooling · VERIFIED_PRIMARY (smc-resiliency S1 bench, transcript spike/out/s1-pi4-bench.log) ·
 > Source: smc-resiliency lab/adapters/transports.py @ 01cf282c and later · Falsifier: the behaviours below not reproducing on the same versions.

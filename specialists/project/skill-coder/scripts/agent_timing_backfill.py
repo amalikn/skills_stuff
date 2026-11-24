@@ -24,6 +24,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+REQUIRES_PYTHON = (3, 11)
 PROJECTS = Path.home() / ".claude" / "projects"
 OPERATOR_TOOLS = {"AskUserQuestion"}
 

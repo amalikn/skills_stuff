@@ -145,3 +145,11 @@ for label, cmd, stdin in todo:
 > In `just`, each `@cmd` line of a recipe ends the recipe when it fails, so a check made of several steps reports only the first failure. Write the closing check as one shebang recipe that runs every
 > step through a small `step()` wrapper and exits 1 at the end with the failed steps named (excerpt in skill-ai-it `references/pitfalls.md`, same date). Proved red then green: a moved plan date failed
 > the governance step and doc freshness still ran.
+
+> **Learned 2026-11-24** · a local CI image for act: one Dockerfile, a tag hashed from the pins, setup steps skipped by a variable · VERIFIED_PRIMARY (Linux job 295 s
+> to 233 s warm) · Source: continuum-app `scripts/ci/image/Dockerfile`, `scripts/ci/ci_image.sh`, `.github/workflows/ci.yml` (2227449) · Falsifier: an act release
+> ignoring `--var` in `if:`. The tag is the SHA-256 of the Dockerfile, the workflow and the toolchain file, so a pin change builds a new image and a stale one is never
+> used; act runs with `-P ubuntu-latest=<tag> --pull=false --var CI_IMAGE=baked`, actions carry `if: vars.CI_IMAGE != 'baked'`, and install steps are guarded with
+> `command -v` so the workflow still runs on the bare image. Three traps on the way: (1) `ENV PATH=...` replacing the base image's PATH removed act's node, so every
+> node action failed: write `PATH=/opt/x/bin:$PATH`; (2) fixing that line, near the top, invalidated every later layer: a 13-minute rebuild (put late fixes late);
+> (3) the first run on a new image is cold (rust-cache key changes): 445 s once.

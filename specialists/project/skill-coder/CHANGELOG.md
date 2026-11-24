@@ -17,6 +17,7 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261124_1948 — Write-backs from continuum 2026-11-24 evening](#20261124_1948--write-backs-from-continuum-2026-11-24-evening)
 - [20261122_2341 — Write-backs from continuum 2026-11-22 late](#20261122_2341--write-backs-from-continuum-2026-11-22-late)
 - [20261122_2044 — Write-backs from continuum 2026-11-22 night](#20261122_2044--write-backs-from-continuum-2026-11-22-night)
 - [20261122_0219 — Feature unification in tests; release size profile](#20261122_0219--feature-unification-in-tests-release-size-profile)
@@ -84,6 +85,14 @@ Last rotated: 20261119_1601
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261124_1948 — Write-backs from continuum 2026-11-24 evening
+
+Rust (languages/rust/learned-crates.md, 2026-11-24): PostgreSQL FOR UPDATE deadlocks with FK inserts, FOR NO KEY UPDATE does not (BUG-570); sqlx 0.8 refuses
+`query(&format!(...))`. Rust (languages/rust/learned-async-and-tests.md, 2026-11-24): nextest test groups for tests sharing one external service; a "nothing goes to X"
+assertion racing a later follow-up; `macro_rules!` paths in child modules. Tooling (references/tooling-and-runtime.md, 2026-11-24): a local CI image for act (pinned tag,
+`--var` skips, PATH and layer-order traps, cold first run). Shell (languages/shell/learned-other.md, 2026-11-24): pipefail with `| head` recurred in a Dockerfile RUN.
+Logged late (the contract test found them unlogged): 2026-11-22 entries in languages/python.md, languages/rust/learned-crates.md, languages/rust/learned-platform.md, references/version-control-and-review.md.
+
 ## 20261122_2341 — Write-backs from continuum 2026-11-22 late
 
 Rust: rustic_core inside a server (staged file with as_path, non_exhaustive BackendOptions, opendal:s3 options, spawn_blocking works, test the library path, not only through a fallback); crypto crates optimised in dev builds; sccache with its own gate target; ? from Send+Sync boxed errors; boxing a grown enum variant.
