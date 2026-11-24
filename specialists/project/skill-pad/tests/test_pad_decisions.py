@@ -83,6 +83,23 @@ class WrappedAndStatus(unittest.TestCase):
         self.assertIn("**Superseded by:** DL-003", items["DL-001"]["body"])
         self.assertEqual([items[k]["status"] for k in ("DL-001", "DL-002", "DL-003")], ["superseded", "deferred", "accepted"])
 
+    def test_points_one_per_line(self):
+        """A row whose points are split by <br> shows one point per line, a blank line where the list starts and ends, and a title cut at the first break.
+
+        Returns:
+            None.
+        """
+        log = ("| ID     | Date       | Kind    | Decision                                         | Reason | Who |\n"
+               "| ------ | ---------- | ------- | ------------------------------------------------ | ------ | --- |\n"
+               "| DL-009 | 2026-11-24 | process | Two answers:<br>- one: A.<br>- two: B.<br>Advice followed. | Why.   | Op. |\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "decision-log.md"
+            path.write_text(log)
+            item = pdm.log_items(path)[0]
+        self.assertIn("**Decision:** \nTwo answers:\n\n- one: A.\n- two: B.\n\nAdvice followed.\n\n**Reason:** Why.", item["body"])
+        self.assertEqual(item["title"], "DL-009: Two answers:")
+        self.assertNotIn("<br>", item["body"])
+
 
 class Architecture(unittest.TestCase):
     """architecture_items() reads the decision bullets of a Key decisions section."""

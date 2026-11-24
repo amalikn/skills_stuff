@@ -16,6 +16,7 @@ Last rotated: 20261124_1452
 
 ## Contents
 
+- [20261124_1634 — pad_decisions shows a row's points one per line](#20261124_1634--pad_decisions-shows-a-rows-points-one-per-line)
 - [20261124_1452 — pad_spec_words checks comment rewrites](#20261124_1452--pad_spec_words-checks-comment-rewrites)
 - [20261124_1451 — Write-back from continuum 2026-11-24: bulk standard pass](#20261124_1451--write-back-from-continuum-2026-11-24-bulk-standard-pass)
 - [20261123_1840 — Mirrored decisions carry wiki-links](#20261123_1840--mirrored-decisions-carry-wiki-links)
@@ -39,6 +40,14 @@ Last rotated: 20261124_1452
 - [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
 - [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
 - [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
+
+## 20261124_1634 — pad_decisions shows a row's points one per line
+
+- **What:** a decision-log row with several points separates them with `<br>` (a table row stays on one line); the Pad body shows one point per line with a blank line where a list starts
+  and ends, the title stops at the first break, and an update now rewrites the title too (it kept the old one before).
+- **Why:** operator, continuum 2026-11-24, on DL-215 (four answers in one run-on row): "each point should be on a separate line at least"; a bold ref inside a point was replaced by the
+  linked item's whole title, so points start with the plain ref.
+- **Evidence:** tests/test_pad_decisions.py test_points_one_per_line fails on the old script and passes now (7 tests OK); continuum DECIS-560 re-mirrored, the next plan shows 0 to update.
 
 ---
 
