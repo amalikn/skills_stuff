@@ -264,3 +264,13 @@ Security and practice
 [etcd-faq]: https://etcd.io/docs/v3.5/faq/
 [k8s-etcd]: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
 [k8s-disruptions]: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
+
+> **Learned 2026-11-24** · Immich (docs read 2026-11-24), Nextcloud docker and all-in-one READMEs (main/master, 2026-11-24), Proxmox VE 9.2 · VERIFIED_PRIMARY · Source:
+> <https://docs.immich.app/install/requirements>, <https://raw.githubusercontent.com/nextcloud/docker/master/README.md>,
+> <https://raw.githubusercontent.com/nextcloud/all-in-one/main/readme.md>; home NAS project `docs/research/app-deployment-20261124_2338.md` · Falsifier: an Immich doc page
+> describing a supported native install, or the nextcloud image README dropping its "expert use" warning
+> Self-hosted photo and file apps on a Proxmox home NAS: Immich documents Docker Compose only, recommends a full VM over Docker in LXC, needs 6 GB RAM (8 recommended),
+> an x86-64-v2 CPU type for its ML container (Proxmox `host` or `x86-64-v2-AES`, not the old `kvm64`) and Postgres on local SSD. Nextcloud's plain image is
+> "maintained by community volunteers and designed for expert use"; All-in-One is the vendor's official method and brings its own Borg backup with whole-instance
+> restore, so an off-site tool (restic) should copy the Borg repository rather than duplicate it. One Docker VM with both apps fits a 32 GB box at about 10 to 12 GB.
+> No visual surface.
