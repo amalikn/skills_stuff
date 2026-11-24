@@ -7,7 +7,9 @@ was compared with the item's current body as a multiset of words, so a dropped o
 
 Run (from the project folder whose .pad.toml names the workspace):
     python3 pad_spec_words.py spec.json [--allow WORD ...] [--workspace SLUG]
-Spec: the `just rewrite` format, {"items": [{"ref": "BUG-5", "body": "..."}]}; items without a body are skipped.
+Spec: the `just rewrite` format, {"items": [{"ref": "BUG-5", "body": "..."}], "comments": [{"ref": "BUG-5", "id": "<id>", "body": "..."}]}; items
+and comments without a body are skipped. A comment rewrite is compared with the comment's current text (2026-11-24, continuum TD-541: 82 comments put
+into the bullet form); a bullet newly labelled Decision is listed for review, because a word check cannot tell advice from an operator decision.
 Exit: 0 every body keeps its words; 1 at least one item lost words (listed); 2 bad spec or a pad call failed.
 Safety: reads Pad through `pad item show`; writes nothing. Runtime: one pad call per item (about 0.2 s each), rate limits retried.
 """
@@ -81,6 +83,71 @@ def pad_show(ref: str, extra: list[str], timeout: int) -> str:
   raise RuntimeError(f"pad item show {ref}: rate limited")
 
 
+def pad_comment(ref: str, ident: str, extra: list[str], timeout: int) -> str:
+  """A comment's current text.
+
+  Args:
+    ref: the item ref.
+    ident: the comment id.
+    extra: global pad flags (--workspace).
+    timeout: seconds per call.
+
+  Returns:
+    The comment text.
+
+  Raises:
+    RuntimeError: pad failed or the comment is not on the item.
+  """
+  p = subprocess.run(["pad", "item", "comments", ref, "--format", "json", *extra], capture_output=True, text=True, timeout=timeout)
+  if p.returncode != 0:
+    raise RuntimeError(f"pad item comments {ref}: {(p.stderr or p.stdout).strip()[-200:]}")
+  for c in json.loads(p.stdout or "[]"):
+    if c.get("id") == ident:
+      return c.get("body") or ""
+  raise RuntimeError(f"{ref}: comment {ident} not found")
+
+
+def decision_added(old: str, new: str) -> bool:
+  """Whether the rewrite labels a bullet Decision where the original never said decision (advice can be mislabelled; read it).
+
+  Args:
+    old: the current text.
+    new: the rewrite.
+
+  Returns:
+    True when a Decision label appears that the original did not carry.
+  """
+  return "**Decision:**" in new and "decision" not in old.lower() and "decided" not in old.lower()
+
+
+def check_comments(spec: dict, allow: set[str], extra: list[str], timeout: int) -> tuple[int, int]:
+  """Compare each comment rewrite with the comment's current text; print lost words and added Decision labels.
+
+  Args:
+    spec: the parsed spec.
+    allow: words that may disappear.
+    extra: global pad flags.
+    timeout: seconds per call.
+
+  Returns:
+    (comments checked, comments that lost words).
+
+  Raises:
+    RuntimeError: a pad call failed.
+  """
+  comments = [c for c in spec.get("comments", []) if "body" in c and "id" in c]
+  bad = 0
+  for c in comments:
+    old = pad_comment(c["ref"], c["id"], extra, timeout)
+    missing = lost(old, c["body"], allow)
+    if missing:
+      bad += 1
+      print(f"{c['ref']} comment {c['id'][:8]}: lost {sum(missing.values())} word(s): {', '.join(sorted(missing))[:200]}")
+    if decision_added(old, c["body"]):
+      print(f"{c['ref']} comment {c['id'][:8]}: review: a Decision label was added (advice or an operator decision?)")
+  return len(comments), bad
+
+
 def main(argv: list[str] | None = None) -> int:
   """Compare every body in the spec with the item's current body.
 
@@ -98,7 +165,8 @@ def main(argv: list[str] | None = None) -> int:
   a = ap.parse_args(argv)
   started = time.monotonic()
   try:
-    items = [i for i in json.loads(a.spec.read_text()).get("items", []) if "body" in i]
+    spec = json.loads(a.spec.read_text())
+    items = [i for i in spec.get("items", []) if "body" in i]
   except (OSError, ValueError, AttributeError) as error:
     print(f"pad_spec_words: bad spec: {error}", file=sys.stderr)
     return 2
@@ -110,10 +178,12 @@ def main(argv: list[str] | None = None) -> int:
       if missing:
         bad += 1
         print(f"{it['ref']}: lost {sum(missing.values())} word(s): {', '.join(sorted(missing))[:200]}")
+    n_comments, bad_comments = check_comments(spec, {w.lower() for w in a.allow}, extra, a.timeout)
   except RuntimeError as error:
     print(f"pad_spec_words: {error}", file=sys.stderr)
     return 2
-  print(f"{len(items)} body(ies) checked, {bad} lost words; {time.monotonic() - started:.1f} s")
+  bad += bad_comments
+  print(f"{len(items)} body(ies) and {n_comments} comment(s) checked, {bad} lost words; {time.monotonic() - started:.1f} s")
   return 1 if bad else 0
 
 

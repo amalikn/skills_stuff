@@ -16,6 +16,7 @@ Last rotated: 20261124_1451
 
 ## Contents
 
+- [20261124_1452 — pad_spec_words checks comment rewrites](#20261124_1452--pad_spec_words-checks-comment-rewrites)
 - [20261124_1451 — Write-back from continuum 2026-11-24: bulk standard pass](#20261124_1451--write-back-from-continuum-2026-11-24-bulk-standard-pass)
 - [20261123_1840 — Mirrored decisions carry wiki-links](#20261123_1840--mirrored-decisions-carry-wiki-links)
 - [20261123_1422 — Status values per collection](#20261123_1422--status-values-per-collection)
@@ -41,6 +42,10 @@ Last rotated: 20261124_1451
 - [20261120_1334 — Pad CLI 0.21.1 installed; no behaviour change seen](#20261120_1334--pad-cli-0211-installed-no-behaviour-change-seen)
 
 ---
+
+## 20261124_1452 — pad_spec_words checks comment rewrites
+
+- scripts/pad_spec_words.py also compares each comment rewrite (spec `comments`) with the comment's current text and lists a bullet newly labelled Decision for review; two offline tests; smoke run on three continuum comments (promoted from a continuum TD-541 one-off check).
 
 ## 20261124_1451 — Write-back from continuum 2026-11-24: bulk standard pass
 

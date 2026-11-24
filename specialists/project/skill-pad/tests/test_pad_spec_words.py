@@ -44,3 +44,23 @@ class Lost(unittest.TestCase):
 
 if __name__ == "__main__":
   unittest.main()
+
+
+class DecisionLabel(unittest.TestCase):
+  """decision_added() flags a Decision label the original never carried (2026-11-24: advice relabelled as a decision)."""
+
+  def test_advice_relabelled_is_flagged(self):
+    """Advice turned into a Decision bullet is flagged.
+
+    Returns:
+        None.
+    """
+    self.assertTrue(psw.decision_added("Advice: reject for now.", "- **Decision:** Advice: reject for now."))
+
+  def test_recorded_decision_is_not_flagged(self):
+    """A comment that already said decided keeps its label quietly.
+
+    Returns:
+        None.
+    """
+    self.assertFalse(psw.decision_added("Decided 2026-11-23 (DL-180): readers are owners.", "- **Decision:** readers are owners."))
