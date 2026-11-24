@@ -52,7 +52,7 @@ nd := "mise exec -- node"
 bootstrap:
     @mkdir -p "{{wc}}"
     @test -f "{{wc}}/.mise.toml" || cp .mise.toml "{{wc}}/.mise.toml"
-    @cd "{{wc}}" && mise install && mise exec -- python -m venv .venv
+    @cd "{{wc}}" && mise install && "$(mise where python)/bin/python3" -m venv .venv
     @test -f requirements.txt && {{py}} -m pip install --quiet --upgrade pip -r requirements.txt || true
     @{{py}} -c "import sys; print('venv ready:', sys.version.split()[0], sys.executable)"
 

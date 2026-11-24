@@ -219,3 +219,15 @@ check: _require-venv
     step just lint
     if [ ${#failed[@]} -gt 0 ]; then echo "check FAILED in: ${failed[*]}" >&2; exit 1; fi
 ```
+
+> **Learned 2026-11-24** · skill-ai-it templates, bootstrap of a new project (home NAS, me/nas) · VERIFIED_PRIMARY · Source: that project's `just check` failing on the
+> generated justfile (`justfile:55 reaches Python through an implicit mise exec -- python`) and `role_check.py` reporting "CHANGELOG.md: no `---` front matter ... that parses
+> as YAML"; fixed in `templates/justfile` and `references/files-records.md` (this commit) · Falsifier: a fresh bootstrap whose `just check` still flags either line
+> Two template defects met at first check of a bootstrapped project: (1) the template's own `bootstrap` recipe built the venv with `mise exec -- python -m venv`, which the
+> template checker's interpreter-pinning rule rejects; it now names the pinned interpreter by path inside quotes. (2) The CHANGELOG front-matter `Archive:` value contained
+> `layout: `, a colon-space YAML reads as a nested mapping, so the whole header failed to parse; the value is now quoted. Also: `adopt_governed_files.py` skips the
+> context-map parse when PyYAML is absent from the project venv, so a bootstrap should add `pyyaml` to `requirements.txt`. No visual surface.
+> ```just
+> # templates/justfile bootstrap (2026-11-24)
+> @cd "{{wc}}" && mise install && "$(mise where python)/bin/python3" -m venv .venv
+> ```

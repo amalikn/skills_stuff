@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261119_1648
+Last rotated: 20261124_2249
 ---
 
 # Changelog — skill-ai-it
@@ -28,10 +28,11 @@ Last rotated: 20261119_1648
 - [20261112_1536 — new-skill mode: seed template, pack scaffold and pack contract check](#20261112_1536--new-skill-mode-seed-template-pack-scaffold-and-pack-contract-check)
 - [20261111_1259 — central project tooling plan, the skill's flow map, md_examples_check](#20261111_1259--central-project-tooling-plan-the-skills-flow-map-md_examples_check)
 - [20261111_1213 — history_migrate: check gate, dirty-reference refusal, survey](#20261111_1213--history_migrate-check-gate-dirty-reference-refusal-survey)
-- [20261111_1135 — archcore, ruff, code map, templates and the Pad question](#20261111_1135--archcore-ruff-code-map-templates-and-the-pad-question)
 - [20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes](#20261010_2014--rotation-fixes-explicit-pins-prose-units-lazy-continuation-move_sections-split-audit-adopter-fixes)
 
 ## Unreleased
+
+- 2026-11-24 templates/justfile bootstrap names the pinned interpreter by path (its own checker rejected `mise exec -- python`); references/files-records.md CHANGELOG `Archive:` value quoted (a `layout: ` colon broke YAML); Learned entry in references/pitfalls.md (home NAS bootstrap).
 
 - 2026-11-19 · `scripts/records/rotate_records.py`: an `Open items tracker:` value that is not a relative markdown path (prose such as "this file, Open items") is ignored with a message; it once made
   a file named `this` in skill-coder (2026-11-07). One test in `tests/test_rotate_records.py`.
@@ -168,22 +169,6 @@ From the rollout to 18 other projects (smc-resiliency session, operator "do all 
   Test `test_check_gate_and_dirty_references`; 6 history tests pass.
 - [references/files-history.md](references/files-history.md): "Rolling it out across projects" and a Learned entry (12 of 18 checks already red; one project per run).
 - The 22 docs past review: approved by the operator 2026-11-11 (`a806ef4`).
-
-## 20261111_1135 — archcore, ruff, code map, templates and the Pad question
-
-Operator, 2026-11-11: skill-ai-it gets the lint config, code map and archcore "like we do in our other skills", its templates updated with any missing ones added, and bootstrap and refresh ask whether
-to link a Pad workspace (a suggested name; repos may share one).
-
-- Added `.archcore/` (archcore 0.3.6 init, `archcore status` clean): eight rules, one file each, and `index.guide.md`; AGENTS.md Working rules are now one line and a link per rule (AGENTS.md re-read
-  in full, Last reviewed 2026-11-11).
-- Added `ruff.toml` (two-space, 160 columns, the other skills' rule set; the 65 older Python files excluded until a reformat is decided, Markdown excluded), `ruff==0.17.3` in requirements.txt, `just
-  lint` inside `just check` (proved to fail on a bad new file).
-- Added `code-map.toml` (adopt_code_map.py): 38 modules, all `promoted` (this pack's own tooling).
-- Added templates `history-readme.md` (used by history_layout.py for a project without an index), `session-record.md` (slurp closeouts; skill-slurp-chat Step 8 names it), `archcore/index.guide.md` and
-  `archcore/rule.md` (promote; patterns/archcore-routing.md names them); AI_NAVIGATION template names the history folders.
-- Added [references/pad-workspace.md](references/pad-workspace.md) and its SKILL.md step: with no `.pad.toml`, ask once (folder name suggested, existing workspaces offered, `pad workspace link <slug>` shares one; VERIFIED_PRIMARY
-  `pad workspace --help` v0.19.2); "no" recorded in AGENTS.md.
-- Proposed, not built: a project `ruff.toml` template belongs with skill-coder (owner of lint rules).
 
 ## 20261010_2014 — Rotation fixes (explicit pins, prose units, lazy continuation); move_sections; split audit; adopter fixes
 
