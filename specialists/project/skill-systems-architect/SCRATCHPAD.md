@@ -29,6 +29,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 - Committed in skills_stuff up to b6f399f; push pending (operator).
 
 - 2026-11-19: v2.3.15, two identity write-backs from continuum-app TASK-164 (edge client-certificate anchor, Keycloak issuer across networks).
+- 2026-11-24: v2.3.25, Learned from continuum (EFS is not a backup; raft snapshot needs the escrowed shares; t4g break-even; ephemeral owner hosts hand back before self-terminating).
 
 ## Next actions
 

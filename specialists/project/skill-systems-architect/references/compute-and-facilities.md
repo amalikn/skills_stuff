@@ -131,6 +131,13 @@ Dual-feed power: each host draws one PSU from each independent feed
 | Replace-not-repair edge image       | fleets of small boxes             | hand-tuned edge boxes                  | each failure becomes a site visit and a snowflake |
 | Measure PSI and p99 under load      | sizing and acceptance             | sizing from core count or average CPU  | saturation hides in tails and stall time          |
 
+> **Learned 2026-11-24** · AWS burstable instances for small always-on services · VERIFIED_PRIMARY (AWS price-list files, ap-southeast-2, read 2026-11-24) · Source:
+> continuum `docs/architecture-review/options/plan-384-aws-options-20261124_1621.md` (C2) · Falsifier: a price change moving the break-even.
+> t4g.medium (Graviton, 2 vCPU, 4 GB) in unlimited-credit mode costs about US$31/month; surplus credits are billed, and a fixed-performance type only becomes cheaper
+> above about 85 % average CPU over 24 hours, so a light control-plane host belongs on the burstable type with an alarm on credit spend, not on a fixed type. Graviton
+> fits when every image and build is already arm64. Melbourne (ap-southeast-4) is an opt-in Region with a narrower price list (no t3a or c7g read there); Sydney
+> (ap-southeast-2) is the default Australian choice, with Melbourne held for a second-Region copy.
+
 ## Failure modes and tests
 
 | Failure                                 | Symptom                                         | Blast radius                | Proving test                                           |

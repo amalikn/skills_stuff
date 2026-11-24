@@ -241,6 +241,22 @@ Proxmox Backup Server (VERIFIED_PRIMARY, [pbs-overview] and [pbs-maint], checked
 | Keys and catalog escrowed off-prod     | encrypted backups                | key only in the production vault         | intact backup that nobody can decrypt                     |
 | Failback planned as a second migration | any failover                     | "we will just switch back"               | split-brain or lost writes made during the DR period      |
 
+> **Learned 2026-11-24** · cloud file shares versus backups; secrets-store snapshots · VERIFIED_PRIMARY (OpenBao 2.7.2 restore drill 7/7) · Source: continuum-app
+> `scripts/dev-stack/bao_snapshot_drill.py` (ac644e0); continuum DL-220 · Falsifier: an OpenBao release whose restored snapshot opens with the new node's keys.
+> A live shared file system (AWS EFS, an NFS mount) is not a backup: a delete, corruption or ransomware write reaches it at once. The point-in-time layer is snapshots
+> (EBS by Data Lifecycle Manager, ZFS) plus a delete-proof object copy (S3 Object Lock in compliance mode, written by an instance role that may put but not delete).
+> A Vault/OpenBao raft snapshot restored onto a new node seals itself after `snapshot-force` and opens only with the original unseal shares, so a snapshot without the
+> escrowed shares restores nothing: the drill must use the escrow copy, and the escrow belongs apart from the snapshot. A bucket in the hosts' own Region shares that
+> Region's failure domain; one copy outside the provider (a pull to a workstation) covers account loss.
+
+```python
+# bao_snapshot_drill.py step 6: the restored node answers only to the ORIGINAL shares
+for _ in range(60):
+  if json.loads(call(url, "GET", "/v1/sys/seal-status"))["sealed"]:
+    unseal(url, shares[1:3])  # two original shares from escrow
+    break
+```
+
 ## Failure modes and tests
 
 | Failure                                  | Symptom                              | Blast radius                     | Proving test                                                        |

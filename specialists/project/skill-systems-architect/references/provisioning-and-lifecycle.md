@@ -155,6 +155,12 @@ drain --> zero traffic for --> power off --> revoke      --> remove     --> eras
 | Reconcile before retry                           | Writes with uncertain outcome | Blind retry on timeout                    | Duplicate or conflicting changes                          |
 | Traffic evidence before retirement               | Decommissioning               | Retire from inventory alone               | A hidden consumer breaks                                  |
 
+> **Learned 2026-11-24** · ephemeral hosts that own state · VERIFIED_SECONDARY (design review; side-agent finding, operator decision) · Source: continuum DL-223, DL-224 ·
+> Falsifier: none (design rule). A host created per test and set to terminate itself after N hours (a cost guard where no budget alert exists) can be the *owner* of
+> live work at that moment; terminating then strands everything since the last checkpoint. Order the shutdown: checkpoint, hand ownership back to a durable host,
+> and only after that commits terminate; when the durable host is unreachable, do not terminate, retry (hourly) up to a hard cap. Each recreated host is also a new
+> device identity: plan the clean-up of old enrolment records.
+
 ## Failure modes and tests
 
 | Failure                             | Symptom                                                   | Blast radius      | Proving test                                                   |

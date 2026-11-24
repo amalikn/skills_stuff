@@ -13,6 +13,10 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-24 (v2.3.24 -> v2.3.25): backup-disaster-recovery.md, compute-and-facilities.md, provisioning-and-lifecycle.md, three Learned 2026-11-24 from continuum: a shared
+  file system (EFS) is not a backup and a raft snapshot opens only with the escrowed original shares (drill 7/7); t4g burstable break-even about 85 % average CPU,
+  Melbourne opt-in; an ephemeral host that owns state hands it back before it self-terminates (DL-224).
+
 - 2026-11-24: references/security-and-service-identity.md, Learned 2026-11-24 (three): step-up sign-in bound through the login state; secrets off the command line and where a short-lived token may rest; Keycloak device grant needs PKCE on an enforcing client (continuum TASK-535, BUG-548, FR-546, TASK-536)
 
 - 2026-11-23: references/security-and-service-identity.md "Test identities with software authenticators" (dedicated sensitive client: passkey then OTP, azp + fresh auth_time; realm traps), from continuum FR-502 (DL-203); see skill-coder P-85.
