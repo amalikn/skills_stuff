@@ -180,3 +180,20 @@ Part of [python.md](../python.md).
 > ```python
 > p = argparse.ArgumentParser(description=(__doc__ or "Add one new SMC to an ansible-wifi inventory.").splitlines()[0])
 > ```
+
+> **Learned 2026-11-25** · Python 3.13+ `ssl`, throwaway test certificates · VERIFIED_PRIMARY (observed: verification failed until the extensions were added; Python 3.14 and
+> 3.15, OpenSSL 4.1.0) · Source: continuum-app `scripts/deploy/test_cert_watch.py` `make_ca`, `make_leaf` (15a00ec) · Falsifier: a CA made without these extensions that
+> `ssl.create_default_context()` accepts on 3.13+. From 3.13, `create_default_context()` sets `VERIFY_X509_STRICT`, so a bare `openssl req -x509` test CA is rejected. The CA
+> needs `basicConstraints=critical,CA:TRUE`, `keyUsage` with `keyCertSign` and a `subjectKeyIdentifier`; the leaf needs `authorityKeyIdentifier` and
+> `extendedKeyUsage=serverAuth`. Certificates from a real public CA already comply; only home-made test chains break.
+>
+> ```python
+> openssl("req", "-x509", "-newkey", "rsa:2048", "-nodes", "-keyout", "ca.key", "-out", "ca.pem", "-days", "30",
+>         "-subj", "/CN=test CA",
+>         "-addext", "basicConstraints=critical,CA:TRUE",
+>         "-addext", "keyUsage=critical,keyCertSign,cRLSign",
+>         "-addext", "subjectKeyIdentifier=hash", cwd=d)
+> (d / f"{name}.ext").write_text(       # leaf, signed with: openssl x509 -req ... -extfile {name}.ext
+>   "subjectAltName=DNS:localhost\nbasicConstraints=CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\n"
+>   "extendedKeyUsage=serverAuth\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid\n")
+> ```

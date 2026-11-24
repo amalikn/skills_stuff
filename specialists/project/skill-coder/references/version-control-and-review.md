@@ -137,6 +137,26 @@ manual).
 > return f"unknown: {err.strip().splitlines()[0] if err.strip() else f'exit {code}'}"
 > ```
 
+> **Learned 2026-11-25** · git over HTTPS, a long pre-push gate · VERIFIED_PRIMARY (git 2.56.1 source, transport-helper.c `push_refs_with_push`; that the helper re-reads the
+> ref after pre-push is inferred from it, not reproduced) · Source: continuum-app `scripts/ci/push_ref_guard.sh` (6926217), BUG-470 · Falsifier: a push over HTTPS that sends
+> the pre-push sha after a commit lands on the branch during the hook. The pre-push hook is given the sha git resolved for each ref, but a remote helper (HTTPS) is handed
+> the ref by name (`push refs/heads/main:refs/heads/main`), so a commit made while a minutes-long gate runs can be what reaches the remote, ungated. After the gate
+> passes, refuse when the local ref no longer equals the gated sha (or push by sha: `git push origin <sha>:refs/heads/main`, which nothing can move).
+>
+> ```sh
+> # Called by .githooks/pre-push after a ref's gate passes: sh push_ref_guard.sh <repo> <local-ref> <gated-sha>
+> case "$local_ref" in
+>   refs/*) ;;
+>   *) exit 0 ;;            # source given as a commit id: sent by id, cannot move
+> esac
+> now=$(git -C "$repo" rev-parse -q --verify "$local_ref^{commit}" 2>/dev/null || echo deleted)
+> if [ "$now" != "$gated" ]; then
+>   echo "pre-push: $local_ref moved from $gated to $now while the gate ran; the remote would get an untested commit." >&2
+>   echo "pre-push: push again to gate the new tip." >&2
+>   exit 1
+> fi
+> ```
+
 ## Change logs and versions
 
 - Every change that alters governance, navigation, behaviour or a repeated job's runtime gets a change-log entry; a repeated job's entry carries its measured runtime. Why: the log is the project's

@@ -40,6 +40,24 @@ project's pin outranks this skill's defaults, and a suggestion that ignores it b
 - `mise exec -- python` is not the fix where a venv sits between mise and the interpreter: the dependency is implicit and degrades silently. For Node, `mise exec -- node` is the explicit form, as it
   is for CLI tools pinned in `.mise.toml` (Learned 2026-11-19). (skill-ai-it, VERIFIED against its template on 2026-10-19.)
 
+> **Learned 2026-11-25** · macOS launchd agents · VERIFIED_PRIMARY (PATH and `python3` observed: "command not found" under launchd, fixed by the plist PATH; the
+> cloud-folder hang cause is UNVERIFIED) · Source: continuum-app `deploy/mac/dev.continuum.domain-renew.plist.template` (3d7c9b1), TASK-588 · Falsifier: a launchd job whose PATH includes
+> `/opt/homebrew/bin` without setting it. A launchd job's PATH is `/usr/bin:/bin:/usr/sbin:/sbin`: Homebrew CLIs are "command not found", so set `EnvironmentVariables`
+> PATH in the plist; `python3` there is the system 3.9, so name the project venv's python by path. A job that opened a file under `~/Library/CloudStorage` (a File
+> Provider cloud folder) hung inside a CLI; the cause is unverified (likely macOS privacy control on background access to cloud folders). Run a new job once with
+> `launchctl kickstart gui/$(id -u)/<label>` and watch it for hangs before leaving it installed.
+>
+> ```xml
+> <key>ProgramArguments</key>
+> <array>
+>   <string>@PY@</string>   <!-- the project venv's python: launchd's python3 is the system 3.9 -->
+>   <string>-I</string>
+>   <string>@REPO@/scripts/deploy/domain_renew.py</string>
+> </array>
+> <key>EnvironmentVariables</key>
+> <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin</string></dict>
+> ```
+
 ## Where things live
 
 | Kind                              | Place                                                    | Why                                                                                                   |

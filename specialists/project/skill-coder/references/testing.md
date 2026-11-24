@@ -194,6 +194,36 @@ check: _require-venv
 > run under the default engine failed on a fault case that deletes data on purpose. Before trusting a new gate check, run it once in each mode the gate is
 > used in, and narrow it to what no case may legitimately do (a write fallback), counting what a case may cause (a read fallback during a deletion test).
 
+> **Learned 2026-11-25** · a test helper that starts a server on a "free" port · VERIFIED_PRIMARY (gate failure 2026-11-24, then a forced-failure proof) · Source: continuum-app
+> `apps/coordinator/tests/artefact.rs` `fn opa_server` (5fca40d), BUG-577 · Falsifier: a parallel run where the child binds a port another test took and the helper still
+> waits out its full timeout. Picking a port by binding port 0 and releasing it races other parallel tests: another process takes the port, the server exits at once with
+> a bind error, and a blind health wait times out (15 s) with no cause; a healthy start takes 0.06 s, so the timeout hid an exit, not a slow start. Detect the child's
+> exit on every poll (`try_wait`) and retry on a fresh port, send the child's stderr to a file and put it in the error, and give each health probe its own short timeout:
+> the proof found a probe without one hung on a port that accepted but never answered. Prove such a fix by a temporary patch that forces the failure (start on an
+> occupied port), watch the retry and the error text, then remove the patch.
+>
+> ```rust
+> let probe = reqwest::Client::builder().timeout(Duration::from_secs(1)).build()?;   // a silent listener must not hang the wait
+> for attempt in 1..=3 {
+>   let port = std::net::TcpListener::bind("127.0.0.1:0")?.local_addr()?.port();
+>   let log = std::env::temp_dir().join(format!("opa-test-{}-{port}.log", std::process::id()));
+>   let child = Command::new("opa") /* run --server --addr 127.0.0.1:{port} ... */
+>     .stderr(std::fs::File::create(&log)?).spawn()?;
+>   let mut server = OpaServer(child, format!("http://127.0.0.1:{port}"));
+>   loop {
+>     if let Ok(Some(status)) = server.0.try_wait() {        // exited: bind race, retry on a fresh port
+>       last = format!("opa exited ({status}) on port {port}, attempt {attempt}: {}",
+>         std::fs::read_to_string(&log).unwrap_or_default().trim());
+>       break;
+>     }
+>     if matches!(probe.get(format!("{}/health", server.1)).send().await
+>       .map(|r| r.status().is_success()), Ok(true)) { return Ok(server); }
+>     tokio::time::sleep(Duration::from_millis(100)).await;  // plus a 60 s overall limit naming the log
+>   }
+> }
+> Err(last.into())
+> ```
+
 ## Proof against the real target
 
 - Before claiming a capability works, verify it against a real target (an isolated or spare one; a read-only proof may run against production where the project authorises it, leaving nothing on the

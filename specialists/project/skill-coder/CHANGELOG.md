@@ -39,6 +39,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-25 (continuum write-back): references/version-control-and-review.md, Learned 2026-11-25: HTTPS push sends the ref by name, guard the gated sha after pre-push; references/testing.md, Learned 2026-11-25: port-0 server start races parallel tests (try_wait, retry, stderr, probe timeout, forced-failure proof); languages/python/learned-other.md, Learned 2026-11-25: Python 3.13+ VERIFY_X509_STRICT extensions for test CAs; references/tooling-and-runtime.md, Learned 2026-11-25: launchd PATH and python3, cloud-folder hang.
+
 - 2026-11-25 references/design-patterns.md P-65: third adopter (home NAS), compact single-file form and its limit.
 
 - 2026-11-24 languages/hcl.md: OpenTofu-only blocks in `.tofu` files (HashiCorp tooling and tflint skip them), their variables with them, official OpenTofu VS Code extension (home NAS project).
@@ -95,7 +97,7 @@ Last rotated: 20261119_1601
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
 ## 20261124_2216 — P-87 merge by unpacking beside the live copy
 
-- references/design-patterns.md: P-87 Merge by unpacking beside the live copy, never into it (CANDIDATE, continuum-app 41d77c8).
+- references/design-patterns.md (Learned 2026-11-24): P-87 Merge by unpacking beside the live copy, never into it (CANDIDATE, continuum-app 41d77c8).
 
 ## 20261124_2215 — Rust guide: names from outside become paths; justfile exports and bare cargo test
 

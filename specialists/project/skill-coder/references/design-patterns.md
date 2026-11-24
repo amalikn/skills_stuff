@@ -1551,8 +1551,8 @@ fi
 
 ### P-65 One version record, its pins found by pattern
 
-> **Learned 2026-11-25** · P-65 adopted a third time (home NAS `scripts/versions_check.py`, compact form: one `pin = "<file>|<regex>"` per entry; every match must
-> equal the version) · VERIFIED_PRIMARY (22 entries green; a planted 9.9.9 reported FAIL) · Falsifier: a second copy of a pin in another file, which this compact form
+> **Learned 2026-11-25** · P-65 adopted a third time (compact form: one `pin = "<file>|<regex>"` per entry; every match must equal the version) · VERIFIED_PRIMARY
+> (22 entries green; a planted 9.9.9 reported FAIL) · Source: home NAS project `scripts/versions_check.py` · Falsifier: a second copy of a pin in another file, which this compact form
 > does not look for: use the full form's file globs and `min` when pins are copied.
 
 > **Learned 2026-11-10** · any project whose versions are pinned in several files · VERIFIED_PRIMARY (smc-resiliency `versions.toml` and
