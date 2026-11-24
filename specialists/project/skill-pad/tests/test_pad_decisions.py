@@ -171,3 +171,17 @@ class LinkBodies(unittest.TestCase):
         self.assertIn("(DL-191)", body, "never links to itself")
         self.assertNotIn("[[FR-999]]", body, "only refs that exist")
         self.assertIn("`TASK-1`", body, "code spans left alone")
+
+
+class UpdateDiff(unittest.TestCase):
+    """update_diff() names the item and shows a trailing-space difference quoted."""
+
+    def test_trailing_space_is_visible(self):
+        """A body that differs only by a trailing space shows the space.
+
+        Returns:
+            None.
+        """
+        out = pdm.update_diff({"ref": "DL-1", "body": "**Decision:**\nA"}, "DECIS-9", "**Decision:** \nA")
+        self.assertIn("update DL-1 (DECIS-9):", out)
+        self.assertIn("'-**Decision:** '", out)

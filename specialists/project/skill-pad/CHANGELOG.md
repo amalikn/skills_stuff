@@ -44,7 +44,9 @@ Last rotated: 20261124_1452
 ## 20261124_1634 — pad_decisions shows a row's points one per line
 
 - **What:** a decision-log row with several points separates them with `<br>` (a table row stays on one line); the Pad body shows one point per line with a blank line where a list starts
-  and ends, the title stops at the first break, and an update now rewrites the title too (it kept the old one before). No space follows `**Decision:**` before a multi-point body: Pad strips it, and the next plan re-updated the item forever (found the same day on DL-219).
+  and ends, the title stops at the first break, and an update now rewrites the title too (it kept the old one before). No space follows `**Decision:**` before a multi-point body: Pad strips it, and the next plan re-updated the item forever (found the same day on DL-219). `--show-updates` prints each planned update with a diff (a trailing space quoted). New `scripts/decision_log_add.py` (`just decision-add`):
+  appends one row (next DL id, six columns, points joined by `<br>`, refuses `|`); tests/test_decision_log_add.py round-trips it through pad_decisions; SKILL.md rule
+  "Decision rows".
 - **Why:** operator, continuum 2026-11-24, on DL-215 (four answers in one run-on row): "each point should be on a separate line at least"; a bold ref inside a point was replaced by the
   linked item's whole title, so points start with the plain ref.
 - **Evidence:** tests/test_pad_decisions.py test_points_one_per_line fails on the old script and passes now (7 tests OK); continuum DECIS-560 re-mirrored, the next plan shows 0 to update.

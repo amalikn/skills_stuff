@@ -77,6 +77,12 @@ export *ARGS: _require-venv
 decisions *ARGS: _require-venv
     @{{py}} "{{justfile_directory()}}/scripts/pad_decisions.py" {{ARGS}}
 
+# Append one decision row to the current folder's decision log (next DL id, six columns, points split by <br>): plan by default, --apply writes.
+# Then `just decisions --apply` mirrors it. [writes one line with --apply]
+[no-cd]
+decision-add *ARGS: _require-venv
+    @{{py}} "{{justfile_directory()}}/scripts/decision_log_add.py" {{ARGS}}
+
 # [project writes: whatever the pad command writes] One pad CLI call, retried with backoff while the shared local server rate-limits (stdin replayed):
 # just -f <skill-pad>/justfile pad item comment TASK-5 --stdin < note.md
 [no-cd]

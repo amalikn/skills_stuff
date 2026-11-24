@@ -91,6 +91,10 @@ into that session.
     `[[REF]]` link (`[[DECIS-221|DL-058]]` for a decision id; operator, 2026-11-20, after "Unblocked: ASK-237 answered" went out unlinked), and every dependency is a typed relation (`pad item block`,
     `implements`, `split-from`, `supersedes`), set when the item is created; `just links` (`scripts/pad_links.py`) fixes bodies and agent-written comments written without them ([items-and-edits rule
     6](references/items-and-edits.md)).
+  - **Decision rows (operator, continuum 2026-11-24: "each point should be on a separate line at least"):** one decision is one row of the decision log, never several
+    answers run together; a decision with several points keeps one row with its points separated by `<br>`, which the mirror shows one per line. Write rows with
+    `just -f <skill-pad>/justfile decision-add` (`scripts/decision_log_add.py`: next DL id, six columns), then `decisions --apply`; `decisions --show-updates` explains an
+    update that never settles.
   - **Updates as the work runs:** a comment or note at the start, at each result and at each blocker, written as bullets (`- **What:**`, `- **Result:**`, `- **Evidence:**`, `- **Not verified:**`, `-
     **Next:**`), complete before short.
   - **Closing statement:** before an item moves to done (or fixed, cancelled, wont-fix) it gets a `YYYY-MM-DD HH:MM AEDT DONE:` comment (`CLOSED:` when not all was done) with bullets: what was done,

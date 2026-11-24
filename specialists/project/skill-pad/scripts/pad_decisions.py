@@ -13,6 +13,7 @@ Usage (from the project folder, whose .pad.toml names the workspace):
     python3 pad_decisions.py --project-root . --limit 1 --apply   # canary one create
     python3 pad_decisions.py --project-root . --apply             # write
 Options: --decision-log PATH (default docs/architecture-review/DECISION-LOG.md; skipped when absent), --pad PATH, --timeout SECONDS (60).
+    --show-updates (2026-11-24): with the plan, each item to update and a diff of its body (a trailing space is shown quoted).
     --architecture PATH (2026-11-20): also mirror the decision bullets of that document's `## Key decisions` section (unc keeps its decisions in
     ARCHITECTURE.md, not a DL log); refs are register ids (D17, S20, X2) or ARCH-<slug>;
     a renamed bullet gets a new slug, so items whose ref left the source are listed as orphaned (never changed).
@@ -296,6 +297,25 @@ def plan(want: list[dict], have: dict, body_of) -> tuple[list[dict], list[dict]]
     return creates, updates
 
 
+def update_diff(want: dict, ref: str, current: str) -> str:
+    """Why an item is planned for update: its ref and a unified diff of the body in Pad against the wanted one (2026-11-24: an item re-updated
+    on every run because Pad strips a trailing space the wanted body kept; only a diff showed it).
+
+    Args:
+        want: the desired item.
+        ref: the Pad item ref.
+        current: the body Pad holds now.
+
+    Returns:
+        The report text.
+    """
+    import difflib
+
+    diff = difflib.unified_diff(current.strip().splitlines(), want["body"].strip().splitlines(), "pad", "wanted", lineterm="", n=0)
+    lines = [f"update {want['ref']} ({ref}):"] + [f"  {d!r}" if d.endswith(" ") else f"  {d}" for d in diff]
+    return "\n".join(lines)
+
+
 def orphans(want: list[dict], have: dict) -> list[tuple[str, str]]:
     """List Pad decision items whose decision_ref no longer appears in any source (2026-11-20: an ARCH-<slug> ref changes when its bullet is renamed).
 
@@ -376,6 +396,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--limit", type=int, help="create at most N items (canary)")
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--no-links", action="store_true", help="mirror bodies without wiki-links (as before 2026-11-23)")
+    ap.add_argument("--show-updates", action="store_true", help="print each item to update with a diff of its Pad body against the wanted body")
     a = ap.parse_args(argv)
     root = a.project_root.resolve()
     try:
@@ -405,6 +426,9 @@ def main(argv: list[str] | None = None) -> int:
         creates, updates = plan(want, have, body_of)
         creates = creates[: a.limit] if a.limit else creates
         print(f"decisions: {len(want)} wanted, {len(creates)} to create, {len(updates)} to update")
+        if a.show_updates:
+            for w in updates:
+                print(update_diff(w, have[w["ref"]], body_of(have[w["ref"]])))
         for ref, item in orphans(want, have):
             print(f"orphaned: {item} ({ref}) is in Pad but no longer in the source; a renamed or removed decision. Close it by hand with a comment.")
         if not a.apply:
