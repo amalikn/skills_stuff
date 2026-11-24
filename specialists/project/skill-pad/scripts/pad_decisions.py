@@ -332,24 +332,28 @@ def orphans(want: list[dict], have: dict) -> list[tuple[str, str]]:
     return sorted((r, i) for r, i in have.items() if r not in refs)
 
 
-def existing(binary: str, timeout: int) -> dict:
-    """Read the items already in the decisions collection, including closed ones.
+def existing(binary: str, timeout: int) -> tuple[dict, dict]:
+    """Read the items already in the decisions collection, including closed ones, with their bodies, in one call.
+
+    One `pad item list --full` replaces a `pad item show` per item: 339 shows took about 60 s, and twice that when the shared server
+    rate-limited (continuum BUG-557, 2026-11-24); the list takes well under a second.
 
     Args:
         binary: the pad executable.
         timeout: seconds per call.
 
     Returns:
-        decision_ref -> Pad item ref.
+        (decision_ref -> Pad item ref, Pad item ref -> current body).
     """
-    data = json.loads(pad(binary, timeout, "item", "list", "decisions", "--all", "--format", "json", "--limit", "1000") or "[]")
-    out = {}
+    data = json.loads(pad(binary, timeout, "item", "list", "decisions", "--all", "--format", "json", "--full", "--limit", "1000") or "[]")
+    out, bodies = {}, {}
     for it in data.get("items", data) if isinstance(data, dict) else data:
         fields = it.get("fields") or {}
         fields = json.loads(fields) if isinstance(fields, str) else fields
         if fields.get("decision_ref"):
             out[fields["decision_ref"]] = it.get("ref")
-    return out
+            bodies[it.get("ref")] = it.get("content", "")
+    return out, bodies
 
 
 def apply(binary: str, timeout: int, creates: list[dict], updates: list[dict], have: dict, prefix: str) -> None:
@@ -400,7 +404,7 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     root = a.project_root.resolve()
     try:
-        have = existing(a.pad, a.timeout)
+        have, bodies = existing(a.pad, a.timeout)
         want = conflict_items(root / ".kc") + log_items(root / a.decision_log)
         if a.architecture:
             arch, skipped = architecture_items(root / a.architecture)
@@ -413,7 +417,7 @@ def main(argv: list[str] | None = None) -> int:
             link_bodies(want, have, {it["ref"] for it in items}, decisions)
 
         def body_of(ref: str) -> str:
-            """Read one Pad item's current body.
+            """Return one Pad item's current body: from the listing, or by `pad item show` when the listing lacked it.
 
             Args:
                 ref: the Pad item ref.
@@ -421,6 +425,8 @@ def main(argv: list[str] | None = None) -> int:
             Returns:
                 Its content.
             """
+            if ref in bodies:
+                return bodies[ref]
             return json.loads(pad(a.pad, a.timeout, "item", "show", ref, "--format", "json")).get("content", "")
 
         creates, updates = plan(want, have, body_of)

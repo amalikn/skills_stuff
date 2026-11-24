@@ -185,3 +185,29 @@ class UpdateDiff(unittest.TestCase):
         out = pdm.update_diff({"ref": "DL-1", "body": "**Decision:**\nA"}, "DECIS-9", "**Decision:** \nA")
         self.assertIn("update DL-1 (DECIS-9):", out)
         self.assertIn("'-**Decision:** '", out)
+
+
+class ExistingTest(unittest.TestCase):
+    """existing() reads refs and bodies from one listing call (BUG-557: one show per item took about 60 s)."""
+
+    def test_one_listing_call_gives_refs_and_bodies(self):
+        calls = []
+        listing = {"items": [
+            {"ref": "DECIS-1", "content": "body one", "fields": json.dumps({"decision_ref": "DL-1"})},
+            {"ref": "DECIS-2", "content": "body two", "fields": {"decision_ref": "DL-2"}},
+            {"ref": "DECIS-3", "content": "no ref", "fields": {}},
+        ]}
+
+        def fake_pad(binary, timeout, *args):
+            calls.append(args)
+            return json.dumps(listing)
+
+        real, pdm.pad = pdm.pad, fake_pad
+        try:
+            have, bodies = pdm.existing("pad", 5)
+        finally:
+            pdm.pad = real
+        self.assertEqual(have, {"DL-1": "DECIS-1", "DL-2": "DECIS-2"})
+        self.assertEqual(bodies, {"DECIS-1": "body one", "DECIS-2": "body two"})
+        self.assertEqual(len(calls), 1)
+        self.assertIn("--full", calls[0])

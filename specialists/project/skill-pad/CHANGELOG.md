@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261124_2252
+Last rotated: 20261124_2356
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261124_2356 — pad_decisions reads bodies in one listing call (62.8 s to 0.3 s)](#20261124_2356--pad_decisions-reads-bodies-in-one-listing-call-628-s-to-03-s)
 - [20261124_2252 — Learned: workspace setup traps (icons, boolean flags, conventions arguments)](#20261124_2252--learned-workspace-setup-traps-icons-boolean-flags-conventions-arguments)
 - [20261124_2211 — decision-add keeps free-text arguments intact](#20261124_2211--decision-add-keeps-free-text-arguments-intact)
 - [20261124_1634 — pad_decisions shows a row's points one per line](#20261124_1634--pad_decisions-shows-a-rows-points-one-per-line)
@@ -38,7 +39,12 @@ Last rotated: 20261124_2252
 - [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
 - [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
-- [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
+
+## 20261124_2356 — pad_decisions reads bodies in one listing call (62.8 s to 0.3 s)
+
+- scripts/pad_decisions.py: existing() lists the decisions collection once with `--full` and returns each item's body; body_of() reads that cache and falls back to `pad item show` only for a ref the listing lacked. Before, plan() ran one `pad item show` per existing decision: 339 calls took 62.8 s on a plan-only run with nothing to change, and about 118 s when the shared server rate-limited (continuum BUG-557: the 'record and mirror' calls of 2026-11-24 ran 46 to 118 s). After: 0.3 s, same plan (339 wanted, 0 to create, 0 to update).
+- tests/test_pad_decisions.py ExistingTest: one listing call gives refs and bodies and passes `--full`; fails on the old code (proven), 96 tests OK.
+- Learned 2026-11-24 · pad CLI · VERIFIED_PRIMARY (pad item list --full JSON carries `content`, equal to `pad item show`, 339 items in 0.06 s) · Falsifier: a listing whose content differs from show. Read many items' bodies with one `pad item list <collection> --all --full --format json`, never a show per item.
 
 ## 20261124_2252 — Learned: workspace setup traps (icons, boolean flags, conventions arguments)
 
@@ -183,14 +189,3 @@ consulted at session start (`status` mode) in every such project. project_stuff/
 docs/trackers/decision-log.md (91 decisions on 20 Nov, 1 superseded, built from SCRATCHPAD's Recent decisions, live and rotated). Its commit gate runs `just pad-decisions --apply` non-fatally. Its
 check fails on a KEEP decision with no log row (negative test: rc 1 with a row removed). Mirror run time: 29.6 s for 89 creates. SETUP.md re-read against the justfile (ruff lint added in dda2a020),
 .mise.toml and `pad --version`: pad 0.21.1 and a ruff row (run through mise, not pinned); Last reviewed 2026-11-20.
-
-## 20261120_1417 — Rule: work in Pad shows as active
-
-- SKILL.md Rules: new rule after "Claim before working an item": work found in Pad is claimed and set `in-progress` before it starts; work not in Pad gets an item created first, then kept current and
-  closed with the closing statement (operator, 20 Nov 2026, from the enterprise-strategy hub session; hub items TASK-19, TASK-144, TASK-145 were run this way).
-- references/cli-reference.md Traps: a comment message starting with `-` is read as a flag and refused (v0.21.1); use `--stdin`.
-- Duplicate removed: a parallel session committed this rule and its own fuller "Work is visible in Pad" rule together (a0fea8bb); this rule's text is dropped and its "a relay, a write-back or a side
-  task counts as work" clause joins the kept rule.
-- 20261120_1425: housekeeping exception (operator, 20 Nov 2026): closeout, slurp, skill write-backs, coherence sweeps and staleness audits get no Pad item; "a write-back" dropped from the work clause.
-- SKILL.md Rules: "Never add to Pad" lists the housekeeping kinds (closeout and slurps, write-backs, coherence sweeps, staleness audits, record upkeep, sync reports, memory saves, their commits)
-  (operator, 20 Nov 2026).
