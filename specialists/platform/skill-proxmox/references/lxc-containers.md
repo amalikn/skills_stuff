@@ -59,3 +59,12 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > # /etc/pve/lxc/<vmid>.conf (proposed, home NAS Immich container)
 > dev0: /dev/dri/renderD128,gid=<render gid>
 > ```
+
+> **Learned 2026-11-25 (e)** · Proxmox VE 9.2, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY for the root@pam limits (bpg container docs: bind mounts and feature
+> flags other than nesting need root@pam) and the provider schema (`tofu validate`); the host-script half is not yet run on a node · Source: home NAS project
+> `tofu/containers.tf`, `scripts/host/pve_ct_extras.sh` (2026-11-25) · Falsifier: a privilege-separated token adding a host bind mount through the API
+> Containers as code with a scoped token: create the container in OpenTofu, then add what needs root (host bind mounts `pct set <id> -mpN <host>,mp=<ct>`, a device such
+> as `/dev/net/tun` for Tailscale `pct set <id> -dev0 /dev/net/tun`) with an idempotent host script, and give OpenTofu
+> `lifecycle { ignore_changes = [mount_point, device_passthrough] }` so it does not remove them. In an unprivileged container uid 1000 is host uid 101000 (default
+> idmap), so the shared dataset's top directory is chowned to 101000:101000. A container serving an encrypted dataset gets `start_on_boot = false` and starts after
+> the unlock. Screenshot pending: CT > Resources after the home NAS CT 100 exists.

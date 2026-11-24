@@ -77,3 +77,9 @@ through the UI, CLI or API. `VERIFIED_PRIMARY`
 - Snapshots are not backups: they live on the same storage.
 - Storage replication (ZFS) is not a backup either: it copies the latest state, mistakes included ([ha-and-replication.md](ha-and-replication.md)).
 - `/etc/pve` is in no guest backup: back up the node configuration (pmxcfs database, `/etc/network/interfaces`, `/etc/apt`) separately.
+
+> **Learned 2026-11-25** · bpg/proxmox 0.123.1 · VERIFIED_PRIMARY (bpg `proxmox_backup_job` docs; offline `tofu validate`) · Source: home NAS project
+> `tofu/host/main.tf` (2026-11-25) · Falsifier: a provider release renaming `prune_backups` keys
+> A vzdump schedule as code: `proxmox_backup_job` with `id`, `schedule` (systemd calendar, e.g. `*-*-* 02:00`), `storage`, `all = true`, `mode = "snapshot"`,
+> `compress = "zstd"` and retention as a string map `prune_backups = { keep-daily = "7", keep-weekly = "4" }`. It needs a host-level token (storage and jobs),
+> not a guest-scoped one. No visual surface until applied: screenshot pending (Datacenter > Backup).

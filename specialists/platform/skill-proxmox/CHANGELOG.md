@@ -14,6 +14,10 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/backup-and-restore.md: proxmox_backup_job with prune_backups map (home NAS).
+
+- 2026-11-25 references/lxc-containers.md (e): containers as code with root-only bind mounts and devices by host script plus ignore_changes (home NAS).
+
 - 2026-11-25 references/qemu-vms.md: virtiofs as code (directory mapping with Mapping.Modify, VM block with Mapping.Use, on_boot false behind encrypted datasets), home NAS project.
 - 2026-11-24 write-back from the home NAS project: references/access-control.md (a) root token is not root@pam, ACME rights; references/opentofu-bpg-provider.md (b) state encryption, proxmox_version, no CA option; references/storage.md (c) mirror-pair growth vs RAIDZ expansion; references/lxc-containers.md (d) iGPU render node into LXC with dev0 gid, SR-IOV on Alder Lake-N not ready. references/architecture-and-cluster.md (e) single-node service minimisation.
 

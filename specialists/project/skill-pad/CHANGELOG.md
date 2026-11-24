@@ -16,6 +16,7 @@ Last rotated: 20261124_2356
 
 ## Contents
 
+- [20261125_0037 — Learned: decisions hidden without --all; rate limit in loops](#20261125_0037--learned-decisions-hidden-without---all-rate-limit-in-loops)
 - [20261124_2356 — pad_decisions reads bodies in one listing call (62.8 s to 0.3 s)](#20261124_2356--pad_decisions-reads-bodies-in-one-listing-call-628-s-to-03-s)
 - [20261124_2252 — Learned: workspace setup traps (icons, boolean flags, conventions arguments)](#20261124_2252--learned-workspace-setup-traps-icons-boolean-flags-conventions-arguments)
 - [20261124_2211 — decision-add keeps free-text arguments intact](#20261124_2211--decision-add-keeps-free-text-arguments-intact)
@@ -39,6 +40,10 @@ Last rotated: 20261124_2356
 - [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
 - [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
+
+## 20261125_0037 — Learned: decisions hidden without --all; rate limit in loops
+
+- references/cli-reference.md: Learned 2026-11-25, `pad item list` hides accepted decisions without `--all`; loops through `just pad` (home NAS).
 
 ## 20261124_2356 — pad_decisions reads bodies in one listing call (62.8 s to 0.3 s)
 

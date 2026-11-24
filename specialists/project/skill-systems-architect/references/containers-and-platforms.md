@@ -282,3 +282,11 @@ Security and practice
 > Compose fits a config-as-code project with a rebuild-from-repo rule: versions pinned beside other apps, one reverse proxy, one backup tool, no master container holding
 > the Docker socket. Its costs are upgrade discipline (one major at a time, Postgres major upgrades by dump and restore, a cron container), best wrapped in a recipe that
 > snapshots first. No visual surface.
+
+> **Learned 2026-11-25 (c)** · Proxmox VE 9.2 home NAS · design judgement with VERIFIED_PRIMARY inputs (Immich docs: Docker in LXC not recommended; bpg docs:
+> container bind mounts root-only) · Source: home NAS project chat 2026-11-25 and `tofu/containers.tf`, `tofu/apps_vm.tf` · Falsifier: a supported Docker-in-LXC path
+> for Immich
+> Placement on a small Proxmox NAS: LXC for services that want host files or a single device and no Docker (Samba with bind mounts, a VPN router with /dev/net/tun,
+> a serial-console server with /dev/serial/by-id, monitoring); a VM for anything Docker-based (Immich, Nextcloud, a reverse proxy) and for USB-pairing work
+> (iOS backups) where clean passthrough matters more than the 1-2 GB saved. Budget RAM per guest against the ARC before adding guests (32 GB box: ARC 6, apps VM 12,
+> Samba 2, VPN 0.5, iOS VM 2-4).

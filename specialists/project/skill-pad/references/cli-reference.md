@@ -285,3 +285,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > ```bash
 > pad collection create "Asks" --schema @conventions/collection-schemas/asks.json --icon "✋" --layout balanced --default-view board --awaits-human=true --tracks-work=false
 > ```
+
+> **Learned 2026-11-25** · Pad CLI v0.21.1 · VERIFIED_PRIMARY (`pad item list decisions` printed "No items found" while `--all` listed DECIS-39 to 49,
+> home NAS workspace) · Falsifier: an accepted decision listed without `--all`
+> `pad item list <collection>` hides done, completed and archived items, which includes accepted decisions; use `pad item list decisions --all` to find a decision's
+> ref (for `[[DECIS-n|DL-nnn]]` links). Plain `pad` calls in a loop hit the shared rate limit (`rate_limited`, retry after 1 s); go through `just pad` (retry wrapper).
