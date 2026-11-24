@@ -126,6 +126,11 @@ The project work they record keeps its own item (a decision recorded at close go
   idle past `--stale-hours` (default 24) as `stale`, however old. Handle each before new work: resume it (claim, comment), or set it back to `open`
   with a comment saying why (who stopped, what it waits on, with its blocking [[ask]] or [[task]] linked); a finished one gets its DONE comment and
   `done`. Also the rest of item-check's findings (labels, DONE comments, logs, comment form, references as links). Housekeeping, so no new item.
+- **Housekeeping as the work lands (operator, 2026-11-25: "why is the housekeeping not done as soon as the task is completed or has an update?"):** the
+  status moves in the same step as the comment that ends the work: a DONE or Fixed comment sets the item's closed status at once, and closing a plan's
+  last open child closes the plan too. item-check reports both misses: `plan` (a plan still open with every child closed) and `marker` (the newest
+  comment says DONE or Fixed while the status is not closed). Continuum, 2026-11-25: five plans sat at planned with every child closed, and a tech-debt
+  item sat at identified a day after its "Fixed" comment.
 - **Through the CLI only**: never read `~/.pad/pad.db` or `~/.pad/attachments/` directly.
 - Under Codex or another harness set `PAD_AGENT=<name>`, or writes are attributed to the human whose credentials are used.
 - **Repo trackers are the truth** (convention `trackers-truth`): a Pad item links to its tracker entry; a fact recorded only in Pad is not recorded.

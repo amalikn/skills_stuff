@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261125_0233.md](changelog/changelog-20261125_0233.md) 1 entry, 2026-11-20 to 2026-11-20: Work visible in Pad; Pad consulted at session start; smc-resiliency decisions
 - [changelog-20261124_2356.md](changelog/changelog-20261124_2356.md) 1 entry, 2026-11-20 to 2026-11-20: Rule: work in Pad shows as active
 - [changelog-20261124_2252.md](changelog/changelog-20261124_2252.md) 1 entry, 2026-11-20 to 2026-11-20: pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
 - [changelog-20261124_2212.md](changelog/changelog-20261124_2212.md) 1 entry, 2026-11-20 to 2026-11-20: Hub workspace set up: baseline without pad-owned-trackers, asks first

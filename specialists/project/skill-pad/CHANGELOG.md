@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261124_2356
+Last rotated: 20261125_0233
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261125_0232 — item-check: plans left open with every child closed; DONE markers on open items](#20261125_0232--item-check-plans-left-open-with-every-child-closed-done-markers-on-open-items)
 - [20261125_0037 — Learned: decisions hidden without --all; rate limit in loops](#20261125_0037--learned-decisions-hidden-without---all-rate-limit-in-loops)
 - [20261124_2356 — pad_decisions reads bodies in one listing call (62.8 s to 0.3 s)](#20261124_2356--pad_decisions-reads-bodies-in-one-listing-call-628-s-to-03-s)
 - [20261124_2252 — Learned: workspace setup traps (icons, boolean flags, conventions arguments)](#20261124_2252--learned-workspace-setup-traps-icons-boolean-flags-conventions-arguments)
@@ -39,7 +40,12 @@ Last rotated: 20261124_2356
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
 - [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
 - [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
-- [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
+
+## 20261125_0232 — item-check: plans left open with every child closed; DONE markers on open items
+
+- scripts/pad_item_check.py: two findings (operator, 2026-11-25: "why is the housekeeping not done as soon as the task is completed or has an update?"): `plan`, a plan not closed whose children (`pad item list --parent <plan> --all`, one more call per plan) are all done, resolved, fixed, cancelled, answered, shipped, completed or archived; `marker`, a plan, task, bug or tech-debt item whose newest comment carries `DONE` or `Fixed` while its status is not closed. Evidence: continuum PLAN-491, 403, 531, 446, 374 at planned with every child closed; TD-509 at identified a day after a "Fixed 2026-11-23" comment.
+- tests/test_pad_item_check.py HousekeepingTests: both rules fail and pass; red against the previous script (TypeError on `children`, marker test FAIL), 23 tests OK after.
+- SKILL.md rule "Housekeeping as the work lands"; scripts/README.md catalog row.
 
 ## 20261125_0037 — Learned: decisions hidden without --all; rate limit in loops
 
@@ -185,12 +191,3 @@ references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-pr
   supersedes); plan by default, idempotent. Operator, 2026-11-20 (continuum ASK-251): references must be clickable and dependencies recorded in the relationship section.
 - references/items-and-edits.md rule 6 rewritten to require both. First run in continuum: 13 bodies and 13 relations.
 - SKILL.md "Tickets tell the whole story" gains the links-and-relations bullet, so every project loads the rule, not only items-and-edits readers.
-
-## 20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions
-
-SKILL.md Rules: two operator rules (20 Nov 2026). (1) Work is visible in Pad. In a project with a `.pad.toml`, work runs on an item the operator can see: it is found, or created before the work starts
-(the operator's request is the confirmation), then claimed, kept `in-progress` with comments, and closed with its `DONE:` comment. The confirm-before-create rule names this exception. (2) Pad is
-consulted at session start (`status` mode) in every such project. project_stuff/AGENTS.md now names skill-pad as required there. README step 6: smc-resiliency keeps its decision log at
-docs/trackers/decision-log.md (91 decisions on 20 Nov, 1 superseded, built from SCRATCHPAD's Recent decisions, live and rotated). Its commit gate runs `just pad-decisions --apply` non-fatally. Its
-check fails on a KEEP decision with no log row (negative test: rc 1 with a row removed). Mirror run time: 29.6 s for 89 creates. SETUP.md re-read against the justfile (ruff lint added in dda2a020),
-.mise.toml and `pad --version`: pad 0.21.1 and a ruff row (run through mise, not pinned); Last reviewed 2026-11-20.

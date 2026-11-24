@@ -204,5 +204,30 @@ class StaleTests(unittest.TestCase):
         idle_open = dict(item("open"), updated_at="2026-11-01T10:00:00Z")
         self.assertFalse(any(line.startswith("stale:") for line in pic.findings(idle_open, [], 0, now=self.NOW)))
 
+
+class HousekeepingTests(unittest.TestCase):
+    """Status left behind the work (operator, 2026-11-25: housekeeping as soon as a task is completed or has an update)."""
+
+    PLAN = "**Serves:** s\n\n**Goal:** g\n\n**Done when:** d\n\n**Out of scope:** o\n\n**Waits on:** w"
+
+    def test_a_plan_with_every_child_closed_is_reported(self) -> None:
+        """Planned with all children done, resolved or answered: report; one child open, or the plan done: clean."""
+        kids = [item("done"), item("resolved", collection="bugs"), item("answered", collection="asks")]
+        out = pic.findings(item("planned", self.PLAN, "plans"), [], 0, children=kids)
+        self.assertTrue(any(line.startswith("plan: status planned while all 3 child item(s) are closed") for line in out), out)
+        open_kid = pic.findings(item("planned", self.PLAN, "plans"), [], 0, children=[*kids, item("open")])
+        self.assertFalse(any(line.startswith("plan:") for line in open_kid), open_kid)
+        self.assertFalse(any(line.startswith("plan:") for line in pic.findings(item("planned", self.PLAN, "plans"), [], 0, children=[])))
+
+    def test_a_done_marker_in_the_newest_comment_needs_the_status(self) -> None:
+        """Identified a day after a "Fixed" comment: report; a later progress comment or a closed status clears it; `Done when` is no marker."""
+        td = item("identified", "**Serves:** s\n\n**Why:** w\n\n**Do:** d\n\n**Done when:** x", "tech-debt")
+        fixed = [{"created_at": "2026-11-22T01:00:00Z", "body": "- **What:** found"}, {"created_at": "2026-11-23T09:55:00Z", "body": "**Fixed 2026-11-23:**\n- **What:** script"}]
+        self.assertTrue(any(line.startswith("marker: the newest comment (2026-11-23)") for line in pic.findings(td, fixed, 0)))
+        later = [*fixed, {"created_at": "2026-11-24T01:00:00Z", "body": "- **What:** reopened, Done when not met"}]
+        self.assertFalse(any(line.startswith("marker:") for line in pic.findings(td, later, 0)))
+        closed = item("done", "**Serves:** s\n\n**Why:** w\n\n**Do:** d\n\n**Done when:** x", "tech-debt")
+        self.assertFalse(any(line.startswith("marker:") for line in pic.findings(closed, fixed, 0)))
+
 if __name__ == "__main__":
     unittest.main()

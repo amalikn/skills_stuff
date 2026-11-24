@@ -15,12 +15,16 @@ the last --days days) it reads the item, its comments and its attachments throug
              open with a comment saying why (operator, 2026-11-20: "check if there are any old or incorrectly tasks left in the wrong state")
     refs     an item ref (TASK-12) or decision id (DL-058) as plain text, not a `[[...]]` link, in the body or in a comment from 2026-11-20 on
              (operator, 2026-11-20: "why are these references not links"); `just links` fixes bodies
+    plan     a plan still open (planned, active ...) whose children (`pad item list --parent <plan> --all`) are all closed: close the plan
+    marker   a plan, task, bug or tech-debt item whose newest comment carries a DONE or Fixed marker while its status is not closed
+             (operator, 2026-11-25: "why is the housekeeping not done as soon as the task is completed or has an update?"; continuum had
+             five plans at planned with every child closed, and a tech-debt item at identified a day after its "Fixed" comment)
 
 Usage:
     python3 pad_item_check.py TASK-57 BUG-66            # these items
     python3 pad_item_check.py --days 2                  # every plan, task and bug touched in the last two days
 Options: --workspace SLUG, --pad PATH, --timeout SECONDS.
-Exit: 0 clean, 1 findings, 2 a pad call failed or bad arguments. Writes nothing. Budget: three pad calls per item (about 0.2 s each; a rate-limited call is retried up to five times with a growing pause); prints its time.
+Exit: 0 clean, 1 findings, 2 a pad call failed or bad arguments. Writes nothing. Budget: three pad calls per item, four per plan (about 0.2 s each; a rate-limited call is retried up to five times with a growing pause); prints its time.
 """
 
 from __future__ import annotations
@@ -47,6 +51,9 @@ LABELS = {  # required labels per collection: docs/pad-usage-guidelines-20261110
 WORK = {"plans", "tasks", "bugs", "tech-debt"}  # collections whose closed items need a DONE: or CLOSED: comment
 CLOSED = {"done", "fixed", "resolved", "shipped", "cancelled", "wont-fix", "declined", "completed"}
 CLOSING = re.compile(r"\b(DONE|CLOSED):")
+# Statuses that end an item, for the plan and marker rules: CLOSED plus an answered ask and an archived item (operator, 2026-11-25).
+ENDED = CLOSED | {"answered", "archived"}
+MARKER = re.compile(r"\bDONE\b|\bFixed\b")  # case-sensitive: `**Done when:**` is a label, not a marker
 RETRIES = 5
 BACKOFF_S = 1.5
 # A store named in a body is not a log to attach: the knowledge-curator decision store .kc/decisions.jsonl (2026-11-22, continuum TASK-27
@@ -163,7 +170,16 @@ def last_activity(item: dict, comments: list[dict]) -> datetime | None:
     return max(times) if times else None
 
 
-def findings(item: dict, comments: list[dict], attachments: int, decision_ids: bool = True, known: set[str] | None = None, now: datetime | None = None, stale_hours: int = STALE_HOURS) -> list[str]:
+def findings(
+    item: dict,
+    comments: list[dict],
+    attachments: int,
+    decision_ids: bool = True,
+    known: set[str] | None = None,
+    now: datetime | None = None,
+    stale_hours: int = STALE_HOURS,
+    children: list[dict] | None = None,
+) -> list[str]:
     """What one item breaks of the writing standard.
 
     Args:
@@ -174,6 +190,7 @@ def findings(item: dict, comments: list[dict], attachments: int, decision_ids: b
         known: the workspace's item refs; a plain ref not among them (another workspace's item, a typo) cannot be linked and is not reported.
         now: the current time (UTC; default now), for the stale rule.
         stale_hours: idle hours after which an in-progress item is stale.
+        children: a plan's child items (each with fields.status); None when not read.
 
     Returns:
         One line per finding; empty when the item meets the standard.
@@ -188,6 +205,13 @@ def findings(item: dict, comments: list[dict], attachments: int, decision_ids: b
     notes = [json.dumps(n) for n in item.get("implementation_notes") or []]
     if item.get("collection_slug") in WORK and status in CLOSED and not any(CLOSING.search(t) for t in texts):
         out.append(f"done: status {status} with no closing comment (`YYYY-MM-DD HH:MM AEDT DONE:` and what was done, the result, evidence, what stays open)")
+    if item.get("collection_slug") == "plans" and children and status not in ENDED:
+        if all(str(fields_of(c).get("status", "")).lower() in ENDED for c in children):
+            out.append(f"plan: status {status or 'unset'} while all {len(children)} child item(s) are closed: close the plan with a DONE comment")
+    if item.get("collection_slug") in WORK and status not in ENDED and comments:
+        newest = max(comments, key=lambda c: str(c.get("created_at", "")))
+        if MARKER.search(newest.get("body") or ""):
+            out.append(f"marker: the newest comment ({str(newest.get('created_at', ''))[:10]}) says DONE or Fixed but the status is {status or 'unset'}: set the status")
     if status == "in-progress" and not texts and not notes:
         out.append("update: in progress with no note or comment")
     last = last_activity(item, comments)
@@ -276,7 +300,11 @@ def main(argv: list[str] | None = None) -> int:
             item = json.loads(pad(["item", "show", ref, "--format", "json", *extra], a.timeout, a.pad))
             comments = json.loads(pad(["item", "comments", ref, "--format", "json", *extra], a.timeout, a.pad) or "[]")
             att = json.loads(pad(["attachment", "list", "--item", ref, "--format", "json", *extra], a.timeout, a.pad) or "{}")
-            for line in findings(item, comments or [], int(att.get("total", 0)), has_decisions, known, stale_hours=a.stale_hours):
+            kids = None
+            if item.get("collection_slug") == "plans":
+                rows = json.loads(pad(["item", "list", "--parent", ref, "--all", "--format", "json", *extra], a.timeout, a.pad) or "[]")
+                kids = rows if isinstance(rows, list) else rows.get("items", [])
+            for line in findings(item, comments or [], int(att.get("total", 0)), has_decisions, known, stale_hours=a.stale_hours, children=kids):
                 bad += 1
                 print(f"{ref}: {line}")
     except (RuntimeError, json.JSONDecodeError) as exc:
