@@ -13,7 +13,7 @@ Kind: log
 
 ## Unreleased
 
-- 2026-11-24 references/containers-and-platforms.md: Immich Docker-only in a VM (x86-64-v2, SSD Postgres), Nextcloud AIO official vs community image (home NAS project).
+- 2026-11-24 references/containers-and-platforms.md: Immich Docker-only in a VM (x86-64-v2, SSD Postgres), Nextcloud AIO official vs community image (home NAS project). Entry (b): when the plain image with Compose fits better.
 
 - 2026-11-24 references/storage-and-data.md: small N305 NAS boxes: M.2 slots PCIe 3.0 x1, no eGPU path, one SO-DIMM; app data on NVMe, bulk on HDD mirrors (home NAS project).
 

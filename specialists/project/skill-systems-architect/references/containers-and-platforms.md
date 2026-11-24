@@ -274,3 +274,11 @@ Security and practice
 > "maintained by community volunteers and designed for expert use"; All-in-One is the vendor's official method and brings its own Borg backup with whole-instance
 > restore, so an off-site tool (restic) should copy the Borg repository rather than duplicate it. One Docker VM with both apps fits a 32 GB box at about 10 to 12 GB.
 > No visual surface.
+
+> **Learned 2026-11-24 (b)** · Nextcloud deployment choice · USER_STATED (operator decision DL-018 in the home NAS project) with VERIFIED_PRIMARY inputs (the two READMEs above) ·
+> Source: home NAS project `docs/research/app-deployment-20261124_2338.md` ("Plain image instead of All-in-One") · Falsifier: a later Nextcloud release where All-in-One
+> keeps its configuration as code in the operator's repo
+> Choosing between them is a fit question, not a difficulty one. All-in-One fits an owner who wants it to run itself and may use Office or Talk. The plain image with
+> Compose fits a config-as-code project with a rebuild-from-repo rule: versions pinned beside other apps, one reverse proxy, one backup tool, no master container holding
+> the Docker socket. Its costs are upgrade discipline (one major at a time, Postgres major upgrades by dump and restore, a cron container), best wrapped in a recipe that
+> snapshots first. No visual surface.
