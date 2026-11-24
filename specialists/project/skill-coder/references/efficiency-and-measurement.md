@@ -69,3 +69,36 @@ render_cache.record(k, text)
 > A progress line flushed by the program still waits in the next pipe stage: `| cut -c1-200` held every `ok` line of a two-hour job until the
 > job ended, so a monitor tailing the log saw nothing and the run looked stalled while a 9.2 GB file had already landed. Watch a long job's
 > unfiltered log, or make every filter line-buffered (`grep --line-buffered`, `awk` with `fflush()`); `cut` and `head` cannot be.
+
+> **Learned 2026-11-24** · agent work, any project · VERIFIED_PRIMARY (measured) · Source: continuum DL-213, docs/reference/efficiency-log.md (tools_stuff e6bd1b1, 8f783aa) · Falsifier: a week of the record where the agent's foreground waits and idle turns stay unseen
+> Time every activity, the agent's own included, or drift stays invisible. A 30-day backfill of one project's session transcripts found
+> 127 agent tool calls over 2 minutes, mostly the agent blocking in the foreground on a push gate ("Wait for ... push", about 10 min each),
+> and a same-day 34-minute idle after the agent ended its turn with work waiting. Record each finished activity as one JSON line (start, end,
+> seconds, actor agent|operator|project, kind, name, ref, exit, log); keep the person's time (answering, waiting) apart from agent time; budget
+> per group in an authored TOML; flag drift as a 7-day median past 1.5x the 28 days before. Capture the agent through Claude Code hooks
+> (PreToolUse marks the start by `tool_use_id`, PostToolUse/PostToolUseFailure emit; UserPromptSubmit and Stop give turns and waits; run them
+> `async`, the hook costs about 90 ms), scripts through their run wrapper, CI through per-step timings, and past days with
+> `scripts/agent_timing_backfill.py`. Long-running services are started detached with a ready wait and a status command, never as a session
+> task, and their start-up has a budget while their lifetime is report only. Parallel independent CI jobs (native and Linux) cut a push from
+> 438-527 s to 281-299 s with the same tests.
+
+```python
+# continuum scripts/timing/hook_timing.py (tools_stuff e6bd1b1): one hook script for every event; never blocks the tool call
+if event == "PreToolUse":
+  mark(key(payload), {"t": now, "tool": tool, "name": summary(tool, payload.get("tool_input"))})   # key = tool_use_id
+elif event in ("PostToolUse", "PostToolUseFailure"):
+  start = take(key(payload))
+  if start:
+    kind = "operator_answer" if tool in OPERATOR_TOOLS else "tool"            # AskUserQuestion is the person's time
+    finished(start["t"], now, kind, start["name"], payload, tool=tool, ok=event == "PostToolUse")
+elif event == "UserPromptSubmit":
+  stop = take(f"stop-{session}")
+  if stop:                                                                     # the agent had ended its turn
+    finished(stop["t"], now, "operator_wait", "agent turn ended; waiting for the operator", payload)
+  mark(f"turn-{session}", {"t": now})
+elif event == "Stop":
+  start = take(f"turn-{session}")
+  if start:
+    finished(start["t"], now, "turn", "prompt to stop", payload)
+  mark(f"stop-{session}", {"t": now})
+```

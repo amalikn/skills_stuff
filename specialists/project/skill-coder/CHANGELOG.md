@@ -36,6 +36,7 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-24: scripts/agent_timing_backfill.py (promoted from a continuum one-off, operator request: any project, any past days); references/efficiency-and-measurement.md, Learned 2026-11-24: time every activity, the agent included (continuum DL-213)
 - 2026-11-23: references/design-patterns.md P-85 (test identity bot with software credentials driving the real flows) and P-86 (run log attached to the work item), from continuum-app devbot and runlog; index rows for P-83 to P-86.
 
 - 2026-11-23: references/design-patterns.md, P-84 (retention by membership with a time-rule fallback); references/testing.md, Learned 2026-11-23: a gate check must run in every mode it guards (continuum-app TASK-492, TASK-493).
