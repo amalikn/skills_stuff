@@ -28,83 +28,83 @@ ROW = re.compile(r"^\| DL-(\d{3,}) \|")
 
 
 def next_id(lines: list[str]) -> str:
-    """The next free DL id of a log.
+  """The next free DL id of a log.
 
-    Args:
-        lines: the log's lines.
+  Args:
+      lines: the log's lines.
 
-    Returns:
-        "DL-nnn", one above the highest present (DL-001 for an empty log).
-    """
-    ids = [int(m.group(1)) for line in lines if (m := ROW.match(line))]
-    return f"DL-{(max(ids) + 1 if ids else 1):03d}"
+  Returns:
+      "DL-nnn", one above the highest present (DL-001 for an empty log).
+  """
+  ids = [int(m.group(1)) for line in lines if (m := ROW.match(line))]
+  return f"DL-{(max(ids) + 1 if ids else 1):03d}"
 
 
 def build_row(dl: str, date: str, kind: str, parts: tuple[str, list[str], str], reason: str, who: str) -> str:
-    """One decision-log row.
+  """One decision-log row.
 
-    Args:
-        dl: its id.
-        date: YYYY-MM-DD.
-        kind: architecture or process.
-        parts: (intro, points, closing); points become "- point" lines, empty intro or closing are left out.
-        reason: the reason column.
-        who: the decider column.
+  Args:
+      dl: its id.
+      date: YYYY-MM-DD.
+      kind: architecture or process.
+      parts: (intro, points, closing); points become "- point" lines, empty intro or closing are left out.
+      reason: the reason column.
+      who: the decider column.
 
-    Returns:
-        The table row.
+  Returns:
+      The table row.
 
-    Raises:
-        ValueError: a `|` or a line break in any text, or no point and no intro.
-    """
-    intro, points, closing = parts
-    texts = [intro, closing, reason, who, *points]
-    if any("|" in t or "\n" in t for t in texts):
-        raise ValueError("a `|` or a line break in the text would break the table row; reword it")
-    if not points and not intro:
-        raise ValueError("a decision needs an intro or at least one point")
-    pieces = [intro] if intro else []
-    pieces += [p if p.startswith("- ") else f"- {p}" for p in points]
-    pieces += [closing] if closing else []
-    return f"| {dl} | {date} | {kind} | {'<br>'.join(pieces)} | {reason} | {who} |"
+  Raises:
+      ValueError: a `|` or a line break in any text, or no point and no intro.
+  """
+  intro, points, closing = parts
+  texts = [intro, closing, reason, who, *points]
+  if any("|" in t or "\n" in t for t in texts):
+    raise ValueError("a `|` or a line break in the text would break the table row; reword it")
+  if not points and not intro:
+    raise ValueError("a decision needs an intro or at least one point")
+  pieces = [intro] if intro else []
+  pieces += [p if p.startswith("- ") else f"- {p}" for p in points]
+  pieces += [closing] if closing else []
+  return f"| {dl} | {date} | {kind} | {'<br>'.join(pieces)} | {reason} | {who} |"
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Plan or append the row.
+  """Plan or append the row.
 
-    Args:
-        argv: command-line arguments; None uses sys.argv.
+  Args:
+      argv: command-line arguments; None uses sys.argv.
 
-    Returns:
-        0 when planned or appended; 1 on bad input.
-    """
-    ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
-    ap.add_argument("--log", type=Path, default=Path("docs/architecture-review/DECISION-LOG.md"))
-    ap.add_argument("--kind", choices=["architecture", "process"], required=True)
-    ap.add_argument("--intro", default="")
-    ap.add_argument("--point", action="append", default=[])
-    ap.add_argument("--closing", default="")
-    ap.add_argument("--reason", required=True)
-    ap.add_argument("--who", default="Operator.")
-    ap.add_argument("--date", default=datetime.date.today().isoformat())
-    ap.add_argument("--apply", action="store_true")
-    a = ap.parse_args(argv)
-    try:
-        text = a.log.read_text()
-        dl = next_id(text.splitlines())
-        row = build_row(dl, a.date, a.kind, (a.intro, a.point, a.closing), a.reason, a.who)
-    except (OSError, ValueError) as e:
-        print(f"decision_log_add: {e}", file=sys.stderr)
-        return 1
-    print(row)
-    if not a.apply:
-        print(f"plan only: {dl} would be appended to {a.log}; --apply writes")
-        return 0
-    with a.log.open("a") as f:
-        f.write(("" if text.endswith("\n") else "\n") + row + "\n")
-    print(f"appended {dl} to {a.log}; mirror with `just pad-decisions --apply`")
+  Returns:
+      0 when planned or appended; 1 on bad input.
+  """
+  ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
+  ap.add_argument("--log", type=Path, default=Path("docs/architecture-review/DECISION-LOG.md"))
+  ap.add_argument("--kind", choices=["architecture", "process"], required=True)
+  ap.add_argument("--intro", default="")
+  ap.add_argument("--point", action="append", default=[])
+  ap.add_argument("--closing", default="")
+  ap.add_argument("--reason", required=True)
+  ap.add_argument("--who", default="Operator.")
+  ap.add_argument("--date", default=datetime.date.today().isoformat())
+  ap.add_argument("--apply", action="store_true")
+  a = ap.parse_args(argv)
+  try:
+    text = a.log.read_text()
+    dl = next_id(text.splitlines())
+    row = build_row(dl, a.date, a.kind, (a.intro, a.point, a.closing), a.reason, a.who)
+  except (OSError, ValueError) as e:
+    print(f"decision_log_add: {e}", file=sys.stderr)
+    return 1
+  print(row)
+  if not a.apply:
+    print(f"plan only: {dl} would be appended to {a.log}; --apply writes")
     return 0
+  with a.log.open("a") as f:
+    f.write(("" if text.endswith("\n") else "\n") + row + "\n")
+  print(f"appended {dl} to {a.log}; mirror with `just pad-decisions --apply`")
+  return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+  sys.exit(main())

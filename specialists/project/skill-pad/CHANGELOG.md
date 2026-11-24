@@ -9,7 +9,7 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261124_1452
+Last rotated: 20261124_1946
 ---
 
 # Changelog — skill-pad
@@ -39,7 +39,6 @@ Last rotated: 20261124_1452
 - [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
 - [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
 - [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
-- [20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs](#20261120_1347--asks-collection-created-in-smc-resiliency-0211-flag-form-and-workspace-wide-refs)
 
 ## 20261124_1634 — pad_decisions shows a row's points one per line
 
@@ -198,9 +197,3 @@ for enterprise-strategy (123 decisions, 7 superseded).
 
 README.md, Setting Pad up in a project, step 3: a project without bug, feature or tech-debt trackers applies the baseline with --only (pad-owned-trackers left out) and starts with the Asks collection;
 learned setting up the enterprise-strategy hub workspace (20 Nov 2026: six conventions, Asks with ASK-11 to ASK-15).
-
-## 20261120_1347 — Asks collection created in smc-resiliency; 0.21.1 flag form and workspace-wide refs
-
-references/cli-reference.md (Traps), Learned 2026-11-20: on 0.21.1 --awaits-human and --tracks-work need the = form (the space form fails with "accepts 1 arg(s), received 2"); refs number across the
-workspace (ASK-105 after TASK-104); no collection get. docs/pad-usage-guidelines: the Asks create command corrected. The smc-resiliency workspace now has its Asks collection (operator decision Q1 A,
-10 Nov), with ASK-105 and ASK-106.

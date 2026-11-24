@@ -19,42 +19,58 @@ LOG = "| ID | Date | Kind | Decision | Reason | Who |\n| --- | --- | --- | --- |
 
 
 class DecisionLogAdd(unittest.TestCase):
-    """The row is the next id, six columns, one point per <br>, and mirrors back through pad_decisions."""
+  """The row is the next id, six columns, one point per <br>, and mirrors back through pad_decisions."""
 
-    def test_next_id_and_round_trip(self):
-        """A planned row is not written; an applied one is DL-010 and pad_decisions shows its points one per line.
+  def test_next_id_and_round_trip(self):
+    """A planned row is not written; an applied one is DL-010 and pad_decisions shows its points one per line.
 
-        Returns:
-            None.
-        """
-        with tempfile.TemporaryDirectory() as tmp:
-            log = Path(tmp) / "DECISION-LOG.md"
-            log.write_text(LOG)
-            args = ["--log", str(log), "--kind", "architecture", "--intro", "Two answers:", "--point", "one: A.", "--point", "- two: B.",
-                    "--closing", "Advice followed.", "--reason", "Because.", "--date", "2026-11-24"]
-            self.assertEqual(dla.main(args), 0)
-            self.assertEqual(log.read_text(), LOG, "plan writes nothing")
-            self.assertEqual(dla.main([*args, "--apply"]), 0)
-            last = log.read_text().splitlines()[-1]
-            self.assertEqual(last, "| DL-010 | 2026-11-24 | architecture | Two answers:<br>- one: A.<br>- two: B.<br>Advice followed. | Because. | Operator. |")
-            item = [i for i in pdm.log_items(log) if i["ref"] == "DL-010"][0]
-            self.assertIn("- one: A.\n- two: B.", item["body"])
+    Returns:
+        None.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+      log = Path(tmp) / "DECISION-LOG.md"
+      log.write_text(LOG)
+      args = [
+        "--log",
+        str(log),
+        "--kind",
+        "architecture",
+        "--intro",
+        "Two answers:",
+        "--point",
+        "one: A.",
+        "--point",
+        "- two: B.",
+        "--closing",
+        "Advice followed.",
+        "--reason",
+        "Because.",
+        "--date",
+        "2026-11-24",
+      ]
+      self.assertEqual(dla.main(args), 0)
+      self.assertEqual(log.read_text(), LOG, "plan writes nothing")
+      self.assertEqual(dla.main([*args, "--apply"]), 0)
+      last = log.read_text().splitlines()[-1]
+      self.assertEqual(last, "| DL-010 | 2026-11-24 | architecture | Two answers:<br>- one: A.<br>- two: B.<br>Advice followed. | Because. | Operator. |")
+      item = [i for i in pdm.log_items(log) if i["ref"] == "DL-010"][0]
+      self.assertIn("- one: A.\n- two: B.", item["body"])
 
-    def test_refusals(self):
-        """A pipe or a line break in the text, or nothing to decide, is refused with exit 1.
+  def test_refusals(self):
+    """A pipe or a line break in the text, or nothing to decide, is refused with exit 1.
 
-        Returns:
-            None.
-        """
-        with tempfile.TemporaryDirectory() as tmp:
-            log = Path(tmp) / "DECISION-LOG.md"
-            log.write_text(LOG)
-            base = ["--log", str(log), "--kind", "process", "--reason", "R"]
-            self.assertEqual(dla.main([*base, "--point", "a | b"]), 1)
-            self.assertEqual(dla.main([*base, "--point", "a\nb"]), 1)
-            self.assertEqual(dla.main(base), 1)
-            self.assertEqual(log.read_text(), LOG)
+    Returns:
+        None.
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+      log = Path(tmp) / "DECISION-LOG.md"
+      log.write_text(LOG)
+      base = ["--log", str(log), "--kind", "process", "--reason", "R"]
+      self.assertEqual(dla.main([*base, "--point", "a | b"]), 1)
+      self.assertEqual(dla.main([*base, "--point", "a\nb"]), 1)
+      self.assertEqual(dla.main(base), 1)
+      self.assertEqual(log.read_text(), LOG)
 
 
 if __name__ == "__main__":
-    unittest.main()
+  unittest.main()

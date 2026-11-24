@@ -4,7 +4,7 @@ Category: setup
 Status: current
 Authority: canonical
 Scope: Installing Pad and skill-pad on the operator's Mac, and checking that each part works
-Last reviewed: 2026-11-21
+Last reviewed: 2026-11-24
 Summary: A working setup needs the pad CLI from Homebrew, an initialised local Pad, the two install links, the pack's venv, the backup and link-opener jobs and the presence hooks.
 Depends on: justfile, .mise.toml, scripts/pad_backup.plist, scripts/pad_link_opener.plist
 ---
