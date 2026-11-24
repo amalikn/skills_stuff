@@ -139,6 +139,7 @@ and records tooling, the `promote` mode, and the rest of the target-map standard
   `versions.toml` ...'" and the recipe exited 1, yet a whitespace-normalised comparison of the pre-rotation file against the new file plus
   docs/history/changelog/*.md found 0 lines missing (the archived copy was re-wrapped by the markdown hook). Cause: audit_rotations.py
   compares exact lines (Counter of lines); compare `" ".join(line.split())` instead, or the archive's words in order.
+  Recurred 2026-11-24 22:12 (skill-pad, `just budget --apply` on CHANGELOG.md): "34 line(s) lost, e.g. '- `scripts/pad_link_opener.py`: a localhost service ...'", exit 1; the git diff removed 7 lines (front-matter `Last rotated` and the rotated entry's Contents line) and the flagged line sits in an older archive (changelog-20261120_1408.md); 0 lines missing.
 - [ ] **`upgrade_navigation_control_layer.py` writes without `--apply`** (found 2026-10-21, unified-network-controller): it writes unless
   `--dry-run` is given, against the write-gate rule (skill-coder `safety-and-writes`), and `budget_plan.py` tells the user to run it bare when AGENTS.md
   is over budget. It failed early there only because PyYAML was missing. Give it `--apply` (plan by default) and print the plan command in the budget hint.

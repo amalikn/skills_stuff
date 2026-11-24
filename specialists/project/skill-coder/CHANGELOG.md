@@ -17,6 +17,8 @@ Last rotated: 20261119_1601
 ## Contents
 
 - [Unreleased](#unreleased)
+- [20261124_2216 — P-87 merge by unpacking beside the live copy](#20261124_2216--p-87-merge-by-unpacking-beside-the-live-copy)
+- [20261124_2215 — Rust guide: names from outside become paths; justfile exports and bare cargo test](#20261124_2215--rust-guide-names-from-outside-become-paths-justfile-exports-and-bare-cargo-test)
 - [20261124_1948 — Write-backs from continuum 2026-11-24 evening](#20261124_1948--write-backs-from-continuum-2026-11-24-evening)
 - [20261122_2341 — Write-backs from continuum 2026-11-22 late](#20261122_2341--write-backs-from-continuum-2026-11-22-late)
 - [20261122_2044 — Write-backs from continuum 2026-11-22 night](#20261122_2044--write-backs-from-continuum-2026-11-22-night)
@@ -85,6 +87,15 @@ Last rotated: 20261119_1601
 - 2026-11-19: logged late: references/generated-artifacts.md Learned 2026-11-12, a second easier-to-read format of a data file (JSON source, YAML view).
 - 2026-11-19: logged late: references/security.md Learned 2026-11-09, release digest before unpacking and disposable config for a CLI with a cloud default (two entries).
 - 2026-11-19: write-back headers repaired to the ledger format (no words changed): languages/rust.md, references/design-patterns.md (6), design-principles.md, tooling-and-runtime.md.
+## 20261124_2216 — P-87 merge by unpacking beside the live copy
+
+- references/design-patterns.md: P-87 Merge by unpacking beside the live copy, never into it (CANDIDATE, continuum-app 41d77c8).
+
+## 20261124_2215 — Rust guide: names from outside become paths; justfile exports and bare cargo test
+
+- languages/rust/guide-keys.md: part 3 section 21, a name from outside becomes a path (allow-list check, Path::parent/file_name, ok_or), from continuum-app 41d77c8; Further reading renumbered 22.
+- languages/rust/learned-cargo-and-builds.md: Learned 2026-11-24, justfile exports reach only recipes, so a bare cargo test fails with NotPresent; passthrough recipe or export loop.
+
 ## 20261124_1948 — Write-backs from continuum 2026-11-24 evening
 
 Rust (languages/rust/learned-crates.md, 2026-11-24): PostgreSQL FOR UPDATE deadlocks with FK inserts, FOR NO KEY UPDATE does not (BUG-570); sqlx 0.8 refuses

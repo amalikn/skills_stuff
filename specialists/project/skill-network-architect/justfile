@@ -45,6 +45,10 @@ mtu budget: _require-venv
 link-budget links: _require-venv
     {{py}} -B scripts/link_budget.py "{{links}}"
 
+# Home or small-site line from a saved traceroute and the public address: public IPv4, CGNAT or double NAT, e.g. just home-line examples/home-line.json
+home-line line: _require-venv
+    {{py}} -B scripts/home_line.py "{{line}}"
+
 # Series/parallel availability against a target (shared helper), e.g. just availability examples/availability.json
 availability model: _require-venv
     {{py}} -B scripts/availability.py "{{model}}"

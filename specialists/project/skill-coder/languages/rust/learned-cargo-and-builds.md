@@ -133,3 +133,9 @@ CARGO_INCREMENTAL=0 RUSTC_WRAPPER=sccache SCCACHE_DIR=<working-cache>/sccache CA
 > each unit's fingerprint on every build, so its access time says when it was last used, and a removed unit is just rebuilt. Lock while trimming: holding any of
 > `.cargo-lock`, `.cargo-build-lock`, `.cargo-artifact-lock` in `<profile>/` makes cargo print "Blocking waiting for file lock". Pattern: design-patterns.md P-83.
 
+
+> **Learned 2026-11-24** · a test that reads settings the justfile exports fails with `NotPresent` under bare `cargo test` · VERIFIED_PRIMARY (continuum-app:
+> `cargo test --test handoff forks` failed "DATABASE_URL is not set", then `Error: NotPresent` once that one was set; passed with every `export` of the justfile set) ·
+> Source: continuum-app justfile `export` lines, `just test` · Falsifier: a test harness that reads its settings from a file instead of the environment.
+> `just` puts its `export` variables only into recipe environments. To run one test by name, go through a recipe that passes arguments on (`just cargo-test -p <crate> --test <bin> <filter>`),
+> or load every export first: `for v in $(grep -oE '^export [A-Z_0-9]+' justfile | awk '{print $2}'); do export $v="$(just --evaluate $v)"; done`.

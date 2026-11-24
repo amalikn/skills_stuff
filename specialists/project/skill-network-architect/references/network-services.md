@@ -166,6 +166,25 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
 > a service reachable only over a VPN, and changes on every start of a host without a static IP. Use a subdomain of a domain the organisation owns, resolved on the
 > VPN's resolver; pick one kept for years with auto-renew, because changing the RP ID re-registers every passkey.
 
+> **Learned 2026-11-24 (b)** · free subdomain registrars as identity anchors (DigitalPlat FreeDomain) · VERIFIED_PRIMARY (publicsuffix.org list read
+> 2026-11-24: DigitalPlat section lists `dpdns.org`, `us.kg`, `qzz.io`; live API `GET https://domain-api.digitalplat.org/api/v1/domains/<name>` with a Bearer
+> key returned `expires_at` one year after `created_at`, `auto_renew` null) · VERIFIED_SECONDARY (third-party auto-renew repo: free renewal opens 120 days
+> before expiry, `POST /domains/{domain}/renew`) · Source: continuum DL-227, TASK-588 · Falsifier: a DigitalPlat name renewed for more than a year, or the
+> suffix leaving the Public Suffix List.
+> A name under a suffix on the Public Suffix List (`<name>.dpdns.org`) is its own registrable domain: valid as a WebAuthn RP ID and with its own Let's Encrypt
+> rate limits, unlike a name under a provider suffix that is not listed. Free registrations run one year and must be renewed (by API, in the window): a lapse
+> changes the RP ID and re-registers every passkey, so renewal is a scheduled job with an alert, not a calendar note. The API host answers scripts; the
+> website hosts (`dash.domain.digitalplat.org`, `dashboard.digitalplat.org`) serve a bot challenge even to API paths. The open-source code
+> (DigitalPlatDev/Domain-OSS `docs/API.md`) documents DNS records and an ACME DNS-01 challenge endpoint; lego and acme.sh had no DigitalPlat provider when
+> checked, so DNS-01 needs a hook script.
+
+> **Learned 2026-11-24 (c)** · is a home line reachable inbound · VERIFIED_PRIMARY (RFC 6598 100.64.0.0/10; a traceroute from a Mac on a home LAN) · Source:
+> continuum NAS options, DL-230; `scripts/home_line.py` · Falsifier: a CGNAT line whose first hop after the router is a public address.
+> Before planning a port forward (WireGuard hub at home), run `traceroute -n -m 5 -q 1 1.1.1.1` from the LAN and note the public address from an echo service:
+> hop 1 is the router; a 100.64.0.0/10 hop next means CGNAT, an RFC 1918 hop means a second NAT, a public hop means the router most likely holds the public
+> address. The router's own WAN address equal to the public one confirms it. `just home-line <line.json>` classifies the saved output. A "static" address is
+> the ISP's statement and cannot be seen from the line.
+
 ## Failure modes and tests
 
 | Failure                                    | Symptom                               | Blast radius                | Test that proves the design handles it             |

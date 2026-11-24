@@ -19,6 +19,7 @@ Storage is defined cluster-wide in `/etc/pve/storage.cfg` and addressed as `<sto
 - [The import content type](#the-import-content-type)
 - [Hyperconverged Ceph](#hyperconverged-ceph)
 - [Choosing](#choosing)
+- [ZFS root: installer, ARC and adding a boot mirror](#zfs-root-installer-arc-and-adding-a-boot-mirror)
 
 ## Types
 
@@ -100,3 +101,11 @@ Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pvecep
 > list (`pvesm set local --content images,snippets,backup,rootdir,iso,vztmpl,import`), guarded by a check of `storage.cfg` so a rerun changes nothing. After it, the API lists `import` among `local`'s
 > content and OpenTofu imports `local:import/<file>.qcow2` with no SSH block. The same lab showed `local-lvm` (thin) at 90.6 % used while the directory storage was at 43 %: thin-pool fill is the first
 > storage risk on a single-disk lab.
+
+## ZFS root: installer, ARC and adding a boot mirror
+
+> **Learned 2026-11-24 (a)** · Proxmox VE 9.2 (admin guide 9.2.15 of 2026-11-18) · VERIFIED_PRIMARY · Source: [Host System Administration, "Limit ZFS Memory Usage" and "Changing a failed bootable device"](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html), read 2026-11-24 · Falsifier: a 9.2 ZFS install whose `/etc/modprobe.d/zfs.conf` has no `zfs_arc_max`, or a mirror that boots without `proxmox-boot-tool init` on the new ESP.
+> - The installer writes the ARC limit to `/etc/modprobe.d/zfs.conf`: 10% of host memory, clamped to 16 GiB (since 8.1; before that ZFS's own 50% or 62.5% applied). On 32 GB that is about 3.2 GiB; the installer's narrow "ARC max size" field can show only the first digits (`318` for 3180 MiB). Check after boot: `cat /etc/modprobe.d/zfs.conf; cat /sys/module/zfs/parameters/zfs_arc_max`. The guide's sizing rule of thumb is 2 GiB base plus 1 GiB per TiB of pool.
+> - Choose **ZFS (RAID0)** on a single boot disk, not ext4, when a second disk may come later: a single-disk vdev becomes a mirror with `zpool attach`; ext4 or LVM needs a reinstall. Never `zpool add` (a stripe with no redundancy).
+> - Adding the second boot disk follows the guide's failed-bootable-device steps with `attach` in place of `replace`: `sgdisk <healthy> -R <new>`, `sgdisk -G <new>`, `zpool attach -f rpool <existing zfs part> <new zfs part>` (wait for the resilver), `proxmox-boot-tool format <new ESP>`, `proxmox-boot-tool init <new ESP> [grub]` (`grub` only when `proxmox-boot-tool status` reports GRUB mode). On a default ZFS install the ESP is partition 2 and ZFS partition 3; read `lsblk` and `zpool status -P` rather than assume. The new disk must be at least the old one's exact byte size (`blockdev --getsize64`).
+> - Seen on a home NAS install (TerraMaster F4-424 Pro, single WD SN740 NVMe): the installer's default was ext4; it was switched to ZFS (RAID0) for the later mirror. Screenshot pending: installer "Advanced bootdisk options", after first boot on a lab or redacted shot.

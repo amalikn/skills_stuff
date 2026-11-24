@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "traceroute": "traceroute to 1.1.1.1 (1.1.1.1), 5 hops max, 40 byte packets\n 1  192.168.86.1  7.384 ms\n 2  203.0.113.125  24.735 ms\n 3  *\n 4  198.51.100.69  24.080 ms\n",
+  "public_ipv4": "203.0.113.36",
+  "global_ipv6": false
+}

@@ -13,6 +13,7 @@ Kind: log
 
 ## Contents
 
+- [20261124_2220 — Home-line classifier; free-subdomain registrars as identity anchors (v2.3.17 -> v2.3.18)](#20261124_2220--home-line-classifier-free-subdomain-registrars-as-identity-anchors-v2317---v2318)
 - [20261124_1951 — Provider host names as identity anchors; per-boot WireGuard peer slots (v2.3.16 -> v2.3.17)](#20261124_1951--provider-host-names-as-identity-anchors-per-boot-wireguard-peer-slots-v2316---v2317)
 - [20261124_0010 — Root delivery to the phone; fingerprint quirk (v2.3.15 -> v2.3.16)](#20261124_0010--root-delivery-to-the-phone-fingerprint-quirk-v2315---v2316)
 - [20261123_2240 — Reaching a LAN service from a phone with passkeys (v2.3.14 -> v2.3.15)](#20261123_2240--reaching-a-lan-service-from-a-phone-with-passkeys-v2314---v2315)
@@ -38,6 +39,13 @@ Kind: log
 - [20261029_1750 — Adopted into skills_stuff conventions and deepened (v1.0.0 -> v1.1.0)](#20261029_1750--adopted-into-skills_stuff-conventions-and-deepened-v100---v110)
 
 ---
+
+## 20261124_2220 — Home-line classifier; free-subdomain registrars as identity anchors (v2.3.17 -> v2.3.18)
+
+- scripts/home_line.py (`just home-line`): a saved `traceroute -n` plus the public address -> public IPv4 (likely or confirmed), CGNAT or double NAT;
+  examples/home-line.json, tests/test_home_line.py (5 tests), catalogue row. Promoted from a continuum NAS probe (DL-230).
+- references/network-services.md, Learned 2026-11-24 (b): names under a Public Suffix List suffix (DigitalPlat `dpdns.org`) are their own registrable domains;
+  free one-year term, renewal by API; API host vs bot-walled site; no lego or acme.sh provider. (c): reading a home line's inbound reachability.
 
 ## 20261124_1951 — Provider host names as identity anchors; per-boot WireGuard peer slots (v2.3.16 -> v2.3.17)
 

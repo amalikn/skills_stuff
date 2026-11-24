@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261124_1946
+Last rotated: 20261124_2212
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261124_2211 — decision-add keeps free-text arguments intact](#20261124_2211--decision-add-keeps-free-text-arguments-intact)
 - [20261124_1634 — pad_decisions shows a row's points one per line](#20261124_1634--pad_decisions-shows-a-rows-points-one-per-line)
 - [20261124_1452 — pad_spec_words checks comment rewrites](#20261124_1452--pad_spec_words-checks-comment-rewrites)
 - [20261124_1451 — Write-back from continuum 2026-11-24: bulk standard pass](#20261124_1451--write-back-from-continuum-2026-11-24-bulk-standard-pass)
@@ -38,7 +39,11 @@ Last rotated: 20261124_1946
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
 - [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
 - [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
-- [20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first](#20261120_1355--hub-workspace-set-up-baseline-without-pad-owned-trackers-asks-first)
+
+## 20261124_2211 — decision-add keeps free-text arguments intact
+
+- `decision-add` passes its arguments through `"$@"` ([positional-arguments]); with `{{ARGS}}` an argument holding `(`, quotes or spaces broke the recipe (`syntax error near unexpected token`), seen 2026-11-24 in continuum writing DL-227. Tested: plan run with parentheses, quotes and an apostrophe.
+- Learned 2026-11-24 · justfile · VERIFIED_PRIMARY · Source: justfile decision-add · Falsifier: a {{ARGS}} recipe passing "a (b)" through intact. A recipe whose arguments are free text needs [positional-arguments] and "$@"; {{ARGS}} is re-split by the shell.
 
 ## 20261124_1634 — pad_decisions shows a row's points one per line
 
@@ -192,8 +197,3 @@ scripts/pad_decisions.py: decision-log rows wrapped by the Markdown hook were re
 'a'); table_rows() now joins continuation rows; an optional Status column sets the Pad status (accepted, deferred, rejected, superseded by DL-nnn, named in the body). Test added (3 pass). continuum:
 its next pad_decisions run updates 5 items to full text. README setup step 6: a decision log and Decisions collection in every Pad project (operator, 20 Nov 2026: 'this will be standard'); first done
 for enterprise-strategy (123 decisions, 7 superseded).
-
-## 20261120_1355 — Hub workspace set up: baseline without pad-owned-trackers, asks first
-
-README.md, Setting Pad up in a project, step 3: a project without bug, feature or tech-debt trackers applies the baseline with --only (pad-owned-trackers left out) and starts with the Asks collection;
-learned setting up the enterprise-strategy hub workspace (20 Nov 2026: six conventions, Asks with ASK-11 to ASK-15).

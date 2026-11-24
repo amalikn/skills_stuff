@@ -2198,3 +2198,24 @@ Realised in:  Python -> continuum-app scripts/checks/runlog.py (`just runlog REF
 Evidence:     CANDIDATE: attachment and comment verified on the item
 ```
 
+
+### P-87 Merge by unpacking beside the live copy, never into it
+
+> **Learned 2026-11-24** · design pattern, any language · CANDIDATE (one project, dev-stack proven) · Source: continuum-app
+> `apps/agent/src/merge_unpack.rs` (41d77c8) · Falsifier: a merge that needed the live copy changed to be usable
+
+```text
+Problem:      a diverged copy (a fork, a backup, the other side of a sync) must be merged into live work, and an automatic
+              merge or an overwrite can destroy either side.
+Solution:     restore the verified copy into a new sibling folder named by the item (<root>-fork-<id>), refusing when that
+              folder is occupied; the person merges with their own tool (Git, JJ, a diff tool). The request carries only
+              the name suffix, never a path; the receiver checks it is one plain name part.
+Why it works: the live copy cannot be harmed by construction; a repeat merge fails closed instead of mixing two copies;
+              the name says which item the folder came from.
+Reuse:        restore-to-inspect for backups, conflict copies in sync tools, any "accept theirs?" flow.
+Pitfalls:     the sibling must not be tracked or captured as live work; tell the person where the folder is; old merge folders
+              pile up unless the flow says who removes them.
+Realised in:  Rust -> continuum-app apps/agent/src/merge_unpack.rs (`beside`, `unpack_beside`); proven by
+              scripts/checks/loss_check.py step 7 (14/14 on the dev stack)
+Evidence:     CANDIDATE: dev-stack check passed 2026-11-24
+```

@@ -22,7 +22,8 @@ Written for: you, learning Rust. Parts 1 and 2 are [guide-basics.md](guide-basic
 - [18. Keeping a secret out of sight](#18-keeping-a-secret-out-of-sight)
 - [19. A module that became a folder](#19-a-module-that-became-a-folder)
 - [20. Reading a setting into an enum: FromStr](#20-reading-a-setting-into-an-enum-fromstr)
-- [21. Further reading](#21-further-reading)
+- [21. A name from outside becomes a path](#21-a-name-from-outside-becomes-a-path)
+- [22. Further reading](#22-further-reading)
 
 ## 15. An enum whose variants carry different data
 
@@ -141,7 +142,36 @@ let engine = std::env::var("RESTIC_ENGINE").ok().map_or(Ok(Engine::Rustic), |v| 
 `.ok()` turns "not set" into `None`; `map_or(default, f)` uses the default for `None` and calls `f` on a value. Python's equivalent is `Engine(os.environ.get(...))` on an `Enum`,
 which also raises on an unknown value.
 
-## 21. Further reading
+## 21. A name from outside becomes a path
+
+An order from the coordinator says "unpack the fork into a folder called `fork-<id>` beside the workspace". The name comes from outside, so before it touches the disk it is checked to be one
+plain folder-name part: no `/`, no `..`, no leading dot. `Path` builds the sibling; nothing is concatenated as a string.
+
+```rust
+// apps/agent/src/merge_unpack.rs (continuum-app 41d77c8)
+fn beside(root: &Path, name: &str) -> Result<PathBuf, Error> {
+  let plain = !name.is_empty()
+    && name.len() <= 100
+    && !name.starts_with('.')
+    && name.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '.'));
+  if !plain {
+    return Err(format!("unpack name {name:?} is not a plain folder name").into());
+  }
+  let (parent, base) = (
+    root.parent().ok_or("the root has no parent folder")?,
+    root.file_name().ok_or("the root has no name")?,
+  );
+  Ok(parent.join(format!("{}-{name}", base.to_string_lossy())))
+}
+```
+
+What to notice: an allow-list (`.all(...)`) is safer than looking for bad characters. `matches!(c, '-' | '_' | '.')` is a one-line `match` that returns a bool. `Path::parent()` and
+`file_name()` return `Option` (`/` has neither), and `.ok_or("...")?` turns the `None` into an error with a message. `{name:?}` prints the value quoted, so an empty or odd name is visible in
+the error. The test beside it feeds `../x`, `a/b`, `.hidden` and expects each to be refused: a check that is never shown refusing proves nothing.
+
+Read next: [`std::path::Path`](https://doc.rust-lang.org/std/path/struct.Path.html) and [`matches!`](https://doc.rust-lang.org/std/macro.matches.html).
+
+## 22. Further reading
 
 - [Defining an enum](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html) and [traits](https://doc.rust-lang.org/book/ch10-02-traits.html) in the book.
 - [Let chains in Rust 2024](https://doc.rust-lang.org/edition-guide/rust-2024/let-chains.html).

@@ -57,6 +57,10 @@ docs, edk2 sources, one installed-source excerpt). Lab facts read only, on one P
 - 20261107 Learned 2026-11-07 (k) in `references/upgrade-and-troubleshooting.md`: a 9.1.5 node's pending 9.2 stack and repository state.
 - 20261107 Learned 2026-11-07 (l) in `references/monitoring-and-metrics.md`: node report runtime and budget.
 
+## 20261124_2213 — Write-back: ZFS root, ARC default and boot mirror (9.2)
+
+- references/storage.md: Learned 2026-11-24 (a), ZFS root on Proxmox VE 9.2: installer ARC default (10% of RAM, 16 GiB cap, written to /etc/modprobe.d/zfs.conf), ZFS RAID0 over ext4 for a later mirror, and the boot-mirror steps (sgdisk -R/-G, zpool attach, proxmox-boot-tool format/init); from the admin guide 9.2.15 and a home NAS install.
+
 ## 20261119_1648 — Version of record PVE 9.2 (lab pve-manager 9.2.26); QEMU note resolved
 
 AGENTS.md version of record moves from 9.1.5 to 9.2 (lab node on pve-manager 9.2.26 after its 2026-11-07 upgrade); compatibility.yaml gains pve-9-2-26-lab-20261107. operations-cookbook.md keeps Verified against 9.1.5 and states it was not re-verified on 9.2. upgrade-and-troubleshooting.md notes that 9.2 shipped QEMU 11.0 and pve-qemu-kvm 11.1.x is a later update, so Learned (k) and the release table agree. VERIFIED_PRIMARY: https://pve.proxmox.com/wiki/Roadmap and the pve-no-subscription Packages.gz index, retrieved 2026-11-19.

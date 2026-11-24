@@ -1087,6 +1087,14 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-21756612",
+   "title": "domain-api.digitalplat.org",
+   "url": "https://domain-api.digitalplat.org/api/v1/domains/",
+   "evidence": "CITED",
+   "note": "cited in references/network-services.md",
+   "generated": true
+  },
+  {
    "id": "C-ac429a62",
    "title": "erlang",
    "url": "https://en.wikipedia.org/wiki/Erlang_(unit)",

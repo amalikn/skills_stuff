@@ -79,9 +79,11 @@ decisions *ARGS: _require-venv
 
 # Append one decision row to the current folder's decision log (next DL id, six columns, points split by <br>): plan by default, --apply writes.
 # Then `just decisions --apply` mirrors it. [writes one line with --apply]
+# Arguments pass through "$@" (positional-arguments): text with spaces, quotes or parentheses survives (2026-11-24: {{ARGS}} broke on "(").
 [no-cd]
+[positional-arguments]
 decision-add *ARGS: _require-venv
-    @{{py}} "{{justfile_directory()}}/scripts/decision_log_add.py" {{ARGS}}
+    @{{py}} "{{justfile_directory()}}/scripts/decision_log_add.py" "$@"
 
 # [project writes: whatever the pad command writes] One pad CLI call, retried with backoff while the shared local server rate-limits (stdin replayed):
 # just -f <skill-pad>/justfile pad item comment TASK-5 --stdin < note.md
