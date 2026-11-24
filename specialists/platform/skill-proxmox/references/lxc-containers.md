@@ -48,7 +48,7 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pct.md), [bpg 
 
 Use a VM when the workload needs its own kernel, kernel modules, a different OS, UEFI and boot-order behaviour, or strong isolation. A container shares the host kernel.
 
-> **Learned 2026-11-24 (d)** · Proxmox VE 9.2 (pct.conf 9.2.15), kernel 7.0, Intel Alder Lake-N iGPU · VERIFIED_PRIMARY for the option and the driver flags; UNVERIFIED on hardware ·
+> **Learned 2026-11-24 (d)** · Proxmox VE 9.2 (pct.conf 9.2.15), kernel 7.0, Intel Alder Lake-N iGPU · VERIFIED_PRIMARY (the option and the driver flags; UNVERIFIED on hardware) ·
 > Source: <https://pve.proxmox.com/pve-docs/pct.conf.5.html>; Linux `drivers/gpu/drm/xe/xe_pci.c` `adl_n_desc` at v6.18 and v7.0; home NAS project
 > `docs/research/hardware-gpu-research-20261124_2300.md` · Falsifier: an unprivileged container that cannot open `/dev/dri/renderD128` with the `gid=` set to its `render` group
 > Sharing an Intel iGPU's media engine with containers: keep the GPU on the host and pass only the render node, `dev0: /dev/dri/renderD128,gid=<render GID inside the CT>`
@@ -60,8 +60,8 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > dev0: /dev/dri/renderD128,gid=<render gid>
 > ```
 
-> **Learned 2026-11-25 (e)** · Proxmox VE 9.2, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY for the root@pam limits (bpg container docs: bind mounts and feature
-> flags other than nesting need root@pam) and the provider schema (`tofu validate`); the host-script half is not yet run on a node · Source: home NAS project
+> **Learned 2026-11-25 (e)** · Proxmox VE 9.2, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY (the root@pam limits, bpg container docs: bind mounts and feature
+> flags other than nesting need root@pam; the provider schema, `tofu validate`; the host-script half is not yet run on a node) · Source: home NAS project
 > `tofu/containers.tf`, `scripts/host/pve_ct_extras.sh` (2026-11-25) · Falsifier: a privilege-separated token adding a host bind mount through the API
 > Containers as code with a scoped token: create the container in OpenTofu, then add what needs root (host bind mounts `pct set <id> -mpN <host>,mp=<ct>`, a device such
 > as `/dev/net/tun` for Tailscale `pct set <id> -dev0 /dev/net/tun`) with an idempotent host script, and give OpenTofu

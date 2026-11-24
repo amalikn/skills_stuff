@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/opentofu-bpg-provider.md: Learned 2026-11-25, bpg 0.123.1 initialization dns list form, vendor_data_file_id beside user_account, pool_membership deprecated, offline `tofu test` with mock_provider (continuum-app).
+
 - 2026-11-25 references/backup-and-restore.md: proxmox_backup_job with prune_backups map (home NAS).
 
 - 2026-11-25 references/lxc-containers.md (e): containers as code with root-only bind mounts and devices by host script plus ignore_changes (home NAS).

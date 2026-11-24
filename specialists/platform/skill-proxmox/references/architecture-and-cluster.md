@@ -90,8 +90,8 @@ migration works only between nodes of the same architecture. `VERIFIED_PRIMARY` 
 > `localhost` is accepted as the node name in API paths. A 9.1.5 node on the no-subscription repository listed `proxmox-ve 9.2.0` and `pve-manager 9.2.26` as ordinary pending updates: a minor release
 > arrives through `apt full-upgrade`, not a separate upgrade procedure.
 
-> **Learned 2026-11-24 (e)** · Proxmox VE 9.2, single node, no cluster · VERIFIED_PRIMARY for the staff statements (Proxmox forum staff posts and the Service daemons wiki,
-> cited in the home NAS project `docs/research/service-minimisation-20261124_2250.md`); side effects of rpcbind/iSCSI removal UNVERIFIED · Falsifier: a single node where
+> **Learned 2026-11-24 (e)** · Proxmox VE 9.2, single node, no cluster · VERIFIED_PRIMARY (the staff statements; side effects of rpcbind/iSCSI removal UNVERIFIED) ·
+> Source: Proxmox forum staff posts and the Service daemons wiki, cited in the home NAS project `docs/research/service-minimisation-20261124_2250.md` · Falsifier: a single node where
 > `systemctl disable --now pve-ha-lrm pve-ha-crm` is re-enabled by a package upgrade, or where corosync runs without `/etc/corosync/corosync.conf`
 > Minimising a standalone node: disable `pve-ha-lrm` then `pve-ha-crm` (disable suffices); mask `spiceproxy` if SPICE is unused (`pve-guests` starts it otherwise); disable
 > `rpcbind` and `iscsid` only while no NFS or iSCSI storage exists. Corosync does not start without a cluster config, Ceph runs nothing until set up. Keep `watchdog-mux`

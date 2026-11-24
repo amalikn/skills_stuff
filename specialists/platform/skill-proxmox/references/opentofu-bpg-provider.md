@@ -185,3 +185,37 @@ and IDs 900 to 909.
 >   }
 > }
 > ```
+
+> **Learned 2026-11-25** · OpenTofu 1.13.10, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY (`tofu validate` and the offline `tofu test` passed; provider-doc facts as an agent
+> reported them, schema checked against 0.123.1; the vendor-data merge on a node is UNVERIFIED) · Source: continuum-app `deploy/nas/tofu/vms.tofu` and
+> `deploy/nas/tofu/tests/offline_plan.tftest.hcl` (5f723db, 3baf4da) · Falsifier: a 0.123.x `validate` rejecting `dns { servers = [...] }`, or a node whose guest gets
+> only one of vendor data and the generated user data
+> - `initialization { dns { servers = [...] } }` takes a list (the list form validates); `vendor_data_file_id` sits beside `user_account` in the same block. Proxmox is
+>   expected to merge the vendor data with the user data it generates from `user_account` (not yet seen on a node).
+> - `proxmox_virtual_environment_pool_membership` is deprecated in 0.123.1: put `pool_id` on the VM and check the pool exists with the pool data source in a
+>   `precondition`.
+> - `tofu test` with `mock_provider "proxmox"` runs the whole configuration offline (no node, no token): variable validations, rule counts and per-VM attributes are
+>   asserted on a plan; a second `run` with bad `variables` and `expect_failures` proves a validation can fail.
+>
+> ```hcl
+> initialization {                       # deploy/nas/tofu/vms.tofu (3baf4da)
+>   datastore_id        = var.os_datastore_id
+>   vendor_data_file_id = "${var.snippets_datastore_id}:snippets/${each.value.vendor_data}"
+>   ip_config { ipv4 { address = each.value.ipv4_address
+>                      gateway = each.value.ipv4_gateway } }
+>   dns { servers = each.value.dns_servers }
+>   user_account { username = "ubuntu"
+>                  keys     = [trimspace(var.ssh_public_key)] }
+> }
+> # tests/offline_plan.tftest.hcl: no node contact
+> mock_provider "proxmox" {
+>   mock_data "proxmox_virtual_environment_nodes" { defaults = { names = ["node1"] } }
+> }
+> run "plan_three_vms" {
+>   command = plan
+>   assert {
+>     condition     = length(proxmox_virtual_environment_firewall_rules.vm["netbird"].rule) == 7
+>     error_message = "Unexpected firewall rule counts."
+>   }
+> }
+> ```
