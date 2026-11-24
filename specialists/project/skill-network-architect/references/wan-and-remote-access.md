@@ -129,6 +129,27 @@ keepalive interval < carrier mapping timeout (measure it)
 > wrappers are not open source (tailscale/tailscale README). Firezone (Apache-2.0) states production self-hosting is not officially supported. A "nothing public but WireGuard" rule and a
 > self-hosted NetBird cannot both hold on one host: put NetBird's server on its own small host or accept its ports.
 
+> **Learned 2026-11-25** · self-hosted NetBird (v0.83.2) for a home lab · VERIFIED_PRIMARY (docs.netbird.io, read 2026-11-24: selfhosted/maintenance/private-management-plane,
+> identity-providers/local and enable-local-mfa, maintenance/crowdsec, maintenance/backup, manage/settings/enforce-periodic-user-authentication, manage/peers/approve-peers);
+> the enrolment deadlock is reasoning from those pages · Source: continuum `docs/architecture-review/options/task-605-netbird-nas-20261124_2308.md` (TASK-605,
+> DL-233) · Falsifier: a NetBird release that filters admin endpoints by source itself, documents passkeys for local users, or offers peer approval self-hosted.
+> - Admin endpoints (dashboard, `/api`, `/ws-proxy/`, `/management.ProxyService/`) share TCP 443 with the client endpoints and `netbird-server` cannot filter by source:
+>   close them only at the reverse proxy (Traefik path plus source-address allowlist). `/oauth2` can be internal only if every peer joins with a setup key.
+> - An IdP that sits behind the overlay (an internal Keycloak) as NetBird's login deadlocks enrolment: a device not yet connected, or whose peer session expired,
+>   cannot reach the IdP to connect, and after a power cut the server cannot load the connector.
+> - The built-in login (embedded Dex, always on) offers password plus TOTP only; passkeys are not documented for local users (explicit negative).
+> - NetBird's CrowdSec integration works through the NetBird Proxy, and the Proxy needs UDP 51820 public: one more open port.
+> - Peer session expiry (24 h default) applies only to SSO-enrolled peers; setup-key peers never expire, so a lost device keeps its tunnel until its peer is deleted.
+> - Manual peer approval is Enterprise or Cloud Business only, not in the free self-hosted edition.
+
+> **Learned 2026-11-25 (b)** · remote reach to a home lab with a static public IPv4 · VERIFIED_PRIMARY (WireGuard has no TCP mode, wireguard.com/known-limitations;
+> unanswered handshakes without the server key, wireguard.com/protocol); that UDP 443 passes networks allowing QUIC is UNVERIFIED · Source: continuum
+> `docs/architecture-review/options/ask-593-remote-reach-20261124_2252.md` (ASK-593, candidate A1) · Falsifier: a static-IPv4 home line where an overlay with a
+> coordination server exposes less than one silent UDP port.
+> With a static public IPv4 and no CGNAT, plain WireGuard ending in one VM, the router forwarding one UDP port (51820) plus a second forward from UDP 443 to the
+> same listener for networks that block other UDP, is the low-exposure answer: no third party, no new host, and a port that stays silent to anyone without the
+> server key. The gap left is networks that block all UDP. An overlay (NetBird) waits for a concrete trigger: guests or more devices.
+
 ## Patterns and anti-patterns
 
 | Pattern                                 | Use when                             | Anti-pattern                   | Why it fails                                  |

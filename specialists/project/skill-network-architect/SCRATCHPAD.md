@@ -21,6 +21,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 - Evals: skill 22/22 against a baseline, and 22/22 against a fair baseline given the specialist registry (12.71 vs 9.75).
 - Committed in skills_stuff up to b6f399f (concurrent session's commit carried this session's files); push pending (operator).
 - 2026-11-24: v2.3.17, Learned from continuum (EC2 public DNS under the Public Suffix List; per-boot WireGuard peer slot); check_package exempts table rows.
+- 2026-11-25: v2.3.19, Learned from continuum (DigitalPlat hosted API, Cloudflare Free full setup, ntfy iOS upstream; self-hosted NetBird limits; WireGuard plus UDP 443 with a static IPv4).
 
 ## Next actions
 

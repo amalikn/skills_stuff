@@ -185,6 +185,37 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
 > address. The router's own WAN address equal to the public one confirms it. `just home-line <line.json>` classifies the saved output. A "static" address is
 > the ISP's statement and cannot be seen from the line.
 
+> **Learned 2026-11-25 (d)** · a free registrar's hosted API (DigitalPlat), refines (b) · VERIFIED_PRIMARY (read 2026-11-24/25 with a key, GET only; renewal call
+> VERIFIED_SECONDARY from a third-party auto-renew repo, not yet run) · Source: continuum TASK-588, continuum-app `scripts/deploy/domain_renew.py` (5068f33) · Falsifier: a
+> hosted-API path under a domain that answers something other than 403 for a route that does not exist, or an ACME-challenge route on the hosted API.
+> Records are at `GET /api/v1/domains/<name>/dns/records`; the zone is at `/dns`, with free-plan limits in the answer (60 changes a minute, 1000 a day, 200 records a
+> zone). Every other path under a domain answers 403 `forbidden` as a catch-all, so a 403 proves nothing about whether a route exists; no ACME-challenge route was
+> found. The error shape `{"error":{"code","message"},"success":false}` differs from the open-source Domain-OSS code, so the OSS docs (cited in (b)) do not
+> describe the hosted service: probe the hosted API before building on an OSS endpoint. `expires_at` comes without a UTC offset: read it as UTC. Renewal is
+> `POST /domains/<name>/renew` with `{"renewal_type":"free","years":1}` and an `Idempotency-Key` header.
+>
+> ```python
+> # continuum-app scripts/deploy/domain_renew.py (5068f33)
+> when = dt.datetime.fromisoformat(str(data["expires_at"]).replace("Z", "+00:00"))
+> # The live API answers without an offset (2026-11-25); read that as UTC.
+> headers |= {"Content-Type": "application/json", "Idempotency-Key": str(uuid.uuid4())}
+> call(base, key, "POST", f"/domains/{urllib.parse.quote(domain)}/renew", {"renewal_type": "free", "years": 1})
+> ```
+
+> **Learned 2026-11-25 (e)** · DNS on Cloudflare Free for a name from a free registrar · VERIFIED_PRIMARY (developers.cloudflare.com DNS zone setups, full setup, read
+> 2026-11-25); acceptance of a private-section suffix UNVERIFIED until tried · Source: continuum DL-237, DL-241, ASK-612 · Falsifier: Cloudflare accepting or
+> refusing a zone one level below a PSL private-section suffix.
+> Cloudflare's full setup needs the zone apex to be one level below a Public Suffix List suffix. Whether a suffix in the PSL's private section (where free
+> registrars' suffixes sit) counts is not documented: try onboarding before planning on it. If accepted, the registrar keeps the domain and only the nameservers
+> move; an API token limited to Zone DNS Edit on that one zone serves DNS-01 through the stock lego, acme.sh or Traefik Cloudflare provider and cannot transfer or
+> release the domain, so it is a smaller secret than the registrar's API key.
+
+> **Learned 2026-11-25 (f)** · push alerts to an iPhone from self-hosted ntfy · VERIFIED_PRIMARY (docs.ntfy.sh/config, "iOS instant notifications", read 2026-11-25) ·
+> Source: continuum DL-243 · Falsifier: an ntfy release whose iOS app gets instant delivery from a self-hosted server with no upstream.
+> iOS instant delivery needs the public ntfy.sh as upstream even for a self-hosted server (Apple push goes through ntfy.sh), so self-hosting does not remove the
+> third party for an iPhone. For a few alerts, the public ntfy.sh with a long random topic name, kept in the password manager and out of Git and cloud-init, is
+> the simple option; send nothing secret in the message (host and days left).
+
 ## Failure modes and tests
 
 | Failure                                    | Symptom                               | Blast radius                | Test that proves the design handles it             |

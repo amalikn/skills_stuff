@@ -13,6 +13,7 @@ Kind: log
 
 ## Contents
 
+- [20261125_0208 — Free registrar hosted API, Cloudflare Free and ntfy for iOS; self-hosted NetBird limits; WireGuard with a static IPv4 (v2.3.18 -> v2.3.19)](#20261125_0208--free-registrar-hosted-api-cloudflare-free-and-ntfy-for-ios-self-hosted-netbird-limits-wireguard-with-a-static-ipv4-v2318---v2319)
 - [20261124_2220 — Home-line classifier; free-subdomain registrars as identity anchors (v2.3.17 -> v2.3.18)](#20261124_2220--home-line-classifier-free-subdomain-registrars-as-identity-anchors-v2317---v2318)
 - [20261124_1951 — Provider host names as identity anchors; per-boot WireGuard peer slots (v2.3.16 -> v2.3.17)](#20261124_1951--provider-host-names-as-identity-anchors-per-boot-wireguard-peer-slots-v2316---v2317)
 - [20261124_0010 — Root delivery to the phone; fingerprint quirk (v2.3.15 -> v2.3.16)](#20261124_0010--root-delivery-to-the-phone-fingerprint-quirk-v2315---v2316)
@@ -39,6 +40,15 @@ Kind: log
 - [20261029_1750 — Adopted into skills_stuff conventions and deepened (v1.0.0 -> v1.1.0)](#20261029_1750--adopted-into-skills_stuff-conventions-and-deepened-v100---v110)
 
 ---
+
+## 20261125_0208 — Free registrar hosted API, Cloudflare Free and ntfy for iOS; self-hosted NetBird limits; WireGuard with a static IPv4 (v2.3.18 -> v2.3.19)
+
+- references/network-services.md, Learned 2026-11-25 (d): DigitalPlat hosted API read with a key: record and zone paths, free-plan limits, 403 catch-all, error
+  shape differs from Domain-OSS, `expires_at` without offset, renewal call (VERIFIED_SECONDARY). (e): Cloudflare Free full setup needs the apex one level below a PSL
+  suffix (private-section suffix UNVERIFIED); a Zone DNS Edit token for one zone. (f): ntfy iOS instant delivery needs ntfy.sh upstream (continuum DL-237, DL-243).
+- references/wan-and-remote-access.md, Learned 2026-11-25: self-hosted NetBird limits (admin endpoints closed only at the proxy, IdP-behind-overlay enrolment
+  deadlock, Dex password+TOTP only, CrowdSec needs the Proxy and UDP 51820, setup-key peers never expire, no free peer approval); (b): plain WireGuard plus a UDP 443
+  second forward with a static IPv4 (continuum TASK-605, ASK-593).
 
 ## 20261124_2220 — Home-line classifier; free-subdomain registrars as identity anchors (v2.3.17 -> v2.3.18)
 
