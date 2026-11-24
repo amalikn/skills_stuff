@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261124_1452.md](changelog/changelog-20261124_1452.md) 1 entry, 2026-11-20 to 2026-11-20: Pad CLI 0.21.1 installed; no behaviour change seen
 - [changelog-20261124_1451.md](changelog/changelog-20261124_1451.md) 1 entry, 2026-11-20 to 2026-11-20: Tracker export: an item made in Pad renders its title
 - [changelog-20261123_1422.md](changelog/changelog-20261123_1422.md) 1 entry, 2026-11-19 to 2026-11-19: Markdown and Pad sync plan; peer sessions consulted
 - [changelog-20261122_2046.md](changelog/changelog-20261122_2046.md) 1 entry, 2026-11-19 to 2026-11-19: ansible-wifi workspace: adapted conventions file, one workspace for three folders
