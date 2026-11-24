@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261124_2212
+Last rotated: 20261124_2252
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261124_2252 — Learned: workspace setup traps (icons, boolean flags, conventions arguments)](#20261124_2252--learned-workspace-setup-traps-icons-boolean-flags-conventions-arguments)
 - [20261124_2211 — decision-add keeps free-text arguments intact](#20261124_2211--decision-add-keeps-free-text-arguments-intact)
 - [20261124_1634 — pad_decisions shows a row's points one per line](#20261124_1634--pad_decisions-shows-a-rows-points-one-per-line)
 - [20261124_1452 — pad_spec_words checks comment rewrites](#20261124_1452--pad_spec_words-checks-comment-rewrites)
@@ -38,7 +39,10 @@ Last rotated: 20261124_2212
 - [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
 - [20261120_1420 — Work visible in Pad; Pad consulted at session start; smc-resiliency decisions](#20261120_1420--work-visible-in-pad-pad-consulted-at-session-start-smc-resiliency-decisions)
 - [20261120_1417 — Rule: work in Pad shows as active](#20261120_1417--rule-work-in-pad-shows-as-active)
-- [20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step](#20261120_1408--pad_decisions-joins-wrapped-rows-and-reads-status-decisions-are-a-standard-setup-step)
+
+## 20261124_2252 — Learned: workspace setup traps (icons, boolean flags, conventions arguments)
+
+- references/cli-reference.md: Learned 2026-11-24 (emoji icons, boolean flags with =, conventions needs --project, item comment text is positional or --stdin), from the home NAS workspace setup.
 
 ## 20261124_2211 — decision-add keeps free-text arguments intact
 
@@ -190,10 +194,3 @@ check fails on a KEEP decision with no log row (negative test: rc 1 with a row r
 - 20261120_1425: housekeeping exception (operator, 20 Nov 2026): closeout, slurp, skill write-backs, coherence sweeps and staleness audits get no Pad item; "a write-back" dropped from the work clause.
 - SKILL.md Rules: "Never add to Pad" lists the housekeeping kinds (closeout and slurps, write-backs, coherence sweeps, staleness audits, record upkeep, sync reports, memory saves, their commits)
   (operator, 20 Nov 2026).
-
-## 20261120_1408 — pad_decisions joins wrapped rows and reads status; decisions are a standard setup step
-
-scripts/pad_decisions.py: decision-log rows wrapped by the Markdown hook were read as their first line only, so long decisions and reasons reached Pad cut short (continuum DL-001's reason ended at
-'a'); table_rows() now joins continuation rows; an optional Status column sets the Pad status (accepted, deferred, rejected, superseded by DL-nnn, named in the body). Test added (3 pass). continuum:
-its next pad_decisions run updates 5 items to full text. README setup step 6: a decision log and Decisions collection in every Pad project (operator, 20 Nov 2026: 'this will be standard'); first done
-for enterprise-strategy (123 decisions, 7 superseded).

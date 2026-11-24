@@ -55,3 +55,8 @@ What the checks report and how to act on each finding. Repairing: [fixing-diagra
 
 - `scripts/ascii/checks.py` (snapping and checks, including `edge_issues()`).
 - ilia-pluzhnikov/box-diagram `skills/box-diagram/validate.py` (MIT, Copyright (c) 2026 Ilya P), verbatim in `documents/ascii-sources-20261117/`.
+
+> **Learned 2026-11-24** · skill-ascii-diagrams justfile · VERIFIED_PRIMARY · Source: home NAS project, `just -f <pack>/justfile ascii-fix ARCHITECTURE.md` run from the project
+> folder (2026-11-24) · Falsifier: a relative path accepted by the recipe from another folder
+> The recipes run in the pack's folder, so a relative path from the calling project fails with `[Errno 2] No such file or directory`. Pass an absolute path
+> (`just -f <pack>/justfile ascii-fix "$PWD/ARCHITECTURE.md"`); a clean file prints nothing. No visual surface.

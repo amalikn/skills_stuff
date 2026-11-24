@@ -33,3 +33,15 @@ Part of [shell.md](../shell.md).
 > `declare -f` function draws SC2329; each needs an inline disable, which is not allowed. A separate file is also linted and tested on its
 > own. When a script checks many hosts before acting, run the checks at once and print a line per host as each lands: one at a time with no
 > output (30 s timeout each), the operator read it as stalled and stopped it before anything ran.
+
+> **Learned 2026-11-24** · bash, shellcheck 0.11.0 · VERIFIED_PRIMARY · Source: home NAS project `scripts/nas_api.sh`, `scripts/nas_lib.sh` (shellcheck -x run 2026-11-24) ·
+> Falsifier: SC1091 still reported with the directive below
+> A script that sources a sibling through `$(dirname "${BASH_SOURCE[0]}")` gets SC1091 ("not following") under `shellcheck -x` when run from another folder, because
+> a plain `# shellcheck source=nas_lib.sh` resolves against the working directory. Prefix the directive with `SCRIPTDIR`, which shellcheck resolves against the script's
+> own folder; the same works for a config file one level up. No inline `disable` needed.
+> ```bash
+> # shellcheck source=SCRIPTDIR/nas_lib.sh
+> source "$(dirname "${BASH_SOURCE[0]}")/nas_lib.sh"
+> # shellcheck source=SCRIPTDIR/../config/nas.env
+> source "$NAS_ROOT/config/nas.env"
+> ```

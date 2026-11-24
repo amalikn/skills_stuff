@@ -134,6 +134,25 @@ The root step also adds `import` to `local` and downloads the pinned cloud image
 > was enough for the bpg provider to create a q35/OVMF VM with an EFI disk, an imported qcow2 system disk, a cloud-init drive and a NIC on `vmbr0`, resize the disk and start it: the node's task log
 > shows `qmcreate`, `resize` and `qmstart` by that token.
 
+> **Learned 2026-11-24 (a)** · Proxmox VE 9.2 (pve-manager HEAD, pve-access-control HEAD), bpg/proxmox 0.123.1 · VERIFIED_PRIMARY · Source: pve-access-control
+> `src/PVE/RPCEnvironment.pm` `check_api2_permissions`, pve-manager `PVE/API2/ACMEAccount.pm` (no permissions block on register, update, get), provider docs
+> "Operations restricted to root@pam"; extracts kept in the home NAS project `docs/research/sources-20261124/` · Falsifier: a `root@pam!name` token (privsep 0)
+> registering an ACME account on 9.2
+> A token owned by root is not `root@pam` for root-only endpoints: the request's user is the token ID, and the shortcut matches the exact string only. ACME
+> **accounts** therefore need a root password login or ticket (or a root shell: `pvenode acme account register`); ACME **plugins** need `Sys.Modify` on `/`, certificate
+> order and renew `Sys.Modify` on `/nodes/{node}/certificates`, APT repository changes `Sys.Modify` on `/nodes/{node}`, all of which a scoped token can hold. With TOTP on
+> root, a password login returns a TFA-pending ticket (`NeedTFA=1`), so a provider using username and password cannot finish it. The provider's
+> `ssh { root_ticket = true }` mints a root ticket over SSH for `/nodes/{node}/` calls only; `/cluster` (where ACME accounts live) and `/access` keep the configured
+> credentials. Screenshot pending: Datacenter > ACME, after the home NAS certificate is issued.
+> ```perl
+> # pve-access-control src/PVE/RPCEnvironment.pm (HEAD, 2026-11-24)
+> sub check_api2_permissions {
+>     my ($self, $perm, $username, $param) = @_;
+>     return 1 if !$username && $perm->{user} && $perm->{user} eq 'world';
+>     raise_perm_exc("user != null") if !$username;
+>     return 1 if $username eq 'root@pam';   # a root token's username is 'root@pam!name': no shortcut
+> ```
+
 <!-- next write-back entry -->
 
 > **Learned 2026-11-07 (f)** · Proxmox VE 9.1.5 (libpve-storage-perl 9.1.0) · VERIFIED_PRIMARY · Source: installed `PVE/API2/Storage/Status.pm` download_url permissions (captured in

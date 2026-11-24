@@ -47,3 +47,15 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pct.md), [bpg 
 ## When a VM instead
 
 Use a VM when the workload needs its own kernel, kernel modules, a different OS, UEFI and boot-order behaviour, or strong isolation. A container shares the host kernel.
+
+> **Learned 2026-11-24 (d)** · Proxmox VE 9.2 (pct.conf 9.2.15), kernel 7.0, Intel Alder Lake-N iGPU · VERIFIED_PRIMARY for the option and the driver flags; UNVERIFIED on hardware ·
+> Source: <https://pve.proxmox.com/pve-docs/pct.conf.5.html>; Linux `drivers/gpu/drm/xe/xe_pci.c` `adl_n_desc` at v6.18 and v7.0; home NAS project
+> `docs/research/hardware-gpu-research-20261124_2300.md` · Falsifier: an unprivileged container that cannot open `/dev/dri/renderD128` with the `gid=` set to its `render` group
+> Sharing an Intel iGPU's media engine with containers: keep the GPU on the host and pass only the render node, `dev0: /dev/dri/renderD128,gid=<render GID inside the CT>`
+> (`dev[n]: [[path=]<Path>][,deny-write][,gid][,mode][,uid]`, "Device to pass through to the container"); several containers can share it, unlike full PCI passthrough to one VM.
+> SR-IOV on Alder Lake-N is not production-ready on 9.2: upstream `xe` marks it `has_sriov = true` but `require_force_probe` (xe is not the default driver for it), and the
+> `i915-sriov-dkms` backport calls itself highly experimental. Screenshot pending: CT > Resources > Add > Device Passthrough, after the home NAS Immich container exists.
+> ```text
+> # /etc/pve/lxc/<vmid>.conf (proposed, home NAS Immich container)
+> dev0: /dev/dri/renderD128,gid=<render gid>
+> ```

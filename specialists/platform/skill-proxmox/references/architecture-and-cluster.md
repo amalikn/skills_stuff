@@ -89,3 +89,15 @@ migration works only between nodes of the same architecture. `VERIFIED_PRIMARY` 
 > Falsifier: a single-node 9.x install whose `/cluster/status` carries a `cluster` row On a standalone node `GET /cluster/status` returns only a `node` row (no `quorate` field, `online: 1`).
 > `localhost` is accepted as the node name in API paths. A 9.1.5 node on the no-subscription repository listed `proxmox-ve 9.2.0` and `pve-manager 9.2.26` as ordinary pending updates: a minor release
 > arrives through `apt full-upgrade`, not a separate upgrade procedure.
+
+> **Learned 2026-11-24 (e)** · Proxmox VE 9.2, single node, no cluster · VERIFIED_PRIMARY for the staff statements (Proxmox forum staff posts and the Service daemons wiki,
+> cited in the home NAS project `docs/research/service-minimisation-20261124_2250.md`); side effects of rpcbind/iSCSI removal UNVERIFIED · Falsifier: a single node where
+> `systemctl disable --now pve-ha-lrm pve-ha-crm` is re-enabled by a package upgrade, or where corosync runs without `/etc/corosync/corosync.conf`
+> Minimising a standalone node: disable `pve-ha-lrm` then `pve-ha-crm` (disable suffices); mask `spiceproxy` if SPICE is unused (`pve-guests` starts it otherwise); disable
+> `rpcbind` and `iscsid` only while no NFS or iSCSI storage exists. Corosync does not start without a cluster config, Ceph runs nothing until set up. Keep `watchdog-mux`
+> (killing it can reset the node), `pvescheduler`, `postfix` (smartd and ZED mail). Staff call service changes the wrong tool for NVMe write reduction: journald caps,
+> no rsyslog duplicate and rrdcached `WRITE_TIMEOUT` are where the writes are. No visual surface.
+> ```bash
+> systemctl disable --now pve-ha-lrm && systemctl disable --now pve-ha-crm
+> systemctl mask --now spiceproxy          # undo: systemctl unmask spiceproxy && systemctl start spiceproxy
+> ```

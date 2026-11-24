@@ -13,6 +13,7 @@ Last reviewed: 2026-11-08
 # Changelog
 
 ## Unreleased
+- 2026-11-24 write-back from the home NAS project: references/access-control.md (a) root token is not root@pam, ACME rights; references/opentofu-bpg-provider.md (b) state encryption, proxmox_version, no CA option; references/storage.md (c) mirror-pair growth vs RAIDZ expansion; references/lxc-containers.md (d) iGPU render node into LXC with dev0 gid, SR-IOV on Alder Lake-N not ready. references/architecture-and-cluster.md (e) single-node service minimisation.
 
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 - 2026-11-09 read-only lab probes for the doc-only sections (operator: "Read-only probes now") blocked: the lab node was unreachable from this network (port 22 timed out, no lab route); probe set recorded in SCRATCHPAD open items; no Learned entry until they run.

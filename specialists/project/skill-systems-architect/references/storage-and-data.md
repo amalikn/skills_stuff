@@ -284,3 +284,11 @@ Measurement and security
 > address). Readers should recognise compressed data by its frame magic so older objects still read, and cap decompression size. Retention must keep every object a
 > manifest still names. Each restic invocation also costs a repository open (about 0.7 s on a dev S3): remember facts that stay true (repository exists, snapshot ids).
 
+
+> **Learned 2026-11-24** · TerraMaster F4-424 Pro (Intel i3-N305), Proxmox VE 9.2 · VERIFIED_PRIMARY for the hardware limits (TerraMaster spec page, Intel ARK), design
+> otherwise · Source: home NAS project `docs/research/hardware-gpu-research-20261124_2300.md`, `docs/research/doc-review-20261124_2300.md`, doc 07 · Falsifier: a spec
+> sheet showing PCIe 3.0 x2 or x4 M.2 on this model
+> Small N305 NAS boxes size the design: both M.2 slots are PCIe 3.0 x1 (about 1 GB/s), so a second NVMe is worth more as the boot-pool mirror than as a fast pool or special
+> vdev; no Thunderbolt/USB4, no PCIe slot or OCuLink, so an external GPU is not practical and the iGPU's media engine (QuickSync) carries transcoding; one SO-DIMM slot with a
+> 32 GB vendor maximum caps guest plus ARC planning. Put app databases, thumbnails and ML caches on NVMe and bulk originals on HDD mirror pairs that grow a pair at a time.
+> Off-site backup must be named before a cloud photo service is cancelled. No visual surface.

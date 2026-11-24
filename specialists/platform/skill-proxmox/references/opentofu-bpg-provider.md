@@ -155,3 +155,33 @@ and IDs 900 to 909.
 > adding the watchdog block in place without a VM reboot
 > A `watchdog` block (`enabled = true; model = "i6300esb"; action = "reset"`) added in place to a running VM made the provider reboot it; pin
 > `boot_order = ["scsi0", "net0"]` too, since OVMF rewrites BootOrder from Proxmox's `boot: order=` on every boot.
+
+> **Learned 2026-11-24 (b)** · OpenTofu 1.13.10, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY · Source: home NAS project `tofu/versions.tf`, `tofu validate` run 2026-11-24;
+> OpenTofu v1.13.9 docs (state encryption, pbkdf2 key provider); provider docs argument reference · Falsifier: a `validate` that rejects `var.*` in a pbkdf2 key provider,
+> or a provider release with a CA-file argument
+> - State and plan encryption fits the local-backend pattern: the passphrase is a sensitive variable the wrapper sets from the password manager
+>   (`TF_VAR_state_passphrase`), with `enforced = true` so a missing variable fails instead of writing plaintext. Keep the state file in the project's persistent data
+>   folder (not the rebuildable working cache: losing state loses the mapping to real objects).
+> - `~> 0.120` resolved 0.123.1 on 2026-11-24. `proxmox_virtual_environment_version` is deprecated: use data source `proxmox_version`.
+> - The provider has no CA-file option, only `insecure` / `PROXMOX_VE_INSECURE`: with the node's self-signed certificate either skip verification on a trusted LAN
+>   or give the node a publicly trusted certificate (ACME). Host objects (APT repositories, ACME plugin and certificate, network, storage, firewall, DNS) have resources;
+>   notification targets and matchers have none (negative finding in `docs/resources`).
+> ```hcl
+> # home NAS project tofu/versions.tf (2026-11-24)
+> encryption {
+>   key_provider "pbkdf2" "state" {
+>     passphrase = var.state_passphrase
+>   }
+>   method "aes_gcm" "state" {
+>     keys = key_provider.pbkdf2.state
+>   }
+>   state {
+>     method   = method.aes_gcm.state
+>     enforced = true
+>   }
+>   plan {
+>     method   = method.aes_gcm.state
+>     enforced = true
+>   }
+> }
+> ```

@@ -109,3 +109,11 @@ Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pvecep
 > - Choose **ZFS (RAID0)** on a single boot disk, not ext4, when a second disk may come later: a single-disk vdev becomes a mirror with `zpool attach`; ext4 or LVM needs a reinstall. Never `zpool add` (a stripe with no redundancy).
 > - Adding the second boot disk follows the guide's failed-bootable-device steps with `attach` in place of `replace`: `sgdisk <healthy> -R <new>`, `sgdisk -G <new>`, `zpool attach -f rpool <existing zfs part> <new zfs part>` (wait for the resilver), `proxmox-boot-tool format <new ESP>`, `proxmox-boot-tool init <new ESP> [grub]` (`grub` only when `proxmox-boot-tool status` reports GRUB mode). On a default ZFS install the ESP is partition 2 and ZFS partition 3; read `lsblk` and `zpool status -P` rather than assume. The new disk must be at least the old one's exact byte size (`blockdev --getsize64`).
 > - Seen on a home NAS install (TerraMaster F4-424 Pro, single WD SN740 NVMe): the installer's default was ext4; it was switched to ZFS (RAID0) for the later mirror. Screenshot pending: installer "Advanced bootdisk options", after first boot on a lab or redacted shot.
+
+> **Learned 2026-11-24 (c)** · OpenZFS 2.3+ (PVE 9.2 ships ZFS 2.4) · VERIFIED_PRIMARY · Source: OpenZFS man pages zpool-attach.8, zpool-remove.8, zfs-rewrite.8 (master,
+> read 2026-11-24); home NAS project `docs/references/07-community-baseline-and-pool-layout.md` · Falsifier: removing a top-level mirror from a pool that also holds a raidz vdev
+> Growing a two-disk pool when the future disks' size is unknown: a **second mirror vdev** takes any size pair at full capacity and stays removable
+> (`zpool remove` of a top-level mirror works only while the pool has no raidz or draid top-level vdev, all top-level vdevs share an ashift and encryption keys are loaded).
+> **RAIDZ expansion** (`zpool attach pool raidzN-0 dev`, OpenZFS 2.3) counts a new disk only up to the smallest member, keeps old blocks at the old data-to-parity ratio
+> until rewritten (`zfs rewrite`; whether a given PVE build ships it: check `man zfs-rewrite`), never changes the parity level, and makes the layout permanent.
+> Capacity with 12 TB disks: mirror pairs 10.9 then 21.8 TiB; 4-wide RAIDZ1 about 32.7 TiB. No visual surface.

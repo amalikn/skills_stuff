@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-24 references/storage-and-data.md: small N305 NAS boxes: M.2 slots PCIe 3.0 x1, no eGPU path, one SO-DIMM; app data on NVMe, bulk on HDD mirrors (home NAS project).
+
 - 2026-11-24 (v2.3.24 -> v2.3.25): backup-disaster-recovery.md, compute-and-facilities.md, provisioning-and-lifecycle.md, three Learned 2026-11-24 from continuum: a shared
   file system (EFS) is not a backup and a raft snapshot opens only with the escrowed original shares (drill 7/7); t4g burstable break-even about 85 % average CPU,
   Melbourne opt-in; an ephemeral host that owns state hands it back before it self-terminates (DL-224).

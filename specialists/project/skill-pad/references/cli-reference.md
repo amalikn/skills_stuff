@@ -273,3 +273,15 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > Bugs: open, confirmed, in-progress, fixed, wont-fix; Feature Requests: submitted, under-review, planned, building, shipped, declined; Ideas: new, exploring, implemented (others
 > unseen); Plans: planned, completed; Asks: answered; Tech Debt: identified, in-progress, resolved. A refused value prints the allowed list: read it rather than guess.
 
+
+> **Learned 2026-11-24** · Pad CLI v0.21.1 · VERIFIED_PRIMARY · Source: home NAS workspace setup (`pad collection create`, `pad collection update`, `just conventions`,
+> `pad item comment`, run 2026-11-24) · Falsifier: a collection created with `--icon scale` that shows an emoji
+> Four traps met when setting up a new workspace:
+> - `--icon` takes the emoji itself (`--icon "⚖️"`); a word such as `scale` is stored as text and shows before the name (`scale Decisions`). Fix with `pad collection update <slug> --icon "<emoji>"`.
+> - Boolean flags need `=`: `--awaits-human=true --tracks-work=false`; `--awaits-human true` fails with "accepts 1 arg(s), received 2".
+> - `just conventions` needs `--project "<name>"` (and `--workspace`, `--trackers`); without it the script exits 2 before planning.
+> - `pad item comment <ref> "<text>"` takes the text as a positional argument or `--stdin`; there is no `--body`. `pad item create ... --format json` printed no JSON
+>   on success here: read the ref back with `pad item list <collection>`.
+> ```bash
+> pad collection create "Asks" --schema @conventions/collection-schemas/asks.json --icon "✋" --layout balanced --default-view board --awaits-human=true --tracks-work=false
+> ```
