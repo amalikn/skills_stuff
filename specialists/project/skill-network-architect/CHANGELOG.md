@@ -13,6 +13,7 @@ Kind: log
 
 ## Contents
 
+- [20261124_1951 — Provider host names as identity anchors; per-boot WireGuard peer slots (v2.3.16 -> v2.3.17)](#20261124_1951--provider-host-names-as-identity-anchors-per-boot-wireguard-peer-slots-v2316---v2317)
 - [20261124_0010 — Root delivery to the phone; fingerprint quirk (v2.3.15 -> v2.3.16)](#20261124_0010--root-delivery-to-the-phone-fingerprint-quirk-v2315---v2316)
 - [20261123_2240 — Reaching a LAN service from a phone with passkeys (v2.3.14 -> v2.3.15)](#20261123_2240--reaching-a-lan-service-from-a-phone-with-passkeys-v2314---v2315)
 - [20261123_1430 — Caddy deferred headers and Clear-Site-Data for guest edges (v2.3.13 -> v2.3.14)](#20261123_1430--caddy-deferred-headers-and-clear-site-data-for-guest-edges-v2313---v2314)
@@ -37,6 +38,14 @@ Kind: log
 - [20261029_1750 — Adopted into skills_stuff conventions and deepened (v1.0.0 -> v1.1.0)](#20261029_1750--adopted-into-skills_stuff-conventions-and-deepened-v100---v110)
 
 ---
+
+## 20261124_1951 — Provider host names as identity anchors; per-boot WireGuard peer slots (v2.3.16 -> v2.3.17)
+
+- references/network-services.md, Learned 2026-11-24: `*.compute.amazonaws.com` is on the Public Suffix List, so an EC2 public DNS name is a one-address
+  RP ID/cookie scope; use an owned domain on the VPN resolver (continuum DL-173). references/wan-and-remote-access.md, Learned 2026-11-24: a per-test host gets a
+  fixed WireGuard address slot and a fresh key per boot, set at runtime over SSM (continuum DL-223).
+- scripts/check_package.py: table rows are exempt from the 200-character line rule (the markdown policy never reflows a table); three
+  network-services.md table rows had failed the check since 2026-10-29; tests/test_check_package.py TableRows.
 
 ## 20261124_0010 — Root delivery to the phone; fingerprint quirk (v2.3.15 -> v2.3.16)
 

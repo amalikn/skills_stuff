@@ -152,6 +152,12 @@ keepalive interval < carrier mapping timeout (measure it)
 > (no inbound port on either endpoint; rsync over SSH kept as a timing baseline only)
 > ```
 
+> **Learned 2026-11-24** · WireGuard peers that are rebuilt on every use · VERIFIED_SECONDARY (design, not yet deployed) · Source: continuum DL-223,
+> `docs/architecture-review/options/plan-384-aws-options-20261124_1621.md` (setup "target create") · Falsifier: a deployment where runtime peer updates are lost on
+> restart. A host created and destroyed per test cannot keep a static key without storing a long-lived secret (user data, a parameter store). Give it a fixed address
+> slot on the hub (e.g. 10.89.0.4), generate the key at first boot, read the public key over an out-of-band admin channel (SSM) and set the peer at runtime
+> (`wg set wg0 peer <pub> allowed-ips 10.89.0.4/32`, not persisted); the static-peer plan becomes "static peers plus one slot whose key changes".
+
 ## Failure modes and tests
 
 | Failure                          | Symptom                              | Blast radius                   | Test that proves the design handles it                        |

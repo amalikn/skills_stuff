@@ -105,5 +105,25 @@ class CheckPackageTests(unittest.TestCase):
         self.assertTrue(any(expected in finding for finding in findings), findings)
 
 
+class TableRows(unittest.TestCase):
+  """A table row over the width passes (tables are never reflowed); a prose line over it still fails (2026-11-24)."""
+
+  def test_table_row_exempt(self):
+    """A 220-character table row gives no width finding.
+
+    Args:
+      None.
+    Returns:
+      None.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+      root = Path(directory) / "skill-demo"
+      root.mkdir()
+      build(root)
+      (root / "references" / "a.md").write_text(HEADER + "| a | " + "x" * 220 + " |\n")
+      code, findings = run(root)
+      self.assertFalse(any("line over" in f for f in findings), findings)
+
+
 if __name__ == "__main__":
   unittest.main()

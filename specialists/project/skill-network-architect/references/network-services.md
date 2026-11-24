@@ -159,6 +159,13 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
 - Bind the listener to the LAN address only, route only the sign-in and the pages needed (never the IdP admin console), and turn on the host firewall: a laptop with the firewall off exposed every
   0.0.0.0 service to the home LAN.
 
+> **Learned 2026-11-24** · cloud provider host names as identity anchors · VERIFIED_PRIMARY (publicsuffix.org list, read 2026-11-24: `*.compute.amazonaws.com`) ·
+> Source: continuum chat 2026-11-24 ("why don't we use EC2 public DNS?"), DL-173 · Falsifier: AWS leaving the Public Suffix List.
+> Every `ec2-a-b-c-d.<region>.compute.amazonaws.com` is its own registrable domain (a public suffix sits above it), so a WebAuthn RP ID, cookie scope or certificate
+> bound to it is bound to that one address: releasing the Elastic IP or rebuilding the host breaks every passkey. It also resolves to the public address, useless for
+> a service reachable only over a VPN, and changes on every start of a host without a static IP. Use a subdomain of a domain the organisation owns, resolved on the
+> VPN's resolver; pick one kept for years with auto-renew, because changing the RP ID re-registers every passkey.
+
 ## Failure modes and tests
 
 | Failure                                    | Symptom                               | Blast radius                | Test that proves the design handles it             |

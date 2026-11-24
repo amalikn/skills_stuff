@@ -20,6 +20,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
   local source store (519 items) and sources.json ledger; APN operator context in operator/apn/ (index plus four files).
 - Evals: skill 22/22 against a baseline, and 22/22 against a fair baseline given the specialist registry (12.71 vs 9.75).
 - Committed in skills_stuff up to b6f399f (concurrent session's commit carried this session's files); push pending (operator).
+- 2026-11-24: v2.3.17, Learned from continuum (EC2 public DNS under the Public Suffix List; per-boot WireGuard peer slot); check_package exempts table rows.
 
 ## Next actions
 

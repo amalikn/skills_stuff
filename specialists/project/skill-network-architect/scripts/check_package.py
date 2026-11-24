@@ -155,7 +155,8 @@ def check_prose(root):
         if in_text:
           block.append(line)
           continue
-        if len(line) > LINE_WIDTH:
+        # Table rows are exempt: the markdown policy never reflows a table (single-line rows), 2026-11-24.
+        if len(line) > LINE_WIDTH and not line.lstrip().startswith("|"):
           findings.append(f"line over {LINE_WIDTH} characters: {relative}:{number}")
         if len(MERGED_DEFINITION.findall(line)) > 1:
           findings.append(f"link definitions merged on one line (one per line): {relative}:{number}")
