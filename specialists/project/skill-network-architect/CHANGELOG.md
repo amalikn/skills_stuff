@@ -13,7 +13,7 @@ Kind: log
 
 ## Contents
 
-- [20261125_1135 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)](#20261125_1135--cloudflare-move-proven-zone-accepted-resolver-servfail-after-delegation-token-needs-zone-read-v2319---v2320)
+- [20261125_1119 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)](#20261125_1119--cloudflare-move-proven-zone-accepted-resolver-servfail-after-delegation-token-needs-zone-read-v2319---v2320)
 - [20261125_0208 — Free registrar hosted API, Cloudflare Free and ntfy for iOS; self-hosted NetBird limits; WireGuard with a static IPv4 (v2.3.18 -> v2.3.19)](#20261125_0208--free-registrar-hosted-api-cloudflare-free-and-ntfy-for-ios-self-hosted-netbird-limits-wireguard-with-a-static-ipv4-v2318---v2319)
 - [20261124_2220 — Home-line classifier; free-subdomain registrars as identity anchors (v2.3.17 -> v2.3.18)](#20261124_2220--home-line-classifier-free-subdomain-registrars-as-identity-anchors-v2317---v2318)
 - [20261124_1951 — Provider host names as identity anchors; per-boot WireGuard peer slots (v2.3.16 -> v2.3.17)](#20261124_1951--provider-host-names-as-identity-anchors-per-boot-wireguard-peer-slots-v2316---v2317)
@@ -42,7 +42,7 @@ Kind: log
 
 ---
 
-## 20261125_1135 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)
+## 20261125_1119 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)
 
 - references/network-services.md, Learned 2026-11-25 (g): Cloudflare Free accepted a zone under a PSL private-section suffix (resolves (e)); DigitalPlat nameservers
   change in the dashboard only, its API refuses the default Python User-Agent; 1.1.1.1 SERVFAIL under a just-delegated zone broke Caddy's zone lookup (use two
