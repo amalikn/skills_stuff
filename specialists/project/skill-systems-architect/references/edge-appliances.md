@@ -473,3 +473,14 @@ Measurement and hardware:
 >   on a link shaped like the field's (tc netem) and its record names the profile.
 > - Track every boot medium by its hardware identity (SD CID, disk serial) with a physical label tying the card in the hand to its entry; a card whose CID name says 16 GB while it reports 32 GB,
 >   with an unassigned maker ID, is no-name and may be fake-capacity: check with a full write and read (f3) before wear or fill tests.
+
+> **Learned 2026-11-25** · serial consoles on edge boxes · VERIFIED_PRIMARY (bench Pi 4 on a field image, console served by conserver on a home NAS)
+> Source: smc-resiliency CHANGELOG 20261125_1937 and 20261125_2026; skill-smc 06_failure-modes (Learned 2026-11-25) · Falsifier: a box whose console UART
+> also drives a device and keeps its speed across the device's polling
+> - Before trusting a console for crash evidence, ask what else owns that UART. A device link on the same port (a Pi's GPIO UART used by an app talking to a
+>   control board) can reset its speed on a schedule; the console then shows one junk byte per key and crash text after the first poll is likely garbled. Boot
+>   output, printed before the poller starts, stays clean. agetty with `--keep-baud` keeps whatever speed it finds, so restarting it does not repair this.
+> - For a test, pause the poller at runtime (stop its scheduler for this boot) rather than editing the image: the crash's reboot restores it, and the box
+>   under test stays identical to the field image. A box that does not reboot gets the scheduler started again by the test.
+> - Record consoles through a console server (conserver) with a read-only spy over SSH and a forced-command key, and make the recorder mark a dropped
+>   session in the log (a line saying lines may be missing): a silent drop looks exactly like a hung box.
