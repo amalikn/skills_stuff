@@ -156,3 +156,10 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 > the device stayed on the host): `usb set` changes the autoconnect rule only; a device already plugged in moves to the VM at its next plug-in.
 > `prlctl set <vm> --help` in 27.1.0 lists a `usb` category but no command that connects a present device, so re-plugging is the operator step.
 
+> **Learned 2026-11-25 (b)** · Parallels Desktop 27.1.0 Pro, macOS 27.2, Linux arm64 guest from bento/ubuntu-24.04 · VERIFIED_PRIMARY
+> (/Library/Logs/parallels.log; `prlctl list -i` "Hypervisor type: apple"; prlctl error text) · Source: home NAS vagrant/ios-poc/Vagrantfile at
+> 6df2786 · Falsifier: a Linux guest on the Apple hypervisor that receives a USB device
+> On this host Linux VMs run on Apple's hypervisor (Virtualization framework), and USB passthrough fails for every device there (parallels.log:
+> "Failed to initialize the USB passthrough instance ... VZErrorDomain (-6)"); `prlctl set <vm> --hypervisor-type parallels` exists (the option rejects a
+> bad value) but is refused with PRL_ERR_INVALID_CONFIGURATION for such a VM, including as a vagrant-parallels pre-boot customize. A lab that needs a
+> USB device in a Linux guest (an iPhone for usbmuxd) uses another path: pair on the Mac and copy the record, or a hypervisor with USB passthrough.

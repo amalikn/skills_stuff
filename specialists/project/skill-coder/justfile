@@ -213,6 +213,11 @@ process-match *args: _require-venv
 reflow-lossless *args: _require-venv
     @{{py}} scripts/reflow_lossless.py "$@"
 
+# Read-only: markdown tables' aligned width and continuation rows against the hook's 200-column wrap, e.g. just table-width docs/x.md [--before "## Tail"]
+[positional-arguments]
+table-width *args: _require-venv
+    @{{py}} scripts/table_width.py "$@"
+
 # Read-only: V8 .cpuprofile files (VS Code extension host stalls) reduced to self time per extension, hot functions and stacks, e.g. just cpuprofile-summary $TMPDIR/exthost-*.cpuprofile
 [positional-arguments]
 cpuprofile-summary *args: _require-venv

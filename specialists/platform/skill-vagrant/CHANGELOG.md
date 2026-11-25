@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/parallels-prlctl.md (b): no USB passthrough for Linux guests on the Apple hypervisor (VZErrorDomain -6); --hypervisor-type parallels refused (home NAS iOS PoC).
 - 2026-11-25 references/parallels-prlctl.md and networking-and-synced-folders.md (b): USB passthrough by `prlsrvctl usb set`; bridged public_network gives two default routes (home NAS iOS PoC).
 - 2026-11-19: references/upgrade-and-troubleshooting.md triage row + Learned entry: a guest clock 100 years fast (chrony disabled, Time Sync only at boot) breaks every TLS client inside it; `vagrant reload` resyncs, `systemctl enable --now chrony` keeps it right.
 

@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 references/macos-and-endpoints.md (b): headless iOS Wi-Fi backups with pymobiledevice3: pair once on USB, record as a device key, mobdev2 only when uncabled, encryption and Reset All Settings, passcode at start, sudo home (home NAS).
 - 2026-11-25 references/security-and-service-identity.md: give a second project a forced-command key for one capability, not host root (home NAS consoles).
 - 2026-11-25 (v2.3.30 -> v2.3.31): references/macos-and-endpoints.md, Learned 2026-11-25: Time Machine to SMB, a wedged macOS SMB client (state U, server close-share does not free it, restart), reading progress server-side from the sparsebundle, refquota plus fruit max size (home NAS).
 

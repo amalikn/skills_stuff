@@ -106,6 +106,7 @@ inputs, outputs and safety labels.
 | `scripts/group_timeouts.py` | Timed subprocess calls (ssh, a shell) whose children outlive the timeout             |
 | `scripts/process_match.py`  | `pgrep -f` / `pkill -f` patterns not anchored with `^` (they can match their own caller) |
 | `scripts/reflow_lossless.py` | Whether a re-wrapped markdown file changed any table cell or word (it needs table-reflow's `cli.mjs` for tables) |
+| `scripts/table_width.py`    | Markdown tables at or over the hook's 200-column aligned width, or already split into continuation rows |
 | `scripts/language_split.py` | Language files over 200 lines or 25 KB; splits one into `languages/<lang>/` topic files (writes only with `--apply`) |
 | `scripts/scaffold.py`       | Prints a new script and its test skeleton that meet these rules (writes nothing)     |
 

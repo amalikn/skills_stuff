@@ -352,3 +352,23 @@ Baselines:
 > # me/nas scripts/nas_tm_status.sh (on the Mac): wedged-client count
 > ps -axo stat=,comm= | awk '$1 ~ /^U/ && $2 ~ /(diskutil|NetAuthSysAgent|backupd-helper|mount_smbfs)/ {n++} END {print n+0}'
 > ```
+
+> **Learned 2026-11-25 (b)** · iPhone (iOS 27.2.1) and iPad (iPadOS 26.7.3) backed up headless with pymobiledevice3 11.63.1 from a Linux VM on a NAS ·
+> VERIFIED_PRIMARY (installed pymobiledevice3 source: osu/posix_util.py, pair_records.py, cli backup2; live runs) · Source: home NAS project
+> scripts/nas_ios_vm.sh, scripts/ios/ios_backup_job.sh at 6df2786 · Falsifier: an iOS release that backs up over Wi-Fi without a passcode prompt on
+> the device, or that keeps advertising mobdev2 on Wi-Fi while cabled
+> Local (Finder-style) iOS backups to a Linux host over Wi-Fi work without iCloud, with these facts:
+> (1) Pairing needs the device once on USB, unlocked (else PasswordProtectedError), with Trust tapped; it can be done on a Mac and the pymobiledevice3
+> pair record (`~/.pymobiledevice3/<UDID>.plist`, or `~/.local/share/pymobiledevice3`) copied to the backup host, which then connects over Wi-Fi only.
+> The record is a key to the device: keep it on encrypted storage only, delete other copies; untrusting the computer on the device revokes it.
+> (2) `lockdown wifi-connections on` enables Wi-Fi access; while cabled the device advertises `_apple-mobdev2._tcp` only on the USB link; unplugged it
+> advertises on the LAN (IPv6 link-local). A bonjour browse shows `UniqueDeviceID: null` until a paired session, so test presence with
+> `lockdown info --mobdev2 --udid <UDID>`. (3) Backup encryption is a device setting: `backup2 encryption on <password>` (positional). If it is already
+> on, the password set earlier (Finder) applies and cannot be read; Settings > General > Transfer or Reset > Reset > Reset All Settings clears it, and
+> also clears Wi-Fi connections and the Trust, so the device is paired again. (4) iOS asks for the device passcode to start a backup to a new host;
+> unattended nightly runs depend on whether it asks again (to be measured). (5) Under `sudo`, pymobiledevice3 reads `~$SUDO_USER` (get_homedir), so a
+> record linked only under /root is missed by `sudo pymobiledevice3` but found by a systemd unit running as root.
+> ```bash
+> pymobiledevice3 lockdown info --mobdev2 --udid "$UDID" >/dev/null && \
+>   timeout 14400 pymobiledevice3 backup2 backup --mobdev2 --udid "$UDID" /srv/ios-backups   # then check Status.plist SnapshotState finished
+> ```
