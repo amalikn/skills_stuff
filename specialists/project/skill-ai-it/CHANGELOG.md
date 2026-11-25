@@ -32,6 +32,8 @@ Last rotated: 20261124_2249
 
 ## Unreleased
 
+- 2026-11-25 patterns/governance-checks.md, Learned 2026-11-25: operator-steps sections need a Check and a Redo line, enforced by a check (home NAS).
+
 - 2026-11-24 templates/justfile bootstrap names the pinned interpreter by path (its own checker rejected `mise exec -- python`); references/files-records.md CHANGELOG `Archive:` value quoted (a `layout: ` colon broke YAML); Learned entry in references/pitfalls.md (home NAS bootstrap).
 
 - 2026-11-19 · `scripts/records/rotate_records.py`: an `Open items tracker:` value that is not a relative markdown path (prose such as "this file, Open items") is ignored with a message; it once made

@@ -334,3 +334,9 @@ accepting it.
 >             fail("superseded", f"{target} is marked '{NOT_FOLDED}' in {PLAN_TRACKER} but carries no note linking {DECIDED_ANCHOR}")
 > ```
 
+> **Learned 2026-11-25** · operator-steps runbooks (manual steps handed to the operator) · VERIFIED_PRIMARY (check run: 12 sections failed, all fixed;
+> proven by removing one Redo line) · Source: home NAS project `scripts/operator_steps_check.py` (commit fa05690) · Falsifier: a section marked done whose
+> redo steps the check does not miss
+> A written rule ("every step keeps how to check, redo and rotate it") was broken by the agent within a day: marking a step done replaced its procedure
+> with one line. A rule about a document's shape needs a check: split the file on `## ` headings and require a `**Check` line and one of
+> `**Redo|Rotate|Undo|Use` per section, run by `just check`. On first run it found 12 more sections with the same gap.
