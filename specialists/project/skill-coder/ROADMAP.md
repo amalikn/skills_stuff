@@ -44,6 +44,7 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
 
 ## Open items (tools)
 
+- [ ] language_split.py on a language already split (2026-11-25, continuum session): `python3 -I scripts/language_split.py --lang python` (plan) proposed rewriting languages/python/learned-other.md (190 lines) to 17 lines, built from python.md's own learned blocks only; applied, it would have dropped the topic file's entries. Not applied. Expected: refuse, or split the over-budget topic file itself. `just check`'s hint ("split it: --lang <name> --apply") points at this path for topic files too.
 - [ ] scripts/code_size.py names some Rust functions after a parameter type when the signature spans lines (continuum-app baseline held `lib.rs::Path`, `::Json`,
   `::State` for plan_handoff and siblings), so adding a parameter or reformatting a signature makes the entry STALE ("in the baseline but no longer found") although
   the function still exists. Seen 2026-11-22: `just code-size` in continuum-app after adding `axum::Extension(actor): axum::Extension<identity::Actor>` to
