@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/lxc-containers.md (m): guests start on UTC; set the zone live with timedatectl; OnCalendar with a zone suffix (home NAS).
 - 2026-11-25 references/opentofu-bpg-provider.md (b), lxc-containers.md (l): ACME token as write-only data_wo; account-name default trap; devN hotplug into a running CT (home NAS).
 - 2026-11-25 references/opentofu-bpg-provider.md, security-certificates-firewall.md (c), access-control.md, lxc-containers.md (k): in-place CT update reboots; ebtables default; pveproxy/firewall/IPv6-sysctl layers; root-created named admin; enable packaged units; forced-command console access (home NAS).
 - 2026-11-25 references/security-certificates-firewall.md (b): root SSH key only by an sshd drop-in (Include first, first value wins), lockout guard, `sshd -T` shows without-password (home NAS).

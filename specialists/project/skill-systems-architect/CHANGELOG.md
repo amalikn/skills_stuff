@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 references/macos-and-endpoints.md (c): iCloud rule (power, locked, Wi-Fi); power and charge readable over Wi-Fi; PasswordProtected unreliable mid-backup (home NAS).
 - 2026-11-25 (v2.3.31 -> v2.3.32): references/edge-appliances.md, Learned 2026-11-25: serial consoles on edge boxes: a UART shared with a device link, a runtime pause the reboot restores, a recorder that marks drops (smc-resiliency).
 - 2026-11-25 references/macos-and-endpoints.md (b): headless iOS Wi-Fi backups with pymobiledevice3: pair once on USB, record as a device key, mobdev2 only when uncabled, encryption and Reset All Settings, passcode at start, sudo home (home NAS).
 - 2026-11-25 references/security-and-service-identity.md: give a second project a forced-command key for one capability, not host root (home NAS consoles).

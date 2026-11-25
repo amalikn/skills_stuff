@@ -117,3 +117,11 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > until a CT restart
 > A USB-serial adapter passed as `devN` by its /dev/serial/by-id path is hot-added to a running container (no restart); the consumer (conserver) still
 > needs its own reload to use it.
+
+> **Learned 2026-11-25 (m)** · PVE 9.2.2, Debian 13 containers and a Debian 13 cloud-image VM · VERIFIED_PRIMARY (`timedatectl` in each guest; the
+> provider schema has no time zone attribute) · Source: home NAS scripts/host/pve_guest_tz.sh at e788911 · Falsifier: a bpg/proxmox release with a
+> container or VM time zone attribute
+> Containers and cloud-image VMs start on Etc/UTC. bpg/proxmox 0.123.1 cannot set a time zone, and the Proxmox CT `timezone` option applies at start
+> (a restart of the service). Set it live inside the guest with `pct exec <ct> -- timedatectl set-timezone <Zone>` (no restart) from a catalogued host
+> script, and in the VM's own setup. A systemd timer in a UTC guest fires in UTC unless OnCalendar names the zone (`*-*-* 00..05:00/15:00
+> Australia/Melbourne`); check with `systemd-analyze calendar`.

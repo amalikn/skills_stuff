@@ -372,3 +372,12 @@ Baselines:
 > pymobiledevice3 lockdown info --mobdev2 --udid "$UDID" >/dev/null && \
 >   timeout 14400 pymobiledevice3 backup2 backup --mobdev2 --udid "$UDID" /srv/ios-backups   # then check Status.plist SnapshotState finished
 > ```
+
+> **Learned 2026-11-25 (c)** · iPhone (iOS 27.2.1), iPad (iPadOS 26.7.3), pymobiledevice3 11.63.1 over Wi-Fi · VERIFIED_PRIMARY (Apple iPhone User Guide
+> "Back up iPhone" and support 108366, read 2026-11-25; live lockdown reads) · Source: home NAS scripts/ios/ios_backup_job.sh at 8f7e4e8 · Falsifier: a
+> PasswordProtected reading of true on a locked device with a backup session open
+> Apple's automatic iCloud Backup rule is only: on power, screen locked, on Wi-Fi; no battery minimum or lock duration is documented. A local Wi-Fi job can
+> read the power state and charge over mobdev2 (`lockdown get com.apple.mobile.battery`: ExternalConnected, BatteryIsCharging, BatteryCurrentCapacity).
+> Lock state is not reliable that way: `PasswordProtected` read false on both devices while locked, each with a backup running, so a "locked for N
+> minutes" gate built on it ships off until verified with no session open. Two first backups over Wi-Fi each dropped with "Connection was terminated
+> abruptly" (iPad, once mid-transfer, once while asleep); an iPhone at 29% off power backed up 60 GB without a drop, so power is a policy, not a need.
