@@ -451,3 +451,21 @@ HOST_RUN_TIMEOUT=240 infra/apn-unc01/ops/host-run.sh smoke.sh
 > self.maxDiff = None
 > self.assertEqual(problems, [])
 > ```
+
+> **Learned 2026-11-25 (c)** · a host script tested offline with stub commands · VERIFIED_PRIMARY (home NAS `tests/test_pve_zram.sh` and
+> `tests/stubs-zram/systemctl` at 6f2602f: the first version passed against stateless stubs while the live apply left the old device) · Source: home NAS
+> project · Falsifier: a stateless stub that would have shown the live failure
+> A stub that only logs and succeeds proves the call order, not the outcome. The first zram script ran `systemctl restart`, its stubs said yes, its final check
+> asked only "is a zram swap active", and on the node the busy device kept the package default. After a live failure, give the stub the state that failed
+> (here: a busy device ignores new settings until its reset file was written), assert on the result, not the call, and keep a negative case where the
+> service "starts" without effect. Same rule for the script's own closing check: verify the property asked for (algorithm and size), not existence.
+> ```bash
+> # tests/stubs-zram/systemctl (excerpt): models the kernel refusing a busy device
+> start | restart)
+>   if [ "$(cat "$sys/reset" 2>/dev/null)" = 1 ]; then rm -f "$sys/busy"; : >"$sys/reset"; fi
+>   if [ ! -f "$sys/busy" ]; then   # only a free device takes ALGO and SIZE from the config
+>     echo "lzo-rle [$(sed -n 's/^ALGO=//p' "$NAS_ZRAM_CONF")] zstd" >"$sys/comp_algorithm"
+>     echo $(($(sed -n 's/^SIZE=//p' "$NAS_ZRAM_CONF") * 1024 * 1024)) >"$sys/disksize"
+>   fi
+>   touch "$sys/busy" "$ZSTATE/active" ;;
+> ```

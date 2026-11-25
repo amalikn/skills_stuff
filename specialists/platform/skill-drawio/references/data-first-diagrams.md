@@ -471,3 +471,20 @@ No screenshot: the output is text in the document itself.
 > the device it delivers to (`ntfy depends_on: [phone]`), the reverse of the real dependency, drawing a second long People-to-Outside run. Removing the
 > reversed edge (the flow page still shows the delivery) made the audit clean. Check a new map's `depends_on` directions before treating an Overview
 > audit finding as an engine fault. Also: markdown-like `*` in a component `host` text renders as italics on flow-page lane heads; write the words.
+
+> **Learned 2026-11-25 (b)** · flow-map parts written with YAML flow lists (`failures: [a, b]`) · VERIFIED_PRIMARY (PyYAML load of the part; PNG export
+> reviewed) · Source: home NAS project `docs/flows/parts/flows-protect.yaml` (fixed in 6f2602f), screenshot `references/screenshots/20261125-yaml-flow-list-split/`
+> · Falsifier: a YAML loader that keeps a comma inside parentheses in one flow-list item
+> In a flow list a comma always ends the item; parentheses do not protect it. `failures: [away from home (share unreachable, calls hang)]` loads as two
+> items, and the step note shows two bullets cut mid-parenthesis. Schema validation and the layout audit both pass, so only the export review caught it.
+> Quote any item that holds a comma. A cheap check over a map's parts (candidate for the validator: reusable_candidate):
+> ```python
+> # any list item with unbalanced parentheses was split by a comma
+> def walk(o, path):
+>   if isinstance(o, list):
+>     for x in o:
+>       if isinstance(x, str) and x.count("(") != x.count(")"): print(path, repr(x))
+>       walk(x, path)
+>   elif isinstance(o, dict):
+>     for k, v in o.items(): walk(v, f"{path}.{k}")
+> ```

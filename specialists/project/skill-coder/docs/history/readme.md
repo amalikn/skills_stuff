@@ -11,6 +11,7 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 
 ## Change log
 
+- [changelog-20261125_1821.md](changelog-20261125_1821.md) 1 entry, 2026-11-01 to 2026-11-01: Learned: guard first and dry-run a gate that hides records
 - [changelog-20261119_1603.md](changelog-20261119_1603.md) release 0.2.0, 92 entries, 2026-10-19 to 2026-11-19 (cut 2026-11-19)
 - [changelog-20261119_1601.md](changelog-20261119_1601.md) 1 entry, 2026-11-01 to 2026-11-01: Learned: a predicate answering a second question
 - [changelog-20261119_1554.md](changelog-20261119_1554.md) 1 entry, 2026-11-01 to 2026-11-01: Learned: Jinja dict keys through JSON, filtered loop index, folded newlines, CRLF edits
@@ -43,5 +44,8 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 - [roadmap-20261028_1311.md](roadmap-20261028_1311.md) 1 done item: Make it the default (done 2026-10-20, operator: "if ...
 - [roadmap-20261027_1045.md](roadmap-20261027_1045.md) 1 done item: Layer check — UNC's check_import_layers calls scripts/import_layers.py (same ...
 
-- [session-records/session-record-20261119_1700.md](session-records/session-record-20261119_1700.md) Whole-chat closeout 2026-11-19: periodic review of 323 docs in 16 packs, 90-day window, rotation fixes
+## Session records
+
+- [session-record-20261119_1700.md](session-records/session-record-20261119_1700.md) Whole-chat closeout 2026-11-19: periodic review of 323 docs in 16 packs, 90-day window, rotation fixes
+
 <!-- history-index:end -->

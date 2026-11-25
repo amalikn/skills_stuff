@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261119_1601
+Last rotated: 20261125_1821
 ---
 
 # Changelog
@@ -33,11 +33,12 @@ Last rotated: 20261119_1601
 - [20261119_1601 — deterministic navigation-control upgrade](#20261119_1601--deterministic-navigation-control-upgrade)
 - [20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records](#20261102_1347--learned-exit-trap-exit-code-ruff-through-a-symlink-tracker-from-records)
 - [20261102_1132 — Learned: one write frame for many fields](#20261102_1132--learned-one-write-frame-for-many-fields)
-- [20261101_2353 — Learned: guard first and dry-run a gate that hides records](#20261101_2353--learned-guard-first-and-dry-run-a-gate-that-hides-records)
 
 ---
 
 ## Unreleased
+
+- 2026-11-25 references/testing.md, Learned 2026-11-25 (c): after a live failure, stubs carry the failing state and tests assert the outcome; a closing check verifies the property, not existence (home NAS zram).
 
 - 2026-11-25 languages/shell/learned-processes-and-timeouts.md, Learned 2026-11-25 (d): `timeout` cannot end a process in state U (wedged SMB mount); check state first, count by state with awk (SC2009) (home NAS).
 
@@ -194,7 +195,3 @@ Applied to: AI_NAVIGATION.md
 ## 20261102_1132 — Learned: one write frame for many fields
 
 `references/design-patterns.md` P-48, from ansible-wifi (2026-11-02).
-
-## 20261101_2353 — Learned: guard first and dry-run a gate that hides records
-
-`references/testing.md`, from skill-knowledge-curator (2026-11-01).

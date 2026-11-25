@@ -45,3 +45,15 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pve-firewall.m
   inside guests).
 - Management interface (8006, 22) on a management network only; firewall rules for it in `cluster.fw`.
 - Secrets (token values, PBS encryption keys, ACME plugin credentials) in a password manager; never in repositories, state files or logs.
+
+> **Learned 2026-11-25** · Proxmox VE 9.2.2 · VERIFIED_PRIMARY (installed /usr/share/perl5/PVE/CLI/pvenode.pm lines 98-164 and PVE/API2/ACMEAccount.pm
+> `tos_url`; `pvesh usage /cluster/acme/account --verbose`) · Source: home NAS project, scripts/host/pve_acme_account.sh at 6f2602f · Falsifier: a
+> `pvenode acme account register` that takes the ToS agreement as an option, or a pvesh create that still prompts
+> `pvenode acme account register` cannot run unattended: without `--directory` it offers a menu, and it always asks "Do you agree to the above terms?" through
+> PVE::PTY::read_line, which needs a tty. The API takes agreement as a parameter: `--tos_url` ("setting this indicates agreement"). Run as root on the node,
+> pvesh acts as root@pam, the only identity allowed to register (a root token is refused). The meta call gives the current ToS URL. A GUI-registered
+> account may carry no contact address (`pvesh get /cluster/acme/account/<name>` shows `account` with createdAt, key, status only).
+> ```bash
+> tos="$(pvesh get /cluster/acme/meta --directory "$DIR" --output-format json | python3 -c 'import json,sys; print(json.load(sys.stdin)["termsOfService"])')"
+> [ -e /etc/pve/priv/acme/"$NAME" ] || pvesh create /cluster/acme/account --name "$NAME" --contact "$MAIL" --directory "$DIR" --tos_url "$tos"
+> ```

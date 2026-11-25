@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261125_1820 — YAML flow-list items split by commas
+
+- references/data-first-diagrams.md, Learned 2026-11-25 (b): an unquoted flow-list item with a comma inside parentheses loads as two items; quote it; unbalanced-parenthesis check as a validator candidate (home NAS; screenshot 20261125-yaml-flow-list-split).
+
 ## 20261125_1310 — Home NAS map: reversed dependency and italic host text
 
 - references/data-first-diagrams.md, Learned 2026-11-25: an Overview shared run caused by a reversed `depends_on`; `*` in host text renders italic (home NAS map; screenshot 20261125-home-nas-flowmap).

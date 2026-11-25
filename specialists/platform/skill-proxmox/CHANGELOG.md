@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/storage.md (c): zram-tools 0.3.7 PERCENT overrides SIZE; its restart cannot resize a busy device; swapoff, reset, start (home NAS).
+- 2026-11-25 references/security-certificates-firewall.md: unattended ACME account registration with `pvesh create --tos_url` as root@pam (home NAS).
 - 2026-11-25 references/lxc-containers.md (j): `pct exec <ct> -- sh -s -- args` runs a repo script inside a CT from piped stdin (home NAS).
 - 2026-11-25 references/storage.md (b): a ZFS-root install creates no swap; swap on a zvol discouraged by the admin guide; partition or zram (home NAS).
 

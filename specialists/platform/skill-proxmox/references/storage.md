@@ -138,3 +138,19 @@ Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pvecep
 > prefers a partition on a physical disk (space left free in the installer's advanced options) and swappiness 10. When the whole disk went to ZFS,
 > the options are no swap with enough RAM and fixed guest memory, or zram (compressed RAM swap, no disk; not mentioned in the guide: UNVERIFIED as a
 > Proxmox recommendation).
+
+> **Learned 2026-11-25 (c)** · Proxmox VE 9.2.2, kernel 7.0.2-6-pve, Debian 13.5, zram-tools 0.3.7-1 · VERIFIED_PRIMARY (package's /usr/sbin/zramswap and
+> /etc/default/zramswap read from the .deb on the node; journal of zramswap.service) · Source: home NAS project, scripts/host/pve_zram.sh at 6f2602f ·
+> Falsifier: a zram-tools release whose restart re-sizes a live device, or whose default config has no PERCENT
+> zram swap on a ZFS-root node with zram-tools has two traps. (1) The shipped config sets PERCENT=50, and PERCENT overrides SIZE, so a fixed size needs
+> PERCENT removed, not just SIZE changed. (2) The package's postinst starts the service at once with that default (half of RAM, lz4); `systemctl restart`
+> then fails silently to apply a new config: stop dies at `modprobe -r zram` ("Module zram is in use"), and start gets "Device or resource busy" writing
+> comp_algorithm and disksize, only warns, re-runs mkswap and reports success. Apply a change with swapoff, the kernel's reset, then start, and check the
+> live algorithm and size rather than "is a zram swap active":
+> ```bash
+> timeout 30 systemctl stop zramswap.service || true      # fails at modprobe -r; swapoff below does the real work
+> timeout 120 swapoff /dev/zram0 2>/dev/null || true
+> echo 1 >/sys/block/zram0/reset                          # device free: comp_algorithm and disksize writable again
+> systemctl reset-failed zramswap.service; timeout 60 systemctl start zramswap.service
+> grep -q '\[zstd\]' /sys/block/zram0/comp_algorithm && [ "$(cat /sys/block/zram0/disksize)" = $((4096*1024*1024)) ]
+> ```
