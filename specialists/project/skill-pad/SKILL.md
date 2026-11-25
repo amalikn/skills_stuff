@@ -2,6 +2,8 @@
 name: skill-pad
 description: "Pad (getpad.dev) project management via the pad CLI: items, plans, conventions, live feed, setup. Use for /pad, $pad or Pad tasks."
 argument-hint: "[status | capture <thought> | onboard | connect | disconnect | anything you want to say to your project]"
+metadata:
+  version: "1.0.0"
 allowed-tools:
   - Bash
   - Read
@@ -104,7 +106,7 @@ into that session.
   - **Check before done:** `just -f <skill-pad>/justfile item-check <ref>` (or `--days 1` at closeout) must exit 0. Standard and examples: [docs/pad-usage-guidelines-20261110_1628.md](docs/pad-usage-guidelines-20261110_1628.md) 3.3.
 - **Claim before working an item** (`pad item claim <ref>`); on `lease_held` pick other work, never loop.
 - **Work is visible in Pad (operator, 2026-11-20; every project with a `.pad.toml`):** before starting any piece of work, find its item (`pad item list`, `pad item search`); when there is none, create
-  it (a task to the writing standard, 3.3), since the operator's request for the work is the confirmation. Claim it, set it `in-progress` with `--comment`, comment at the start, at each result and at
+  it (a task to the writing standard, 3.3), since the operator's request for the work is the confirmation. Claim it, set it `in-progress` with `--comment` as the first step, before reading or preparing for it (operator, 2026-11-21), comment at the start, at each result and at
   each blocker, and close it with the `DONE:` comment. No work in a Pad project runs without an active item the operator can see; a relay or a side task counts as work. Housekeeping gets no item
   (operator, 2026-11-20).
 - **Skill work goes to the `skills` workspace (operator, 2026-11-20: "All skill related stuff will go into skill workspace in the pad"):** work on any skill pack (its scripts, references, conventions,
@@ -131,6 +133,10 @@ The project work they record keeps its own item (a decision recorded at close go
   last open child closes the plan too. item-check reports both misses: `plan` (a plan still open with every child closed) and `marker` (the newest
   comment says DONE or Fixed while the status is not closed). Continuum, 2026-11-25: five plans sat at planned with every child closed, and a tech-debt
   item sat at identified a day after its "Fixed" comment.
+  The same step also covers (operator, 2026-11-25, continuum rule "housekeeping in the same turn a task completes or changes"): the items the work
+  supersedes or makes obsolete (closed with a comment naming the item that replaced them, or a `supersedes` relation), the children it splits into
+  (created with `--parent` and ordered with `block`), and the parent plan (a progress comment whenever a child starts, finishes or is blocked, not only
+  when the last one closes). Housekeeping, so no new item; never deferred to a later sweep.
 - **Through the CLI only**: never read `~/.pad/pad.db` or `~/.pad/attachments/` directly.
 - Under Codex or another harness set `PAD_AGENT=<name>`, or writes are attributed to the human whose credentials are used.
 - **Repo trackers are the truth** (convention `trackers-truth`): a Pad item links to its tracker entry; a fact recorded only in Pad is not recorded.

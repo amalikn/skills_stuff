@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261125_0233
+Last rotated: 20261125_1158
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261125_1157 — Housekeeping as the work lands: superseded items, split children, parent-plan comments; in-progress before any reading (v1.0.0)](#20261125_1157--housekeeping-as-the-work-lands-superseded-items-split-children-parent-plan-comments-in-progress-before-any-reading-v100)
 - [20261125_0232 — item-check: plans left open with every child closed; DONE markers on open items](#20261125_0232--item-check-plans-left-open-with-every-child-closed-done-markers-on-open-items)
 - [20261125_0037 — Learned: decisions hidden without --all; rate limit in loops](#20261125_0037--learned-decisions-hidden-without---all-rate-limit-in-loops)
 - [20261124_2356 — pad_decisions reads bodies in one listing call (62.8 s to 0.3 s)](#20261124_2356--pad_decisions-reads-bodies-in-one-listing-call-628-s-to-03-s)
@@ -39,7 +40,14 @@ Last rotated: 20261125_0233
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
 - [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
-- [20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)](#20261120_1647--pad_links-item-references-as-links-dependencies-as-typed-relations-operator)
+
+## 20261125_1157 — Housekeeping as the work lands: superseded items, split children, parent-plan comments; in-progress before any reading (v1.0.0)
+
+- SKILL.md: the "Housekeeping as the work lands" rule now also covers items the work supersedes, the children it splits into and a parent-plan comment at every
+  child change; "in-progress" is the first step, before reading or preparing (operator, 2026-11-25: write the continuum housekeeping policy back so other
+  projects follow it).
+- SKILL.md front matter: `metadata.version` added, starting at 1.0.0 (operator, 2026-11-25: "add version to skill-pad"); later entries bump it and name
+  the new version in their heading, as the other packs do. ARCHITECTURE.md re-read: item-check row now names the stale, plan and marker findings.
 
 ## 20261125_0232 — item-check: plans left open with every child closed; DONE markers on open items
 
@@ -184,10 +192,3 @@ references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-pr
 - `scripts/pad_links.py`: a mirrored register id (`D17`) becomes `[[DECIS-n|D17]]`; never `D17-03` or `D3.6`. New `tests/test_pad_links.py` (4 tests).
 - `references/cli-reference.md` Traps: Learned 2026-11-20, workspace rename is web-UI and name-only (slug read-only); reads are rate-limited too.
 - unc workspace brought to the smc-resiliency and continuum layout: Asks and Decisions collections, baseline conventions plus decisions-mirror and progress-record, 52 bodies laid out, links applied.
-
-## 20261120_1647 — pad_links: item references as links, dependencies as typed relations (operator)
-
-- scripts/pad_links.py and `just links`: bare item refs and decision ids in bodies become `[[REF]]` / `[[DECIS-n|DL-058]]` wiki-links; a JSON spec adds typed relations (blocks, implements, split-from,
-  supersedes); plan by default, idempotent. Operator, 2026-11-20 (continuum ASK-251): references must be clickable and dependencies recorded in the relationship section.
-- references/items-and-edits.md rule 6 rewritten to require both. First run in continuum: 13 bodies and 13 relations.
-- SKILL.md "Tickets tell the whole story" gains the links-and-relations bullet, so every project loads the rule, not only items-and-edits readers.
