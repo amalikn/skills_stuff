@@ -39,6 +39,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-25 languages/python/learned-network.md (new topic file; learned-other.md was at its budget), Learned 2026-11-25: fetch a known key list by GET, not a filtered `aws s3 cp --recursive` (582 s to 37 s; continuum FR-655).
+
 - references/errors-and-timeouts.md, Learned 2026-11-25: nested timeouts (inner limit inside the caller's) and keeping the last stderr line of a killed
   process (continuum BUG-641). references/tooling-and-runtime.md, Learned 2026-11-25: exact-text edit scripts assert one match and re-read after a formatter.
 

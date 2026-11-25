@@ -112,6 +112,7 @@ The rest of this override lives in [python/](python/) (split 2026-11-07 by scrip
 | ---------------- | ------ |
 | [learned-other.md](python/learned-other.md) | 15     |
 | [open-items.md](python/open-items.md) | 2      |
+| [learned-network.md](python/learned-network.md) | 1      |
 
 > **Learned 2026-11-22** · Python, an environment variable that is set but empty · VERIFIED_PRIMARY (reviewed and fixed) · Source: continuum-app `scripts/cli_signin_check.py` (3a81ec5) ·
 > Falsifier: none. `os.environ.get("CARGO_TARGET_DIR", default)` returns `""` when the variable exists but is empty, and `Path("") / "debug/c7m"` is then a relative path. Use
