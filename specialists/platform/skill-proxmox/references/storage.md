@@ -130,3 +130,11 @@ Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pvecep
 > { printf 'CREATE-tank\n'; kp show -s -a Password "$ZFS_ENTRY"; printf '\n'; } | ssh root@node 'bash pve_tank_create.sh <disk1> <disk2> --apply'
 > for d in $(zfs list -H -o name -r tank/secure | sort -r); do zfs unmount "$d"; done; zfs unload-key tank/secure   # then load-key from the vault
 > ```
+
+> **Learned 2026-11-25 (b)** · Proxmox VE 9.2 installer, ZFS root on the whole disk · VERIFIED_PRIMARY (node `free -h`: swap 0; admin guide, Host System
+> Administration, "SWAP on ZFS", copy in documents/research-sources-20261107/pve-admin-chapter-sysadmin.html) · Source: home NAS project · Falsifier: a ZFS-root
+> install that creates a swap device
+> A ZFS-root install creates no swap, and the GUI shows SWAP usage N/A. The guide warns that swap on a zvol can block the server or cause high IO load,
+> prefers a partition on a physical disk (space left free in the installer's advanced options) and swappiness 10. When the whole disk went to ZFS,
+> the options are no swap with enough RAM and fixed guest memory, or zram (compressed RAM swap, no disk; not mentioned in the guide: UNVERIFIED as a
+> Proxmox recommendation).
