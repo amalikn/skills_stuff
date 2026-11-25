@@ -152,3 +152,7 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 > timeout 30 prlsrvctl usb list | grep -E "^Device|Connected-To-Vm"
 > timeout 30 prlsrvctl usb set "$usb_id" nas-ios-poc     # only with --apply, after checking the Vagrantfile names that VM
 > ```
+> Correction 2026-11-25 (same engagement, VERIFIED_PRIMARY: `prlsrvctl usb list` after the set showed Autoconnect-Action guest and the VM name, but
+> the device stayed on the host): `usb set` changes the autoconnect rule only; a device already plugged in moves to the VM at its next plug-in.
+> `prlctl set <vm> --help` in 27.1.0 lists a `usb` category but no command that connects a present device, so re-plugging is the operator step.
+
