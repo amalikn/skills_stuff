@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261125_1939.md](changelog-20261125_1939.md) 1 entry, 2026-11-17 to 2026-11-17: smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)
 - [changelog-20261120_2140.md](changelog-20261120_2140.md) 1 entry, 2026-11-17 to 2026-11-17: Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)
 - [changelog-20261120_2119.md](changelog-20261120_2119.md) 1 entry, 2026-11-16 to 2026-11-16: Solutions to platforms (no version change)
 - [changelog-20261120_1725.md](changelog-20261120_1725.md) 1 entry, 2026-11-16 to 2026-11-16: fleet facts for a remote conversion: boot partition free, root label, x86 disk layouts (v0.14.4 -> v0.14.5)

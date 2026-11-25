@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261120_2140
+Last rotated: 20261125_1939
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261125_1937 — RCT serial console shares ttyS0 with tstik's AVR link (v0.17.0 -> v0.17.1)](#20261125_1937--rct-serial-console-shares-ttys0-with-tstiks-avr-link-v0170---v0171)
 - [20261120_2155 — pre-push hook lints the pushing worktree (v0.16.9 -> v0.17.0)](#20261120_2155--pre-push-hook-lints-the-pushing-worktree-v0169---v0170)
 - [20261120_2140 — 24.04 role differences and the relative-playbook trap from the role builds (v0.16.8 -> v0.16.9)](#20261120_2140--2404-role-differences-and-the-relative-playbook-trap-from-the-role-builds-v0168---v0169)
 - [20261120_2119 — smc_change render check and lint mode; variables_files on ansible-core 2.18 (v0.16.7 -> v0.16.8)](#20261120_2119--smc_change-render-check-and-lint-mode-variables_files-on-ansible-core-218-v0167---v0168)
@@ -39,9 +40,12 @@ Last reviewed: 2026-10-27
 - [20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)](#20261118_2049--storage-identity-readable-on-x86-and-pi-low-touch-description-record-name-locid-v0149---v0150)
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
 - [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
-- [20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)](#20261117_1857--smc_change_multiple-never-pass--e-smc_change-vars-guard-blocks-edits-delta-gate-on-rewritten-files-v0146---v0147)
 
 ---
+
+## 20261125_1937 — RCT serial console shares ttyS0 with tstik's AVR link (v0.17.0 -> v0.17.1)
+
+- references/06_failure-modes.md: Learned entry. The `*/5` update:stats cron sets the shared UART to 19200, which breaks a 115200 console and getty (smc-resiliency 20261125).
 
 ## 20261120_2155 — pre-push hook lints the pushing worktree (v0.16.9 -> v0.17.0)
 
@@ -191,10 +195,3 @@ whole AVR play; "banner exchange" timeouts are the ssh plugin's 10 s default aga
 New read-only `scripts/access/ssh_handshake_time.sh` (`just ssh_handshake_time`, offline test `just test_ssh_handshake_time`, smoke-run on wujal-wujal-booth-smc01, catalogued in `scripts/README.md`);
 reference 19: any SMC a run did not finish (offline, no record, unreachable, refused, failed, held back) is noted and fails INCOMPLETE, in the wrapper's last play when `smc_change_defer_incomplete` is
 set (operator; side-agent note on later plays).
-
-## 20261117_1857 — smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)
-
-`references/19_smc-change-role.md` (smc_change_multiple bullets): `-e smc_change=<spec>` outranks each import's play var, so both imports ran rct-avr-smsc and the AVR flash never ran (23-SMC batch,
-2026-11-17: 4 passed, 6 failed on AVR 2.14, 13 never started); what `6/11 ACTIONS` means and why the AVR version check fails instead of skipping. `references/13_known-issues.md`: the vars guard also
-blocks non-printing edits of inventory host files (use `just smc_mark_iridium`); the lint delta gate brings old findings of a rewritten file in as new; pipefail needs bash (ansible-wifi chat
-f516e57d).

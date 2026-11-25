@@ -640,6 +640,16 @@ public function sendData($data, $length = 0)
     $this->openSerialIO("/dev/ttyS0", 19200, 1, 8, 0);   // stty + serialflush before every message
 ```
 
+> **Learned 2026-11-25** · a serial console on an RCT Pi shares `/dev/ttyS0` with tstik's AVR link · VERIFIED_PRIMARY (bench card, warehouse rct-iridium image
+> with `console=serial0,115200` added, no AVR fitted) · Source: smc-resiliency CHANGELOG 20261125_1937 · Falsifier: an RCT Pi with tstik's cron running whose
+> `stty -F /dev/ttyS0 speed` stays 115200 across a `*/5` minute
+> The GPIO 14/15 console and the AVR are the same mini UART. Root cron `*/5 ... php artisan update:stats` sets the port to 19200 and writes AVR frames on it, so
+> five minutes after boot at most a 115200 console shows one junk byte (0xE0) per key and a garbled prompt; agetty runs with `--keep-baud`, so restarting it
+> keeps 19200. Boot output (bootloader, kernel, first prompt) comes before cron and reads clean. To get a login on the console: `stty -F /dev/ttyS0 115200`,
+> `systemctl restart serial-getty@ttyS0`, and pause tstik's cron while you work. With an AVR fitted, kernel messages and getty output also reach the AVR. That
+> may be why the field image leaves the console off the UART (UNVERIFIED). Recording the console without writing to it (conserver `spy`) is safe.
+> Kernel panic and watchdog text after the first cron run likely goes out at 19200 too (UNVERIFIED): pause the cron before a hang or crash test.
+
 > **Learned 2026-10-28 (c)** · AVR V3.07 on a Thuraya control board loses the SIM · USER_STATED (a team member, relayed by the operator, with Stats
 > page screenshots) · Source: change record `rct-tstik-iridium-update-20261028_1221.md` 5.6-5.7 (local-knowledge-ansible) · Falsifier: a Thuraya-equipped board on V3.07 whose Stats page still shows
 > IridiumSIMSerial and passes the self test V3.07 is for Iridium. On a control board that still has the Thuraya module, after V2.14 -> V3.07 the board's SIM is no longer detected (IridiumSIMSerial and
