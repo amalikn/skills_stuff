@@ -42,6 +42,11 @@ Kind: log
 
 ---
 
+## 20261125_1949 — Public record for a private address; negative-cache flapping; --resolve pinning (v2.3.22 -> v2.3.23)
+
+- references/network-services.md, Learned 2026-11-25 (i): DNS-only public A to a LAN address for a Let's Encrypt name; first-lookup NXDOMAIN cached
+  for the SOA minimum (router flapping, macOS resolver cache); curl --resolve to verify by name without LAN DNS (home NAS).
+
 ## 20261125_1331 — Host input firewall beside Docker; OrbStack rehearsal quirks (v2.3.21 -> v2.3.22)
 
 - references/security-and-segmentation.md, Learned 2026-11-25: input-only nftables table of its own beside Docker, loaded before docker.service, proved

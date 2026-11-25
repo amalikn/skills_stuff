@@ -331,3 +331,16 @@ AAA:
 > the one zone; nothing in DNS-01 itself shows that. Check every new or rotated token: `GET /user/tokens/verify` is active, `GET /zones` returns exactly
 > the expected zone, the zone's nameservers match what public resolvers return, then a TXT record is created, read straight from the zone's
 > authoritative server (`dig @<ns>`), and deleted. Read-only by default; the round trip only with an explicit flag.
+
+> **Learned 2026-11-25 (i)** · public A record for a private address, home LAN behind a consumer router · VERIFIED_PRIMARY (dig against the
+> zone's nameserver, 1.1.1.1, 8.8.8.8 and the router, repeated; curl through the macOS system resolver) · Source: home NAS project
+> scripts/nas_dns_records.py and scripts/nas_api.sh at 7651961 · Falsifier: a router that returns NXDOMAIN for the name after the zone's negative TTL
+> (1) A DNS-only public A record pointing at a LAN address lets every device (and VPN clients routed to the LAN) use the name on a Let's Encrypt
+> certificate with no local DNS; the router passed private answers (no rebinding filter seen). (2) Query a new name only after creating it: the first
+> lookups made right after creation were cached as NXDOMAIN for the zone's SOA minimum (Cloudflare 1800 s). The router flapped between answer and
+> NXDOMAIN (two upstreams, one with the negative cached), and the macOS system resolver held its own negative entry while `dig` (which bypasses it)
+> already answered; both cleared within the TTL without a flush. Check with the system resolver (curl, getaddrinfo), not only dig. (3) Make API
+> clients independent of LAN DNS by pinning the certificate name to the known IP and verifying with the system trust store:
+> ```bash
+> curl --resolve "malik-nas.example.org:8006:192.168.86.151" https://malik-nas.example.org:8006/api2/json/version   # name verified, no DNS
+> ```

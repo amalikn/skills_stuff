@@ -111,3 +111,9 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > (conserver-server does): `enable` then `restart`, and assert `is-enabled`. To give another project console access without root on the node, a CT
 > user whose authorized_keys line is `restrict,pty,command="/usr/local/bin/lab-console" <key>` and a wrapper that allows only `list`, `spy <name>`
 > (`console -s`, read-only) and `attach <name>` from `SSH_ORIGINAL_COMMAND`; `console -s` works without a tty, so a recorder can stream it.
+
+> **Learned 2026-11-25 (l)** · PVE 9.2.2, running Debian 13 LXC · VERIFIED_PRIMARY (`pct set 102 -dev1 /dev/serial/by-id/...,gid=20,mode=0660` on
+> the running CT; the device appeared inside at once) · Source: home NAS console boxer-lab, 2026-11-25 · Falsifier: a devN change that stays pending
+> until a CT restart
+> A USB-serial adapter passed as `devN` by its /dev/serial/by-id path is hot-added to a running container (no restart); the consumer (conserver) still
+> needs its own reload to use it.

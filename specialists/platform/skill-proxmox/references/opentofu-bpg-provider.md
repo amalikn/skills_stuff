@@ -231,3 +231,14 @@ and IDs 900 to 909.
 > grep -qE '# proxmox_virtual_environment_(container|vm)\.[a-z0-9_]+(\[[^]]*\])? will be updated in-place' "$plan_log" && exit 1  # unless allowed
 > tofu -chdir=scratch init -plugin-dir="$TF_DATA_DIR/providers" && tofu -chdir=scratch providers schema -json > schema.json
 > ```
+
+> **Learned 2026-11-25 (b)** · bpg/proxmox 0.123.1, OpenTofu 1.13, PVE 9.2.2 · VERIFIED_PRIMARY (installed provider schema; plan showed
+> `data_wo = (write-only attribute)`; certificate issued in 89 s) · Source: home NAS tofu/host/main.tf and nas.auto.tfvars at 7651961 · Falsifier: a
+> provider release without `data_wo` on proxmox_acme_dns_plugin
+> `proxmox_acme_dns_plugin` takes the DNS API token as `data_wo` with `data_wo_version` (bump it after a rotation), so the token never enters state;
+> `data` stores it. Check the account name before the first order: a variable defaulting to "default" orders against an account that a GUI or host
+> script created under another name (here `malik`).
+> ```hcl
+> data_wo         = { CF_Token = var.cloudflare_api_token }
+> data_wo_version = 1
+> ```
