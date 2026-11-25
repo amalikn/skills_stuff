@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 (v2.3.29 -> v2.3.30): references/backup-disaster-recovery.md, Learned 2026-11-25: off-host copy pulled by a workstation (read-and-list key, never overwrite, hard stop on a shared APFS pool; Continuum FR-655).
+
 - 2026-11-25 (v2.3.28 -> v2.3.29): references/observability-and-incident.md, Learned 2026-11-25: an outage alert has to run off the box (home NAS heartbeat).
 
 - 2026-11-25 (v2.3.27 -> v2.3.28): references/storage-and-data.md, Learned 2026-11-25: SMART gate on empty disks: short test plus health, build, rerun the extended test before data (home NAS DL-040).

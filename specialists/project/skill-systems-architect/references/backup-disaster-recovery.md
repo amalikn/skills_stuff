@@ -156,6 +156,21 @@ Backup isolation: production admin must not be able to delete copy 2 or copy 3
 > envelope names it), and a restore onto a fresh machine needs the basis from the store, not from the previous target. Savings measured: under 1 % of a full bundle for a
 > 554 MB repository; 0.1 to 0.5 % of a 719 MB tree with 16 KiB chunks.
 
+> **Learned 2026-11-25** · off-host copy pulled by a workstation · VERIFIED_PRIMARY (SeaweedFS 4.54 dev stack: a Read and List key refused PutObject and
+> DeleteObject; `df`: the Mac's system and data volumes both showed 36 GiB available, one APFS container) · Source: continuum-app
+> `deploy/coordinator/install.py` `s3_json`, `scripts/deploy/store_pull.py` (8fe7432); Continuum DL-257, DL-258 · Falsifier: a pull identity that can delete; an APFS
+> data volume whose free space is independent of its system volume.
+> A workstation that pulls the backup copy needs three things. A read-and-list-only key on the store, so the copy side holds nothing that can damage the
+> primary. Never overwrite a file already held, with a check that needs no key (restic names files by SHA-256 of their content), so a compromised
+> primary can only withhold new objects. And a hard stop, not only an alert, when the copy shares free space with the OS: APFS volumes in one container
+> share one pool, so a growing copy can fill the startup disk. Never-delete makes the copy outgrow the source (it keeps what the source pruned): size the
+> destination for growth or plan the move to a dedicated drive. Off-host is not off-site: a copy in the same house survives a failed pool or a stolen NAS,
+> not a fire.
+>
+> ```json
+> {"name": "store-pull", "actions": ["Read:continuum-restic", "List:continuum-restic"]}
+> ```
+
 ## Recovery budget arithmetic
 
 - `RTO_actual = detect + decide + provision + transfer + replay/startup + validate + client cutover`.
