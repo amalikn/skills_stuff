@@ -23,6 +23,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 - 2026-11-24: v2.3.17, Learned from continuum (EC2 public DNS under the Public Suffix List; per-boot WireGuard peer slot); check_package exempts table rows.
 - 2026-11-25: v2.3.19, Learned from continuum (DigitalPlat hosted API, Cloudflare Free full setup, ntfy iOS upstream; self-hosted NetBird limits; WireGuard plus UDP 443 with a static IPv4).
 
+- 2026-11-25 (home NAS): v2.3.21, DNS-01 token scope check entry (h).
+
 ## Next actions
 
 - 2026-11-22 night: v2.3.13 write-back from continuum (one forward-auth gate for sub-path apps). Next: same WebSocket check behind a TLS-inspecting proxy on a real guest PC.

@@ -221,3 +221,13 @@ Identity on first boot:
 [anscheck]: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_checkmode.html
 
 [mid]: https://www.freedesktop.org/software/systemd/man/latest/machine-id.html
+
+> **Learned 2026-11-25** · rebuild-from-scratch kit for a single home server (Proxmox VE 9.2) · VERIFIED_PRIMARY (run on the configured node: plan 12 s,
+> apply 42 s, no changes; its key checks proven able to fail by mutation, not every step) · Source: home NAS project `scripts/nas_node_bootstrap.sh`, `docs/operator-steps/`,
+> `docs/as-built/README.md`, AGENTS.md rebuild rule (commits 4606775, 4e25928) · Falsifier: a fresh install that the kit does not bring to the recorded state
+> "Rebuild from a fresh install" holds only with four parts kept together: (1) one idempotent bootstrap that runs every codified step in order (checks,
+> identities, secrets generated into the vault, infrastructure-as-code applied only when the plan creates or updates), plan by default; (2) an
+> operator-steps folder with every hand step (accounts, DNS, router, key paste), its secret's vault entry, check, redo and rotate, written in the same
+> turn it is handed over; (3) an as-built ledger row per node change naming its codified form; (4) a standing rule that a command run by hand in a
+> session is promoted into the repo before the session ends. Rerun the bootstrap on the live node after each addition: a step that reports work on a
+> configured node is not idempotent (here the image fetch and alerts plans said "would" for items already present until fixed).

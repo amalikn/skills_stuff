@@ -324,3 +324,10 @@ AAA:
 [libvirt-fd]: https://libvirt.org/formatdomain.html
 [virsh]: https://libvirt.org/manpages/virsh.html
 [kvm-mq]: https://www.linux-kvm.org/page/Multiqueue
+
+> **Learned 2026-11-25 (h)** · DNS-01 token check for a zone on Cloudflare Free · VERIFIED_PRIMARY (run 2026-11-25) · Source: home NAS project
+> `scripts/nas_dns_check.py` (commit a3c6fae) · Falsifier: a zone-scoped token that lists other zones from `GET /zones`
+> A token made in an account that already holds another zone saw both zones (the second project's zone too) until its Zone Resources were narrowed to
+> the one zone; nothing in DNS-01 itself shows that. Check every new or rotated token: `GET /user/tokens/verify` is active, `GET /zones` returns exactly
+> the expected zone, the zone's nameservers match what public resolvers return, then a TXT record is created, read straight from the zone's
+> authoritative server (`dig @<ns>`), and deleted. Read-only by default; the round trip only with an explicit flag.

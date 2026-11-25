@@ -42,6 +42,10 @@ Kind: log
 
 ---
 
+## 20261125_1250 — DNS-01 token scope check (v2.3.20 -> v2.3.21)
+
+- references/network-services.md, Learned 2026-11-25 (h): a token in a multi-zone account saw another project's zone; check the zone list equals the expected zone, then a TXT round trip read from the authoritative server (home NAS `nas_dns_check.py`).
+
 ## 20261125_1119 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)
 
 - references/network-services.md, Learned 2026-11-25 (g): Cloudflare Free accepted a zone under a PSL private-section suffix (resolves (e)); DigitalPlat nameservers

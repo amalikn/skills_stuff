@@ -428,3 +428,16 @@ let row = sqlx::query("DELETE FROM portal_login WHERE state = $1 AND session_sha
 > A public client with `pkce.code.challenge.method = S256` refuses the device-grant start (`/protocol/openid-connect/auth/device`) with 400 unless it carries
 > `code_challenge` and `code_challenge_method`, and the token poll then needs `code_verifier`; a wrong verifier gets `invalid_grant`. Send PKCE on every device
 > grant: a client without enforcement accepts it too.
+
+> **Learned 2026-11-25 (b)** · break-glass copy into a typed-password recovery vault (KeePassXC CLI 2.8) · VERIFIED_PRIMARY (tested on a throwaway
+> vault: create, copy, exact value read back, rerun skip, wrong password refused) · Source: home NAS project `scripts/nas_recovery_copy.sh`
+> (commit 98ab4a7), DL-039 · Falsifier: a copied entry whose value differs from the source, or a run that stores the recovery password anywhere
+> Applying the 2026-11-21 custody rule takes one operator command: the script prompts for the recovery vault password (`read -s`), creates the vault
+> when missing, copies only the listed break-glass entries that are missing, and proves each copy by reading it back (length, and in the test the
+> exact value). The secret moves only through pipes (`keepassxc-cli add -p` reads the master then the value from stdin); the agent never sees the
+> recovery password, so the step is handed to the operator and recorded in the project's operator steps. Test it with a stub of the main-vault reader.
+> ```bash
+> value="$(kp show -s -a Password "$e" | tr -d '\n')"
+> printf '%s\n%s\n%s\n' "$RPW" "$value" "$value" | keepassxc-cli add -q -p "$VAULT" "$e" >/dev/null
+> got="$(printf '%s\n' "$RPW" | keepassxc-cli show -q -s -a Password "$VAULT" "$e" | tr -d '\n' | wc -c)"
+> ```

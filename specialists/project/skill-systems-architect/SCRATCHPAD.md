@@ -31,6 +31,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 - 2026-11-19: v2.3.15, two identity write-backs from continuum-app TASK-164 (edge client-certificate anchor, Keycloak issuer across networks).
 - 2026-11-24: v2.3.25, Learned from continuum (EFS is not a backup; raft snapshot needs the escrowed shares; t4g break-even; ephemeral owner hosts hand back before self-terminating).
 
+- 2026-11-25 (home NAS): v2.3.27, recovery-vault copy and rebuild kit entries.
+
 ## Next actions
 
 - 2026-11-22 night: v2.3.23 write-backs from continuum (backup library vs process; incremental/chunked artefacts and retention; private-key copy on a removable drive; OpenFGA owner checks). Next: confirm prune with rustic_core before trusting it for retention.
