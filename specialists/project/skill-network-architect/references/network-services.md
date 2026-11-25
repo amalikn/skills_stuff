@@ -160,39 +160,33 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
   0.0.0.0 service to the home LAN.
 
 > **Learned 2026-11-24** · cloud provider host names as identity anchors · VERIFIED_PRIMARY (publicsuffix.org list, read 2026-11-24: `*.compute.amazonaws.com`) ·
-> Source: continuum chat 2026-11-24 ("why don't we use EC2 public DNS?"), DL-173 · Falsifier: AWS leaving the Public Suffix List.
-> Every `ec2-a-b-c-d.<region>.compute.amazonaws.com` is its own registrable domain (a public suffix sits above it), so a WebAuthn RP ID, cookie scope or certificate
-> bound to it is bound to that one address: releasing the Elastic IP or rebuilding the host breaks every passkey. It also resolves to the public address, useless for
-> a service reachable only over a VPN, and changes on every start of a host without a static IP. Use a subdomain of a domain the organisation owns, resolved on the
-> VPN's resolver; pick one kept for years with auto-renew, because changing the RP ID re-registers every passkey.
+> Source: continuum chat 2026-11-24 ("why don't we use EC2 public DNS?"), DL-173 · Falsifier: AWS leaving the Public Suffix List. Every `ec2-a-b-c-d.<region>.compute.amazonaws.com` is its own
+> registrable domain (a public suffix sits above it), so a WebAuthn RP ID, cookie scope or certificate bound to it is bound to that one address: releasing the Elastic IP or rebuilding the host breaks
+> every passkey. It also resolves to the public address, useless for a service reachable only over a VPN, and changes on every start of a host without a static IP. Use a subdomain of a domain the
+> organisation owns, resolved on the VPN's resolver; pick one kept for years with auto-renew, because changing the RP ID re-registers every passkey.
 
 > **Learned 2026-11-24 (b)** · free subdomain registrars as identity anchors (DigitalPlat FreeDomain) · VERIFIED_PRIMARY (publicsuffix.org list read
-> 2026-11-24: DigitalPlat section lists `dpdns.org`, `us.kg`, `qzz.io`; live API `GET https://domain-api.digitalplat.org/api/v1/domains/<name>` with a Bearer
-> key returned `expires_at` one year after `created_at`, `auto_renew` null) · VERIFIED_SECONDARY (third-party auto-renew repo: free renewal opens 120 days
-> before expiry, `POST /domains/{domain}/renew`) · Source: continuum DL-227, TASK-588 · Falsifier: a DigitalPlat name renewed for more than a year, or the
-> suffix leaving the Public Suffix List.
-> A name under a suffix on the Public Suffix List (`<name>.dpdns.org`) is its own registrable domain: valid as a WebAuthn RP ID and with its own Let's Encrypt
-> rate limits, unlike a name under a provider suffix that is not listed. Free registrations run one year and must be renewed (by API, in the window): a lapse
-> changes the RP ID and re-registers every passkey, so renewal is a scheduled job with an alert, not a calendar note. The API host answers scripts; the
-> website hosts (`dash.domain.digitalplat.org`, `dashboard.digitalplat.org`) serve a bot challenge even to API paths. The open-source code
-> (DigitalPlatDev/Domain-OSS `docs/API.md`) documents DNS records and an ACME DNS-01 challenge endpoint; lego and acme.sh had no DigitalPlat provider when
-> checked, so DNS-01 needs a hook script.
+> 2026-11-24: DigitalPlat section lists `dpdns.org`, `us.kg`, `qzz.io`; live API `GET https://domain-api.digitalplat.org/api/v1/domains/<name>` with a Bearer key returned `expires_at` one year after
+> `created_at`, `auto_renew` null) · VERIFIED_SECONDARY (third-party auto-renew repo: free renewal opens 120 days before expiry, `POST /domains/{domain}/renew`) · Source: continuum DL-227, TASK-588 ·
+> Falsifier: a DigitalPlat name renewed for more than a year, or the suffix leaving the Public Suffix List. A name under a suffix on the Public Suffix List (`<name>.dpdns.org`) is its own registrable
+> domain: valid as a WebAuthn RP ID and with its own Let's Encrypt rate limits, unlike a name under a provider suffix that is not listed. Free registrations run one year and must be renewed (by API,
+> in the window): a lapse changes the RP ID and re-registers every passkey, so renewal is a scheduled job with an alert, not a calendar note. The API host answers scripts; the website hosts
+> (`dash.domain.digitalplat.org`, `dashboard.digitalplat.org`) serve a bot challenge even to API paths. The open-source code (DigitalPlatDev/Domain-OSS `docs/API.md`) documents DNS records and an ACME
+> DNS-01 challenge endpoint; lego and acme.sh had no DigitalPlat provider when checked, so DNS-01 needs a hook script.
 
 > **Learned 2026-11-24 (c)** · is a home line reachable inbound · VERIFIED_PRIMARY (RFC 6598 100.64.0.0/10; a traceroute from a Mac on a home LAN) · Source:
-> continuum NAS options, DL-230; `scripts/home_line.py` · Falsifier: a CGNAT line whose first hop after the router is a public address.
-> Before planning a port forward (WireGuard hub at home), run `traceroute -n -m 5 -q 1 1.1.1.1` from the LAN and note the public address from an echo service:
-> hop 1 is the router; a 100.64.0.0/10 hop next means CGNAT, an RFC 1918 hop means a second NAT, a public hop means the router most likely holds the public
-> address. The router's own WAN address equal to the public one confirms it. `just home-line <line.json>` classifies the saved output. A "static" address is
-> the ISP's statement and cannot be seen from the line.
+> continuum NAS options, DL-230; `scripts/home_line.py` · Falsifier: a CGNAT line whose first hop after the router is a public address. Before planning a port forward (WireGuard hub at home), run
+> `traceroute -n -m 5 -q 1 1.1.1.1` from the LAN and note the public address from an echo service: hop 1 is the router; a 100.64.0.0/10 hop next means CGNAT, an RFC 1918 hop means a second NAT, a
+> public hop means the router most likely holds the public address. The router's own WAN address equal to the public one confirms it. `just home-line <line.json>` classifies the saved output. A
+> "static" address is the ISP's statement and cannot be seen from the line.
 
 > **Learned 2026-11-25 (d)** · a free registrar's hosted API (DigitalPlat), refines (b) · VERIFIED_PRIMARY (read 2026-11-24/25 with a key, GET only; renewal call
-> VERIFIED_SECONDARY from a third-party auto-renew repo, not yet run) · Source: continuum TASK-588, continuum-app `scripts/deploy/domain_renew.py` (5068f33) · Falsifier: a
-> hosted-API path under a domain that answers something other than 403 for a route that does not exist, or an ACME-challenge route on the hosted API.
-> Records are at `GET /api/v1/domains/<name>/dns/records`; the zone is at `/dns`, with free-plan limits in the answer (60 changes a minute, 1000 a day, 200 records a
-> zone). Every other path under a domain answers 403 `forbidden` as a catch-all, so a 403 proves nothing about whether a route exists; no ACME-challenge route was
-> found. The error shape `{"error":{"code","message"},"success":false}` differs from the open-source Domain-OSS code, so the OSS docs (cited in (b)) do not
-> describe the hosted service: probe the hosted API before building on an OSS endpoint. `expires_at` comes without a UTC offset: read it as UTC. Renewal is
-> `POST /domains/<name>/renew` with `{"renewal_type":"free","years":1}` and an `Idempotency-Key` header.
+> VERIFIED_SECONDARY from a third-party auto-renew repo, not yet run) · Source: continuum TASK-588, continuum-app `scripts/deploy/domain_renew.py` (5068f33) · Falsifier: a hosted-API path under a
+> domain that answers something other than 403 for a route that does not exist, or an ACME-challenge route on the hosted API. Records are at `GET /api/v1/domains/<name>/dns/records`; the zone is at
+> `/dns`, with free-plan limits in the answer (60 changes a minute, 1000 a day, 200 records a zone). Every other path under a domain answers 403 `forbidden` as a catch-all, so a 403 proves nothing
+> about whether a route exists; no ACME-challenge route was found. The error shape `{"error":{"code","message"},"success":false}` differs from the open-source Domain-OSS code, so the OSS docs (cited
+> in (b)) do not describe the hosted service: probe the hosted API before building on an OSS endpoint. `expires_at` comes without a UTC offset: read it as UTC. Renewal is `POST /domains/<name>/renew`
+> with `{"renewal_type":"free","years":1}` and an `Idempotency-Key` header.
 >
 > ```python
 > # continuum-app scripts/deploy/domain_renew.py (5068f33)
@@ -203,18 +197,33 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
 > ```
 
 > **Learned 2026-11-25 (e)** · DNS on Cloudflare Free for a name from a free registrar · VERIFIED_PRIMARY (developers.cloudflare.com DNS zone setups, full setup, read
-> 2026-11-25); acceptance of a private-section suffix UNVERIFIED until tried · Source: continuum DL-237, DL-241, ASK-612 · Falsifier: Cloudflare accepting or
-> refusing a zone one level below a PSL private-section suffix.
-> Cloudflare's full setup needs the zone apex to be one level below a Public Suffix List suffix. Whether a suffix in the PSL's private section (where free
-> registrars' suffixes sit) counts is not documented: try onboarding before planning on it. If accepted, the registrar keeps the domain and only the nameservers
-> move; an API token limited to Zone DNS Edit on that one zone serves DNS-01 through the stock lego, acme.sh or Traefik Cloudflare provider and cannot transfer or
-> release the domain, so it is a smaller secret than the registrar's API key.
+> 2026-11-25); acceptance of a private-section suffix UNVERIFIED until tried · Source: continuum DL-237, DL-241, ASK-612 · Falsifier: Cloudflare accepting or refusing a zone one level below a PSL
+> private-section suffix. Cloudflare's full setup needs the zone apex to be one level below a Public Suffix List suffix. Whether a suffix in the PSL's private section (where free registrars' suffixes
+> sit) counts is not documented: try onboarding before planning on it. If accepted, the registrar keeps the domain and only the nameservers move; an API token limited to Zone DNS Edit on that one zone
+> serves DNS-01 through the stock lego, acme.sh or Traefik Cloudflare provider and cannot transfer or release the domain, so it is a smaller secret than the registrar's API key.
 
 > **Learned 2026-11-25 (f)** · push alerts to an iPhone from self-hosted ntfy · VERIFIED_PRIMARY (docs.ntfy.sh/config, "iOS instant notifications", read 2026-11-25) ·
-> Source: continuum DL-243 · Falsifier: an ntfy release whose iOS app gets instant delivery from a self-hosted server with no upstream.
-> iOS instant delivery needs the public ntfy.sh as upstream even for a self-hosted server (Apple push goes through ntfy.sh), so self-hosting does not remove the
-> third party for an iPhone. For a few alerts, the public ntfy.sh with a long random topic name, kept in the password manager and out of Git and cloud-init, is
-> the simple option; send nothing secret in the message (host and days left).
+> Source: continuum DL-243 · Falsifier: an ntfy release whose iOS app gets instant delivery from a self-hosted server with no upstream. iOS instant delivery needs the public ntfy.sh as upstream even
+> for a self-hosted server (Apple push goes through ntfy.sh), so self-hosting does not remove the third party for an iPhone. For a few alerts, the public ntfy.sh with a long random topic name, kept in
+> the password manager and out of Git and cloud-init, is the simple option; send nothing secret in the message (host and days left).
+
+> **Learned 2026-11-25 (g)** · moving a free-registrar name to Cloudflare and issuing by DNS-01, resolves the open point in (e) · VERIFIED_PRIMARY (done 2026-11-25:
+> Cloudflare Free accepted `<name>.dpdns.org`; registrar API GET showed the new nameservers; `dig +trace` delegation; a Let's Encrypt staging certificate by DNS-01; caddy-dns/cloudflare README read
+> the same day) · Source: continuum ASK-612, TASK-599, continuum-app c3afdad · Falsifier: a resolver that answers a just-delegated zone correctly on the first query, or a Caddy Cloudflare module
+> that works with a token without Zone Read. (1) Cloudflare accepted a zone one level below a PSL private-section suffix and activated it about 40 minutes after the nameserver change. (2)
+> DigitalPlat's hosted API shows `nameservers` but documents no write for them: change them in its dashboard, never by guessing a write path. Its API host sits behind Cloudflare and refuses Python's
+> default User-Agent (403, error 1010): send your own. (3) On the day of the move, 1.1.1.1 answered SERVFAIL for names under the zone while 8.8.8.8 and the zone's own nameservers answered NXDOMAIN
+> (most likely the old delegation still cached), and Caddy's zone lookup failed through it: give the ACME client more than one resolver (`resolvers 8.8.8.8 1.1.1.1`) and retry on another before
+> blaming the token. (4) Caddy's Cloudflare provider finds the zone by name, so its token needs Zone Read as well as DNS Edit (module README; refines (e); lego's provider UNVERIFIED); a TXT create,
+> read from the zone's nameserver, delete round trip proves the token before any ACME run.
+>
+> ```text
+> # continuum-app deploy/nas/caddy/Dockerfile (c3afdad)
+> FROM caddy:2.11.9-builder AS build
+> RUN xcaddy build v2.11.9 --with github.com/caddy-dns/cloudflare@a8737d095ad5a48ca031cea6ab704057dbc2d250
+> FROM caddy:2.11.9
+> COPY --from=build /usr/bin/caddy /usr/bin/caddy
+> ```
 
 ## Failure modes and tests
 
