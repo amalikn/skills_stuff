@@ -189,3 +189,11 @@ ACLs with no matching user ACL; tokens that never expire. Exit 1 on any high fin
 > A token that manages ACME plugins or accounts as code needs Sys.Modify on `/` itself; a node path is not enough. The pack's `token_audit` then
 > reports `broad-root-grant` (high) for that role on `/`; it is required when the role carries no Permissions.Modify and no VM rights, so record
 > it as accepted in the project's decision log rather than narrowing the ACL and breaking ACME.
+
+> **Learned 2026-11-25 (j)** · Proxmox VE 9.2.2 · VERIFIED_PRIMARY (API reads with a pool-scoped token; budget check run with a lowered limit) · Source: home
+> NAS project `scripts/host/pve_api_identity.sh --continuum`, `scripts/host/pve_alerts.sh` freshness, `docs/references/10-guest-projects.md` (DL-043)
+> · Falsifier: a PVE 9.2 setting that caps a pool's total RAM or vCPUs
+> Sharing one node with another project: a second privsep token with the same role on its own pool, storages and per-VMID ACLs sees only its pool's
+> guests (`/nodes/<n>/qemu` returned none of the host project's VMs) and only the listed storages. Pools carry no CPU or RAM quota, so a budget is a
+> daily check: sum `maxmem` and `maxcpu` of `pvesh get /pools/<pool>` members against a file and alert; disk is capped by a ZFS `quota` on the
+> pool's dataset (use `quota`, not `refquota`, since VM disks are child zvols).

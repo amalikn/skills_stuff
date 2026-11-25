@@ -267,3 +267,9 @@ Logs:
 [promalert]: https://prometheus.io/docs/practices/alerting/
 
 [ne1url]: https://github.com/prometheus/node_exporter/blob/master/collector/filesystem_linux.go
+
+> **Learned 2026-11-25** · single home server with phone alerts · USER_STATED (operator decision DL-047) with VERIFIED_PRIMARY run · Source: home NAS project
+> `scripts/nas_heartbeat.py` (launchd every 15 min) · Falsifier: an on-box check that reports the box's own power or network loss
+> Every alert that runs on a box (its notifications, timers, freshness checks) goes silent when the box is down. Add one check from another machine
+> that already runs: a TCP connect to the management port every 15 minutes, alert after two misses and once on recovery, state in a small file. A
+> laptop as the checker only covers the hours it is awake; say so in the runbook rather than claim an off-site monitor.

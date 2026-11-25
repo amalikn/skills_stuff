@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 lxc-containers.md (i): static IP on running CTs via bpg is in place; access-control.md (j): second project on one node: pool-scoped token, budgets as a daily check, ZFS quota (home NAS).
+
 - 2026-11-25 references/storage.md: Learned 2026-11-25: clearing old-NAS md-RAID disks by serial; `zfs create` reads a passphrase from non-terminal stdin; prove the vault copy by unload and reload (home NAS).
 
 - 2026-11-25 references/lxc-containers.md: Disputed (h) against (e): bpg 0.123.1 cannot set nesting on an existing CT with a privsep token (403); Debian 13 systemd 257 needs it; set it in the root host script (home NAS).

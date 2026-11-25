@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 (v2.3.28 -> v2.3.29): references/observability-and-incident.md, Learned 2026-11-25: an outage alert has to run off the box (home NAS heartbeat).
+
 - 2026-11-25 (v2.3.27 -> v2.3.28): references/storage-and-data.md, Learned 2026-11-25: SMART gate on empty disks: short test plus health, build, rerun the extended test before data (home NAS DL-040).
 
 - 2026-11-25 (v2.3.26 -> v2.3.27): references/security-and-service-identity.md, Learned 2026-11-25 (b): scripted break-glass copy into a typed-password recovery vault, value read back; references/provisioning-and-lifecycle.md, Learned 2026-11-25: rebuild-from-scratch kit (idempotent bootstrap, operator steps, as-built ledger, promote hand commands) (home NAS).

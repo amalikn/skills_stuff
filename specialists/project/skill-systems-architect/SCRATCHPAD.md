@@ -35,6 +35,8 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 - 2026-11-25 (home NAS): v2.3.28, SMART gate on empty disks entry.
 
+- 2026-11-25 (home NAS): v2.3.29, off-box outage heartbeat entry.
+
 ## Next actions
 
 - 2026-11-22 night: v2.3.23 write-backs from continuum (backup library vs process; incremental/chunked artefacts and retention; private-key copy on a removable drive; OpenFGA owner checks). Next: confirm prune with rustic_core before trusting it for retention.

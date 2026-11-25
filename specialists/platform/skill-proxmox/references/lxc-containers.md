@@ -89,3 +89,7 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > pct config "$id" | grep -q '^features:.*nesting=1' || pct set "$id" --features nesting=1   # then restart the CT
 > ```
 
+> **Learned 2026-11-25 (i)** · Proxmox VE 9.2.2, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY (apply output; `ip -4 addr` in each CT) · Source: home NAS
+> project `tofu/containers.tf` (DL-045) · Falsifier: a running CT that needs a restart before the new address appears
+> Changing `initialization.ip_config.ipv4` of running unprivileged containers from `dhcp` to a static `address`/`gateway` through bpg is an in-place
+> update (no replace, no restart): the three containers had the new address and default route seconds after the apply.
