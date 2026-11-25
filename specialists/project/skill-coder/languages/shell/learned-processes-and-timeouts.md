@@ -164,3 +164,20 @@ The alarm-then-exec form above does not stop a program that catches SIGALRM (Go 
 > # home NAS scripts/nas_tm_status.sh
 > stuck="$(ps -axo stat=,comm= | awk '$1 ~ /^U/ && $2 ~ /(diskutil|NetAuthSysAgent|backupd-helper|mount_smbfs)/ {n++} END {print n+0}')"
 > ```
+
+> **Learned 2026-11-25 (e)** · `sync` on macOS · VERIFIED_PRIMARY (smc-resiliency: spike tests and a card-flash guard hung behind a Time Machine first backup) ·
+> Source: smc-resiliency `spike/release/rauc/tryboot_backend.sh` (495ccb35), CHANGELOG 20261125_2026 · Falsifier: `sync <file>` on macOS returning while a network
+> share stays dirty
+> macOS `sync` takes no operands: `sync <file>` is a global sync, so the Linux idiom `sync "$f" 2>/dev/null || sync` flushes every mounted file system on the Mac,
+> and waits, in state U (unkillable, `timeout` cannot end it), for as long as a network share keeps being written (34 min seen; hours during a first backup). Code
+> that runs on the Mac flushes only what it wrote (Python `os.fsync(fd)`, or `fcntl(fd, F_FULLFSYNC)` for a durability barrier); on-box code that tests run on
+> the Mac gets a test-mode switch that skips the flush, since a test cannot observe it anyway.
+>
+> ```bash
+> # spike/release/rauc/tryboot_backend.sh (smc-resiliency 495ccb35)
+> flush() {
+>   [ -z "${SMC_BOOT_DRY:-}" ] || return 0
+>   sync "$1" 2>/dev/null || sync
+> }
+> ```
+

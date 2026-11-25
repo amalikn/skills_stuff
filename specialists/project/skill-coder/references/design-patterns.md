@@ -2223,3 +2223,26 @@ Realised in:  Rust -> continuum-app apps/agent/src/merge_unpack.rs (`beside`, `u
               scripts/checks/loss_check.py step 7 (14/14 on the dev stack)
 Evidence:     CANDIDATE: dev-stack check passed 2026-11-24
 ```
+
+
+### P-88 A streaming reader that is never silent: gap marker and bounded restart
+
+> **Learned 2026-11-25** · design pattern, any language · CANDIDATE (one project, lab-proven) · Source: smc-resiliency
+> `lab/adapters/console.py` `ConserverSource.read` (579c89c6) · Falsifier: a recording whose reader died with no line in the log saying so
+
+```text
+Problem:      a recorder reads a stream from a child process (ssh to a console server, a log tail); when the child dies, read()
+              sees end-of-file, which a select loop treats as "nothing came", so the recording runs to its deadline and the gap
+              looks like the far end went quiet: the very lines a crash test needed are lost without a trace.
+Solution:     on end-of-file, reap the child, write a marker line into the stream ("[reader ended (rc N), restarted k of M;
+              lines may be missing here]"), pause briefly, start the child again; after M restarts raise, so the run fails loudly.
+Why it works: the evidence carries its own gaps; a reader of the log can tell silence from a dropped link; the bound and the
+              pause stop a tight loop against a host that refuses at once.
+Reuse:        serial-console and log recorders, tail -F over ssh, metrics scrapers writing evidence files, any long capture.
+Pitfalls:     reap before restarting (zombies); kill the whole process group on close; the marker must be a full line so line
+              splitters do not glue it to the previous partial line; test the drop with a child that exits at once and prove the
+              test fails against the old silent read.
+Realised in:  Python -> smc-resiliency lab/adapters/console.py (ConserverSource.read, MAX_RESTARTS = 5); live: ssh killed
+              mid-recording, marker written, reconnect, the next console line captured
+Evidence:     CANDIDATE: lab test, mutation check and live drop 2026-11-25
+```
