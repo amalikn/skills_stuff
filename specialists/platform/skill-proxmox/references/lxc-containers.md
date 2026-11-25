@@ -76,3 +76,16 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > ```bash
 > name="$(pveam available --section system | awk '{print $2}' | grep "^debian-13-standard_.*_$(dpkg --print-architecture)\.tar" | sort -V | tail -1)"
 > ```
+
+> **Disputed 2026-11-25 (h)** · Conflicts: Learned 2026-11-25 (e) ("feature flags other than nesting need root@pam", implying nesting works through
+> the token) · Proxmox VE 9.2.2, bpg/proxmox 0.123.1, privilege-separated token · VERIFIED_PRIMARY (apply output) · Source: home NAS project
+> `tofu/containers.tf`, `scripts/host/pve_ct_extras.sh` (commit 0514e66) · Falsifier: a bpg apply adding `features { nesting = true }` to an existing
+> container with a privsep token succeeding
+> PVE itself allows a non-root user to change nesting, but adding `features { nesting = true }` to existing containers through bpg 0.123.1 failed with
+> HTTP 403 "changing feature flags (except nesting) is only allowed for root@pam" on all three (cause UNVERIFIED: likely the provider sends the other
+> flags too). Debian 13 (systemd 257) runs `degraded` in an unprivileged CT without nesting, and `pct start` warns "Systemd 257 detected". Set nesting in
+> the root host script with the other root-only extras and add `features` to `lifecycle.ignore_changes`:
+> ```bash
+> pct config "$id" | grep -q '^features:.*nesting=1' || pct set "$id" --features nesting=1   # then restart the CT
+> ```
+
