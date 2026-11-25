@@ -93,3 +93,13 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > project `tofu/containers.tf` (DL-045) · Falsifier: a running CT that needs a restart before the new address appears
 > Changing `initialization.ip_config.ipv4` of running unprivileged containers from `dhcp` to a static `address`/`gateway` through bpg is an in-place
 > update (no replace, no restart): the three containers had the new address and default route seconds after the apply.
+
+> **Learned 2026-11-25 (j)** · Proxmox VE 9.2 · VERIFIED_PRIMARY (live run from the Mac to CT 100) · Source: home NAS `scripts/nas_tm_status.sh` ·
+> Falsifier: `pct exec <ct> -- sh -s` that ignores piped stdin
+> `pct exec <ct> -- sh -s -- <args>` passes the SSH session's stdin into the container, so a script kept in the repo runs inside a CT without being copied
+> there first, and its arguments reach it as `$1`, `$2`:
+>
+> ```sh
+> # home NAS scripts/nas_tm_status.sh
+> ssh -o BatchMode=yes "root@$NAS_HOST" "pct exec $NAS_SMB_CT -- sh -s -- $NAS_TM_SHARE $ip" <"$NAS_ROOT/scripts/ct/tm_progress.sh"
+> ```

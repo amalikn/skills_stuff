@@ -326,3 +326,29 @@ Baselines:
 > - Right after a raw write macOS mounts the card's new FAT partition and adds `.Spotlight-V100` and `.fseventsd`, so a whole-card read-back hash differs from a correct write. Read back only
 >   regions macOS cannot mount (or unmount before reading and compare the FAT partition file by file).
 > - A Mac's USB card reader does not expose an SD card's CID; read it on the box (`/sys/block/mmcblk0/device/cid`).
+
+> **Learned 2026-11-25** · Time Machine to an SMB share (macOS client, Samba 4.22 vfs_fruit server) · VERIFIED_PRIMARY (live reads on the operator's Mac and the
+> NAS container) · Source: me/nas scripts/nas_tm_status.sh and scripts/ct/tm_progress.sh (commit after 1524716), docs/operator-steps/home-network.md ·
+> Falsifier: a wedged mount that `diskutil unmount force` clears, or one freed by closing the server session alone.
+> - When a Mac leaves the LAN mid-backup (cause inferred from timing, UNVERIFIED) its SMB client can wedge: `diskutil unmount force`, Finder's NetAuthSysAgent (the "Connecting to smb://..."
+>   dialog), `backupd-helper`, `df`, `ls` on the mount all sat in uninterruptible wait (`ps` state `U`); a draw.io export started then also hung, stuck exiting in state `E`
+>   (link to the mount not proven). `timeout` and kill cannot end them. Closing the session on the server (`smbcontrol smbd close-share <share>`) dropped it there but did not free
+>   the Mac, so a restart is the remaining fix. Count `U`-state SMB processes before trying to unmount anything.
+> - Progress is readable server-side without touching the Mac. In the sparsebundle, the size of `bands/` and its newest file time show whether data still
+>   arrives, and `com.apple.TimeMachine.SnapshotHistory.plist` lists completed backups (an empty `<array/>` means none). Here 31 GB were written, then
+>   nothing for over 2 h, with no snapshot: the first backup had stalled although `tmutil status` showed only `Running = 0`.
+> - Two caps apply, and both can be set: the dataset's `refquota` and Samba's `fruit:time machine max size`. Read `refquota` as well as `quota`: checking only
+>   `quota` showed "none" and led to a wrong claim, corrected the same hour.
+>
+> ```sh
+> # me/nas scripts/ct/tm_progress.sh (inside the Samba container)
+> path="$(testparm -s --parameter-name=path --section-name="$share" 2>/dev/null || true)"
+> for b in "$path"/*.sparsebundle; do
+>   kib="$(du -sk "$b/bands" | cut -f1)"
+>   newest="$(find "$b/bands" -type f -printf '%T@\n' | sort -n | tail -1 | cut -d. -f1)"
+>   dicts="$(grep -c '<dict>' "$b/com.apple.TimeMachine.SnapshotHistory.plist" 2>/dev/null || true)"
+>   echo "bundle $kib ${newest:-0} $((dicts - 1))"
+> done
+> # me/nas scripts/nas_tm_status.sh (on the Mac): wedged-client count
+> ps -axo stat=,comm= | awk '$1 ~ /^U/ && $2 ~ /(diskutil|NetAuthSysAgent|backupd-helper|mount_smbfs)/ {n++} END {print n+0}'
+> ```

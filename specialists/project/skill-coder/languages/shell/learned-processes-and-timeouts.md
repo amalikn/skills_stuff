@@ -153,3 +153,14 @@ The alarm-then-exec form above does not stop a program that catches SIGALRM (Go 
 > exec sh "$(git rev-parse --show-toplevel)/scripts/pre_push.sh" "$@"
 > ```
 
+> **Learned 2026-11-25 (d)** · bash on macOS, coreutils `timeout` · VERIFIED_PRIMARY (home NAS: a wedged SMB mount) · Source: home NAS
+> `scripts/nas_tm_status.sh` · Falsifier: `timeout 30 <cmd>` returning at 30 s while `<cmd>` sits in `ps` state `U`
+> `timeout` cannot end a process in uninterruptible wait (`ps` state `U`): `timeout 30 diskutil unmount force` on a wedged SMB mount was still running minutes
+> later, and so were `tmutil` and `ls` on that mount. A probe that may touch a network mount checks process state first and never touches the mount itself.
+> Run anything that might block on it in the background so the session survives. To count processes by state, filter `ps` with awk: pgrep cannot match on state,
+> and `ps | grep` draws ShellCheck SC2009.
+>
+> ```bash
+> # home NAS scripts/nas_tm_status.sh
+> stuck="$(ps -axo stat=,comm= | awk '$1 ~ /^U/ && $2 ~ /(diskutil|NetAuthSysAgent|backupd-helper|mount_smbfs)/ {n++} END {print n+0}')"
+> ```

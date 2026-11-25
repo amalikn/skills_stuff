@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/lxc-containers.md (j): `pct exec <ct> -- sh -s -- args` runs a repo script inside a CT from piped stdin (home NAS).
 - 2026-11-25 references/storage.md (b): a ZFS-root install creates no swap; swap on a zvol discouraged by the admin guide; partition or zram (home NAS).
 
 - 2026-11-25 lxc-containers.md (i): static IP on running CTs via bpg is in place; access-control.md (j): second project on one node: pool-scoped token, budgets as a daily check, ZFS quota (home NAS).
