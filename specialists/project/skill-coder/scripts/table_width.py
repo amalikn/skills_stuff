@@ -20,6 +20,8 @@ import argparse
 import pathlib
 import sys
 
+REQUIRES_PYTHON = (3, 11)
+
 
 def tables(lines: list[str]) -> list[tuple[int, list[str]]]:
   """Group consecutive table rows.

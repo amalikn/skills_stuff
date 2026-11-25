@@ -83,7 +83,7 @@ Part of [shell.md](../shell.md).
 > [ -n "$topic" ] || { echo "empty value on stdin" >&2; exit 1; }
 > ```
 
-> **Learned 2026-11-25** · bash with `set -o pipefail` · VERIFIED_PRIMARY (home NAS tests/test_pve_ipv6.sh failed on `ip -6 -br addr | grep -q '^lo'`;
+> **Learned 2026-11-25 (d)** · bash with `set -o pipefail` · VERIFIED_PRIMARY (home NAS tests/test_pve_ipv6.sh failed on `ip -6 -br addr | grep -q '^lo'`;
 > passed after reading once) · Source: home NAS scripts/host/pve_ipv6.sh at 38688f6 · Falsifier: a pipeline where `grep -q` exits early and pipefail
 > still reports 0
 > `cmd | grep -q pattern` under pipefail fails when grep matches early and exits: the writer gets SIGPIPE on its next line and the pipeline status is
