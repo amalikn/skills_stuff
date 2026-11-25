@@ -292,3 +292,11 @@ Measurement and security
 > vdev; no Thunderbolt/USB4, no PCIe slot or OCuLink, so an external GPU is not practical and the iGPU's media engine (QuickSync) carries transcoding; one SO-DIMM slot with a
 > 32 GB vendor maximum caps guest plus ARC planning. Put app databases, thumbnails and ML caches on NVMe and bulk originals on HDD mirror pairs that grow a pair at a time.
 > Off-site backup must be named before a cloud photo service is cancelled. No visual surface.
+
+> **Learned 2026-11-25** · SMART gate on disks that hold nothing yet · USER_STATED (operator decision DL-040) with VERIFIED_PRIMARY test results · Source: home NAS
+> project DL-040, `docs/references/06-storage-provisioning-and-host-validation.md` record · Falsifier: a case where a disk failing only the extended test
+> costs more than rebuilding an empty pool
+> The extended SMART test on a 12 TB drive takes about 17 hours. When the disks hold nothing yet, waiting for it buys only early detection of a bad drive,
+> which on an empty pool costs a resilver or a rebuild, not data. A sound shortcut: overall health PASSED, zero reallocated, pending and uncorrectable
+> sectors, a passed short test as the latest result, then build the pool and rerun the extended tests on the empty pool, with a written rule that no
+> data is copied until they pass and an alert when they finish. Heavy writes during a test can abort it; a reboot resets it.

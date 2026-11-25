@@ -465,3 +465,9 @@ No screenshot: the output is text in the document itself.
 > segments joint to joint with no arrowheads, one arrow only into the effect (arrowheads at every joint read as clutter). Four bones above, three below, cause cards stacked to the
 > right of each bone line so no line crosses a card; an empty bone shows a dashed "nothing recorded" card instead of being dropped.
 
+> **Learned 2026-11-25** · a new consumer map (single-node home server) · VERIFIED_PRIMARY (render, audit, export) · Source: home NAS project `docs/flows/parts/`
+> (commit after c531af0), screenshot `references/screenshots/20261125-home-nas-flowmap/` · Falsifier: a correct dependency direction still giving a shared run
+> First audit of a new map reported `Overview: shared_runs` between two group arrows; the cause was data, not layout: a component declared it depends on
+> the device it delivers to (`ntfy depends_on: [phone]`), the reverse of the real dependency, drawing a second long People-to-Outside run. Removing the
+> reversed edge (the flow page still shows the delivery) made the audit clean. Check a new map's `depends_on` directions before treating an Overview
+> audit finding as an engine fault. Also: markdown-like `*` in a component `host` text renders as italics on flow-page lane heads; write the words.

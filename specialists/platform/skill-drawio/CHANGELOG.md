@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261125_1310 — Home NAS map: reversed dependency and italic host text
+
+- references/data-first-diagrams.md, Learned 2026-11-25: an Overview shared run caused by a reversed `depends_on`; `*` in host text renders italic (home NAS map; screenshot 20261125-home-nas-flowmap).
+
 ## 20261123_1422 — Ishikawa page data first
 
 - references/data-first-diagrams.md, Learned 2026-11-23: Ishikawa page data first: joints as tiny vertices so every route has ends, one arrow only into the effect (continuum IDEA-456).

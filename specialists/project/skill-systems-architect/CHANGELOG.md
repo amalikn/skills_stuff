@@ -13,6 +13,8 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 (v2.3.27 -> v2.3.28): references/storage-and-data.md, Learned 2026-11-25: SMART gate on empty disks: short test plus health, build, rerun the extended test before data (home NAS DL-040).
+
 - 2026-11-25 (v2.3.26 -> v2.3.27): references/security-and-service-identity.md, Learned 2026-11-25 (b): scripted break-glass copy into a typed-password recovery vault, value read back; references/provisioning-and-lifecycle.md, Learned 2026-11-25: rebuild-from-scratch kit (idempotent bootstrap, operator steps, as-built ledger, promote hand commands) (home NAS).
 
 - 2026-11-25 (v2.3.25 -> v2.3.26): references/security-and-service-identity.md, Learned 2026-11-25: a hypervisor vTPM proves the code path, not key custody (continuum TD-606, DL-232); references/backup-disaster-recovery.md, Learned 2026-11-25: OpenBao snapshot API needs only `read`, renew-self from the default policy, restore never on a host token (continuum-app 83c156b).

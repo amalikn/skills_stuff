@@ -117,3 +117,16 @@ Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pvecep
 > **RAIDZ expansion** (`zpool attach pool raidzN-0 dev`, OpenZFS 2.3) counts a new disk only up to the smallest member, keeps old blocks at the old data-to-parity ratio
 > until rewritten (`zfs rewrite`; whether a given PVE build ships it: check `man zfs-rewrite`), never changes the parity level, and makes the layout permanent.
 > Capacity with 12 TB disks: mirror pairs 10.9 then 21.8 TiB; 4-wide RAIDZ1 about 32.7 TiB. No visual surface.
+
+> **Learned 2026-11-25** · Proxmox VE 9.2.2, OpenZFS 2.4.2 · VERIFIED_PRIMARY (run on a node) · Source: home NAS project `scripts/host/pve_disk_clear.sh`,
+> `scripts/host/pve_tank_create.sh` (commit 5f6bd80) · Falsifier: `zfs create -o keylocation=prompt` refusing a key on a non-terminal stdin
+> Disks from an old NAS (TerraMaster TOS here) carry md-RAID members (`TNAS:UTOS*`, `<host>:UTOSUSER`) and a vfat boot partition; `wipefs -n` shows them
+> and `zpool import` finds nothing. A safe clear is per disk, by serial, refused while a SMART test runs or the disk is in a pool, mounted or in an active
+> md array, with a typed `CLEAR-<serial>`: `wipefs -a` each partition, `sgdisk --zap-all`, `wipefs -a` the disk, re-read the table, then prove
+> `wipefs -n` is empty. For an encrypted dataset with `keyformat=passphrase,keylocation=prompt`, `zfs create` reads the passphrase from stdin when stdin is
+> not a terminal (once, no confirmation), so it can be piped from a password manager; prove the stored copy by `zfs unmount` of the tree,
+> `zfs unload-key`, then `zfs load-key` from the same source and `zfs mount -a`.
+> ```bash
+> { printf 'CREATE-tank\n'; kp show -s -a Password "$ZFS_ENTRY"; printf '\n'; } | ssh root@node 'bash pve_tank_create.sh <disk1> <disk2> --apply'
+> for d in $(zfs list -H -o name -r tank/secure | sort -r); do zfs unmount "$d"; done; zfs unload-key tank/secure   # then load-key from the vault
+> ```

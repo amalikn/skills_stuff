@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/storage.md: Learned 2026-11-25: clearing old-NAS md-RAID disks by serial; `zfs create` reads a passphrase from non-terminal stdin; prove the vault copy by unload and reload (home NAS).
+
 - 2026-11-25 references/lxc-containers.md: Disputed (h) against (e): bpg 0.123.1 cannot set nesting on an existing CT with a privsep token (403); Debian 13 systemd 257 needs it; set it in the root host script (home NAS).
 
 - 2026-11-25 (home NAS write-back): upgrade-and-troubleshooting.md (n) 9.2 installer enables Ceph enterprise too, handle ceph-squid-enterprise; lxc-containers.md (f) template index lists arm64, filter by dpkg architecture; access-control.md (g) ACME needs Sys.Modify on `/`, token_audit high accepted; monitoring-and-metrics.md (m) ntfy webhook plus system-mail matcher via proxmox-mail-forward.
