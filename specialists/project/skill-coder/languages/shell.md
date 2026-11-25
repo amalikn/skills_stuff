@@ -37,7 +37,7 @@ The Google Shell Style Guide, the GNU Bash manual (The Set Builtin), the ShellCh
 
 | Core reference              | In shell                                                                                                                                                               |
 | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| documentation-and-headers   | A top-of-file comment with purpose and usage; each function has a comment block with Globals, Arguments, Outputs and Returns (Google, VERIFIED_PRIMARY)                |
+| documentation-and-headers   | A top-of-file comment with purpose and usage; each function has a comment block with Globals, Arguments, Outputs and Returns (Google, VERIFIED_PRIMARY); no `#####` banner lines above or below the block, though Google's example shows them (operator, 2026-11-25, USER_STATED) |
 | errors-and-timeouts         | Start Bash scripts with `set -euo pipefail`: `-e` exits on an unhandled failure, `-u` treats unset variables as errors, `pipefail` gives a pipeline the status of the  |
 |                             |   last command to fail (Bash manual, VERIFIED_PRIMARY); wrap network commands with `timeout` or the tool's own timeout flag                                            |
 | version-control-and-review  | Gate on `rc=$?` captured right after the command, never through a pipe or `;`                                                                                          |
@@ -67,7 +67,7 @@ The rest of this override lives in [shell/](shell/) (split 2026-11-07 by scripts
 
 | File                              | Blocks |
 | --------------------------------- | ------ |
-| [learned-format-and-lint.md](shell/learned-format-and-lint.md) | 3      |
+| [learned-format-and-lint.md](shell/learned-format-and-lint.md) | 4      |
 | [learned-other.md](shell/learned-other.md) | 4      |
 | [learned-processes-and-timeouts.md](shell/learned-processes-and-timeouts.md) | 13     |
 | [learned-safety.md](shell/learned-safety.md) | 4      |

@@ -45,3 +45,12 @@ Part of [shell.md](../shell.md).
 > # shellcheck source=SCRIPTDIR/../config/nas.env
 > source "$NAS_ROOT/config/nas.env"
 > ```
+
+> **Learned 2026-11-25 (b)** · ShellCheck 0.11.0, VS Code ShellCheck extension · VERIFIED_PRIMARY (home NAS: `shellcheck nas_restic.sh` without `-x` went from SC1091
+> to rc 0 once the file below existed) · Source: home NAS project `.shellcheckrc` (2026-11-25) · Falsifier: an IDE run that still reports SC1091 with the file present
+> The `SCRIPTDIR` directive above is only followed when shellcheck runs with `-x`; an editor extension runs without it and reports SC1091 ("not specified as
+> input"). A project `.shellcheckrc` at the root with `external-sources=true` makes the editor and the lint recipe agree; no inline `disable` needed.
+> ```text
+> # .shellcheckrc
+> external-sources=true
+> ```
