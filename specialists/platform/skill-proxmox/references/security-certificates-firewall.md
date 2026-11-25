@@ -57,3 +57,17 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pve-firewall.m
 > tos="$(pvesh get /cluster/acme/meta --directory "$DIR" --output-format json | python3 -c 'import json,sys; print(json.load(sys.stdin)["termsOfService"])')"
 > [ -e /etc/pve/priv/acme/"$NAME" ] || pvesh create /cluster/acme/account --name "$NAME" --contact "$MAIL" --directory "$DIR" --tos_url "$tos"
 > ```
+
+> **Learned 2026-11-25 (b)** · Proxmox VE 9.2.2 on Debian 13, OpenSSH 10.0p2 · VERIFIED_PRIMARY (node /etc/ssh/sshd_config line 12 `Include`, line 33
+> `PermitRootLogin yes`; sshd_config(5) "the first obtained value will be used"; `sshd -T` after the change) · Source: home NAS project,
+> scripts/host/pve_sshd.sh at 83daf35 · Falsifier: a PVE install whose sshd_config sets PermitRootLogin before the Include line
+> The installer leaves root SSH open to passwords (`PermitRootLogin yes` in the main file). Because Debian's Include of sshd_config.d comes first and sshd
+> keeps the first value, a drop-in overrides it without editing the packaged file (no conffile prompt on upgrade). Guard the lockout: refuse when root
+> has no key (on PVE /root/.ssh/authorized_keys is a symlink into /etc/pve/priv), validate with `sshd -t` and roll back, reload (open sessions stay),
+> and check `sshd -T`, which prints `without-password` for prohibit-password. The web UI login (PAM realm via pveproxy) and its Shell are unaffected.
+> ```bash
+> grep -qE '^(ssh-|ecdsa-|sk-)' /root/.ssh/authorized_keys || exit 1
+> printf 'PermitRootLogin prohibit-password\n' >/etc/ssh/sshd_config.d/10-root-keys.conf
+> sshd -t || { rm -f /etc/ssh/sshd_config.d/10-root-keys.conf; exit 1; }
+> systemctl reload ssh.service; sshd -T | grep -qx 'permitrootlogin without-password'
+> ```

@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 references/security-certificates-firewall.md (b): root SSH key only by an sshd drop-in (Include first, first value wins), lockout guard, `sshd -T` shows without-password (home NAS).
 - 2026-11-25 references/storage.md (c): zram-tools 0.3.7 PERCENT overrides SIZE; its restart cannot resize a busy device; swapoff, reset, start (home NAS).
 - 2026-11-25 references/security-certificates-firewall.md: unattended ACME account registration with `pvesh create --tos_url` as root@pam (home NAS).
 - 2026-11-25 references/lxc-containers.md (j): `pct exec <ct> -- sh -s -- args` runs a repo script inside a CT from piped stdin (home NAS).
