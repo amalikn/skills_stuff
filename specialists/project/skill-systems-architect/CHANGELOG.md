@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-25 references/security-and-service-identity.md: give a second project a forced-command key for one capability, not host root (home NAS consoles).
 - 2026-11-25 (v2.3.30 -> v2.3.31): references/macos-and-endpoints.md, Learned 2026-11-25: Time Machine to SMB, a wedged macOS SMB client (state U, server close-share does not free it, restart), reading progress server-side from the sparsebundle, refquota plus fruit max size (home NAS).
 
 - 2026-11-25 (v2.3.29 -> v2.3.30): references/backup-disaster-recovery.md, Learned 2026-11-25: off-host copy pulled by a workstation (read-and-list key, never overwrite, hard stop on a shared APFS pool; Continuum FR-655).

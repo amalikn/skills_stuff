@@ -38,6 +38,7 @@ Last rotated: 20261125_1821
 
 ## Unreleased
 
+- 2026-11-25 languages/shell/learned-safety.md and learned-format-and-lint.md: `| grep -q` under pipefail fails by SIGPIPE; check must run lint; `*.sh` globs miss extension-less scripts (home NAS).
 - 2026-11-25 references/testing.md, Learned 2026-11-25 (c): after a live failure, stubs carry the failing state and tests assert the outcome; a closing check verifies the property, not existence (home NAS zram).
 
 - 2026-11-25 languages/shell/learned-processes-and-timeouts.md, Learned 2026-11-25 (d): `timeout` cannot end a process in state U (wedged SMB mount); check state first, count by state with awk (SC2009) (home NAS).

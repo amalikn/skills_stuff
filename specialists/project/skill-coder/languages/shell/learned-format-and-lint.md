@@ -54,3 +54,9 @@ Part of [shell.md](../shell.md).
 > # .shellcheckrc
 > external-sources=true
 > ```
+
+> **Learned 2026-11-25** · justfile lint recipes over globs · VERIFIED_PRIMARY (home NAS: shfmt drift in four new test stubs passed `just check`,
+> which did not run lint; an extension-less forced-command script was outside `scripts/ct/*.sh`) · Source: home NAS justfile at 38688f6 · Falsifier:
+> a project whose check already runs lint over every executable
+> The project's closing check must run its lint recipe, or new code drifts while "check passes"; and a glob like `*.sh` misses extension-less
+> executables (wrappers, forced commands), so list them or lint by shebang.

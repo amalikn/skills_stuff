@@ -71,3 +71,16 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pve-firewall.m
 > sshd -t || { rm -f /etc/ssh/sshd_config.d/10-root-keys.conf; exit 1; }
 > systemctl reload ssh.service; sshd -T | grep -qx 'permitrootlogin without-password'
 > ```
+
+> **Learned 2026-11-25 (c)** · PVE 9.2.2 · VERIFIED_PRIMARY (pveproxy(8) read on the node; `pve-firewall localnet`; `iptables -S PVEFW-HOST-IN`; `ip -6 -br
+> addr` after the change) · Source: home NAS project, scripts/host/pve_pveproxy.sh, pve_ipv6.sh, tofu/host/firewall.tf at 38688f6 · Falsifier: a PVE
+> release whose pveproxy ignores /etc/default/pveproxy ACLs, or whose services fail with IPv6 off by sysctl
+> Three host-exposure layers that worked together on a single node: (1) /etc/default/pveproxy `ALLOW_FROM="127.0.0.1,::1,<lan>/24,fe80::/10"`,
+> `DENY_FROM="all"`, `POLICY="allow"` (both-match allows, deny-only refuses), restart, check loopback 200 and roll back if not; (2) the datacenter
+> firewall with input DROP and explicit LAN ACCEPT for 8006, 22 and Ping (pve-firewall also allows 8006/22 from the detected local network; guest NICs
+> with firewall=0 are untouched, so it can be enabled while guests serve); (3) IPv6 off by sysctl, not `ipv6.disable=1`: all and default
+> `disable_ipv6=1`, then `lo` back to 0, which keeps `[::]` listeners (pveproxy, sshd) and postfix/chrony on `::1`. Containers keep IPv6 (namespaces
+> reset IPv6 conf; `net.core.devconf_inherit_init_net=0`).
+> ```text
+> /etc/sysctl.d/90-nas-ipv6-off.conf: net.ipv6.conf.all.disable_ipv6 = 1 / net.ipv6.conf.default.disable_ipv6 = 1 / net.ipv6.conf.lo.disable_ipv6 = 0
+> ```

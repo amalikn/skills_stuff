@@ -197,3 +197,12 @@ ACLs with no matching user ACL; tokens that never expire. Exit 1 on any high fin
 > guests (`/nodes/<n>/qemu` returned none of the host project's VMs) and only the listed storages. Pools carry no CPU or RAM quota, so a budget is a
 > daily check: sum `maxmem` and `maxcpu` of `pvesh get /pools/<pool>` members against a file and alert; disk is capped by a ZFS `quota` on the
 > pool's dataset (use `quota`, not `refquota`, since VM disks are child zvols).
+
+> **Learned 2026-11-25** · PVE 9.2.2 · VERIFIED_PRIMARY (installed PVE/API2/AccessControl.pm `change_password`: `confirmation-password` optional;
+> API ticket issued for the new user) · Source: home NAS project, scripts/host/pve_admin_user.sh at 38688f6 · Falsifier: pvesh as root requiring a
+> confirmation password, or `pveum user add --password` accepting stdin
+> A named Administrator cannot come from a least-privilege automation token (no User.Modify or Permissions.Modify by design): create it as root on the
+> node. `pveum user add --password` prompts on a tty; `pvesh create /access/users --password` takes it as an argument (visible to root only while it
+> runs), so pipe the vault value on stdin into a script that reads one line and never echoes it; then `pvesh set /access/acl --path / --users <u>
+> --roles Administrator`. Prove the login with a ticket request (`/access/ticket`, password as `--data-urlencode password@-`). 2FA enrolment stays a
+> web UI step for the operator.

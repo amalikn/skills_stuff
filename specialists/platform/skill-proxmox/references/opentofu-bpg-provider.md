@@ -219,3 +219,15 @@ and IDs 900 to 909.
 >   }
 > }
 > ```
+
+> **Learned 2026-11-25** · bpg/proxmox 0.123.1, PVE 9.2.2 · VERIFIED_PRIMARY (node /var/log/pve/tasks/index: `vzreboot` of CTs 100 to 102 by the
+> OpenTofu token at the apply of a static-address change; provider schema read with `tofu providers schema -json`) · Source: home NAS project,
+> scripts/nas_node_bootstrap.sh and tofu/host/firewall.tf at 38688f6 · Falsifier: a container network update applied without a reboot task
+> (1) A plan line "will be updated in-place" on `proxmox_virtual_environment_container` (network, here the IP) still reboots the container; a service
+> left disabled inside it then stays down. Automation that auto-applies "create or update" plans should stop on in-place guest updates unless allowed.
+> (2) `proxmox_virtual_environment_cluster_firewall` left without `ebtables` writes `ebtables: 0`, overriding the PVE default 1; set it explicitly.
+> (3) Exact attributes for the pinned version, offline: init a scratch module against the project's downloaded plugin and dump the schema.
+> ```bash
+> grep -qE '# proxmox_virtual_environment_(container|vm)\.[a-z0-9_]+(\[[^]]*\])? will be updated in-place' "$plan_log" && exit 1  # unless allowed
+> tofu -chdir=scratch init -plugin-dir="$TF_DATA_DIR/providers" && tofu -chdir=scratch providers schema -json > schema.json
+> ```

@@ -103,3 +103,11 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > # home NAS scripts/nas_tm_status.sh
 > ssh -o BatchMode=yes "root@$NAS_HOST" "pct exec $NAS_SMB_CT -- sh -s -- $NAS_TM_SHARE $ip" <"$NAS_ROOT/scripts/ct/tm_progress.sh"
 > ```
+
+> **Learned 2026-11-25 (k)** · Debian 13 LXC on PVE 9.2.2, conserver 8.2.7 · VERIFIED_PRIMARY (`systemctl is-enabled` disabled after install;
+> `pct reboot` proof after enabling; sshd forced command tested from a client) · Source: home NAS project, scripts/ct/conserver_setup.sh,
+> lab_console_setup.sh, lab-console at 38688f6 · Falsifier: a conserver-server package that enables its unit on install
+> A setup script that only `systemctl restart`s a packaged service leaves it down after the next CT reboot when the package ships the unit disabled
+> (conserver-server does): `enable` then `restart`, and assert `is-enabled`. To give another project console access without root on the node, a CT
+> user whose authorized_keys line is `restrict,pty,command="/usr/local/bin/lab-console" <key>` and a wrapper that allows only `list`, `spy <name>`
+> (`console -s`, read-only) and `attach <name>` from `SSH_ORIGINAL_COMMAND`; `console -s` works without a tty, so a recorder can stream it.

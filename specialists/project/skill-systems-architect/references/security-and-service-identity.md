@@ -451,3 +451,10 @@ let row = sqlx::query("DELETE FROM portal_login WHERE state = $1 AND session_sha
 > printf '%s\n%s\n%s\n' "$RPW" "$value" "$value" | keepassxc-cli add -q -p "$VAULT" "$e" >/dev/null
 > got="$(printf '%s\n' "$RPW" | keepassxc-cli show -q -s -a Password "$VAULT" "$e" | tr -d '\n' | wc -c)"
 > ```
+
+> **Learned 2026-11-25** · home lab console server shared with another (work) project · USER_STATED (operator chose a dedicated restricted login over
+> reusing node root) · VERIFIED_PRIMARY (refusals tested) · Source: home NAS docs/references/10-guest-projects.md rule 8 at 38688f6 · Falsifier: a
+> consumer that needs a shell on the console host
+> When a second project needs a capability on a personal host (here serial consoles), give it its own key bound to a forced command that allows only
+> the verbs it needs (list, read-only spy, attach), not the host's root path: the boundary is enforced by sshd (`restrict` blocks forwards and agent),
+> the key is replaceable without touching root access, and the consumer's code adds one adapter for the new link instead of host access.

@@ -82,3 +82,14 @@ Part of [shell.md](../shell.md).
 > read -r topic || true   # the value arrives without a trailing newline; read returns 1 at EOF
 > [ -n "$topic" ] || { echo "empty value on stdin" >&2; exit 1; }
 > ```
+
+> **Learned 2026-11-25** · bash with `set -o pipefail` · VERIFIED_PRIMARY (home NAS tests/test_pve_ipv6.sh failed on `ip -6 -br addr | grep -q '^lo'`;
+> passed after reading once) · Source: home NAS scripts/host/pve_ipv6.sh at 38688f6 · Falsifier: a pipeline where `grep -q` exits early and pipefail
+> still reports 0
+> `cmd | grep -q pattern` under pipefail fails when grep matches early and exits: the writer gets SIGPIPE on its next line and the pipeline status is
+> non-zero, so a check meant to pass fails (or an `||` fallback runs). Single-write output (one-line JSON) hides it. Read once into a variable and
+> match that. A stateful stub that prints more than one line is what exposed it.
+> ```bash
+> addrs="$(ip -6 -br addr)"
+> [[ "$addrs" =~ (^|$'\n')lo\ [^$'\n']*::1/128 ]]
+> ```
