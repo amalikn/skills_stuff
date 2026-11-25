@@ -171,3 +171,11 @@ for label, cmd, stdin in todo:
 > `command -v` so the workflow still runs on the bare image. Three traps on the way: (1) `ENV PATH=...` replacing the base image's PATH removed act's node, so every
 > node action failed: write `PATH=/opt/x/bin:$PATH`; (2) fixing that line, near the top, invalidated every later layer: a 13-minute rebuild (put late fixes late);
 > (3) the first run on a new image is cold (rust-cache key changes): 445 s once.
+
+> **Learned 2026-11-25** · exact-text edit scripts after a formatter · VERIFIED_PRIMARY (observed twice in one session) · Source: continuum-app
+> `deploy/coordinator/realm_sync.py`, `restore.py` (5dbeb4d) · Falsifier: an edit script that finds its target after ruff/rustfmt re-wrapped it.
+> A formatter (ruff format, rustfmt, the markdown hook) re-wraps a call one argument per line; a later `str.replace` written against the one-line form
+> then matches nothing and the old value silently stays (here a hard-coded username and a fixed temporary user: about 20 minutes of "Invalid user
+> credentials"). Every scripted replacement asserts it matched exactly once (`assert s.count(old) == 1`), and after any formatter run the target lines
+> are re-read before the next scripted edit.
+

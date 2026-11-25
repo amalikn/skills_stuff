@@ -316,6 +316,24 @@ $ just capacity examples/capacity-plan-pass.json   (same data, 10000 Mbit/s, rto
 Systems architect owns data and service restoration. The network architect owns recovery paths, effective throughput, DNS and traffic convergence. Use skill-smc for remote-site constraints,
 skill-coder for backup automation and skill-openwisp for recovery telemetry.
 
+
+> **Learned 2026-11-25** · rebuild-plus-data-restore for a single-host service stack · VERIFIED_PRIMARY (drill on a fresh VM, continuum TASK-651) · Source:
+> continuum-app `deploy/coordinator/restore.py`, `bootstrap.py` (5dbeb4d) · Falsifier: a restored stack that serves without the re-keying steps below.
+> Keeping host secrets out of every backup (rebuild the VM, restore only data) works only if the rebuild re-keys what the data still references.
+> Found in the drill: (1) a raft snapshot restored onto a new OpenBao seals under the old keyring and opens with the OLD shares; every token the new
+> server issued is gone, so service tokens are re-created after the restore. (2) A restored identity database brings back its admin, whose password
+> lived only in the lost host's secrets: create a temporary admin from the database (Keycloak 26.8 `kc.sh bootstrap-admin user`, VERIFIED_PRIMARY), reset
+> the admin to the new host's password, delete the temporary one. (3) Any "create on setup" step must find the restored object instead (an OpenFGA
+> `fga-init` that always made a new store would have pointed the service at an empty one and dropped every permission). (4) Client secrets regenerated
+> by the rebuild are pushed into the restored realm by a sync step. (5) Whatever the nightly set omits (here the checkpoint store on a separate disk)
+> survives only with that disk. Prove it with before/after counts of users, credentials, devices and grants, a sign-in with an old credential, and the
+> service's own end-to-end check. Measured: about 11 minutes on a small installation.
+>
+> ```text
+> install.py --apply; bootstrap.py init/unseal (new shares, restore only); restore.py --from <set> --apply
+> bootstrap.py root --apply (OLD shares); bootstrap.py setup --apply; install.py --apply (realm sync)
+> ```
+
 ## Further reading
 
 Links checked 2026-10-29.

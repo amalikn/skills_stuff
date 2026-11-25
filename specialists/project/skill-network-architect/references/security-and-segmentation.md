@@ -303,6 +303,27 @@ Scale: likelihood and impact 1-5; score = L x I; subtract 1 per verified control
 - [ ] Rule change has a semantic diff, canary scope, rollback and OOB access.
 - [ ] No compliance claim made from this checklist.
 
+> **Learned 2026-11-25** · a host input firewall beside Docker · VERIFIED_PRIMARY (rehearsed both ways on Ubuntu 26.04, Docker 29 with iptables-nft) · Source:
+> continuum-app `deploy/coordinator/nftables-continuum.nft`, `systemd/continuum-firewall.service` (da6078e) · Falsifier: Docker traffic broken by an
+> input-only `inet` table, or a peer outside the allowed range answered.
+> On a Docker host, filter only the input hook in a table of its own (`table inet continuum`, policy drop), load it with `nft -f` from a unit ordered
+> before docker.service, and never `flush ruleset` (it wipes Docker's tables). Publish every container port on 127.0.0.1 so the reverse proxy on the
+> host network is the only listener input sees; leave forwarding to Docker. Make the file idempotent with `table ... ; delete table ... ; table ... { }`,
+> syntax-check with `nft -c -f` before loading, and prove it both ways: a wrong allowed range must drop the client (counter rises), the real one admit it.
+> Rehearsal note (OrbStack machines): `<machine>.orb.local` resolves on the Mac to a proxy address where TLS on 443 fails, as does the machine's IPv6;
+> test clients use the machine's own IPv4; systemd LoadCredential is unavailable there, and CPU and memory caps are ignored.
+>
+> ```nft
+> table inet continuum {
+> 	chain input {
+> 		type filter hook input priority filter; policy drop;
+> 		iif "lo" accept
+> 		ct state established,related accept
+> 		tcp dport { 443, 8443, 8444, 8445 } ip saddr $OVERLAY accept
+> 	}
+> }
+> ```
+
 ## Further reading
 
 Zero trust and architecture:

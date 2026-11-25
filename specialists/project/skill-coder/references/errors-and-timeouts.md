@@ -155,3 +155,21 @@ agent should have found (lesson `feedback_proactive_upstream_research`).
 > holder that hangs alive then blocks the fallback for good. Record the holder's PID in the lock file once the lock is taken (open the file without truncating, `a+`, so a waiter never erases it), and
 > when the wait ends send TERM, then KILL, judging success by **taking the lock**, not by the PID: a killed child stays a zombie until its parent reaps it, so `kill(pid, 0)` still answers, while its
 > lock is released at death. Never signal yourself or PID 1.
+
+> **Learned 2026-11-25** · nested timeouts and the cause of a kill · VERIFIED_PRIMARY (rehearsal: coordinator VM, BUG-641) · Source: continuum-app
+> `crates/continuum-store/src/restic/process.rs`, `restic/mod.rs` (3c097d5) · Falsifier: a caller that sees the inner failure in time with the inner limit longer than its own.
+> An inner call's time limit must sit inside the caller's: restic retried a missing S3 bucket with backoff (3 s, 4 s, 15 s ...) under the store's 300 s limit,
+> while the agent uploading the artefact gave up at 30 s + 1 s/MiB, so every handoff aborted with "error sending request" and nothing in the server log.
+> Give a cheap probe (`cat config`) its own short limit below the caller's, and when a process is killed at its limit keep its last stderr line in the
+> error: it names the cause ("The specified bucket does not exist"). A child that outlives the kill (`sh -c` without `exec`) holds the pipe open and
+> delays the error by its whole life; test with a single process (`exec`) or kill the group.
+>
+> ```rust
+> // crates/continuum-store/src/restic/process.rs (3c097d5)
+> Err(e) => {
+>   let said = joined(err_reader, "stderr reader").unwrap_or_default();
+>   let last = said.lines().rev().map(str::trim).find(|l| !l.is_empty()).unwrap_or("");
+>   return Err(if last.is_empty() { e } else { other(format!("{e}: {last}")) });
+> }
+> ```
+

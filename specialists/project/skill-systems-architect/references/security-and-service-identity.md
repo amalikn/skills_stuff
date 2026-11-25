@@ -379,6 +379,16 @@ Fleet: 400 Linux hosts. Compare a leaked static SSH key with a leaked short-live
 - [ ] Human password policy follows [N1]; rotation tests prove the old credential fails.
 - [ ] Backup credentials sit in a separate trust domain; deletion from production fails; exceptions have compensating controls and owners.
 
+
+> **Learned 2026-11-25** · OpenBao root token regeneration after 2.5.3 · VERIFIED_PRIMARY (OpenBao v2.7.3 docs: deprecation/unauthed-generate-root,
+> api/system/generate-root-token; rehearsed on 2.7.2) · Source: continuum-app `deploy/coordinator/bootstrap.py` (ce8f828) · Falsifier: an OpenBao 2.5.3+ server answering
+> `sys/generate-root/attempt` without a token and with the listener flag unset.
+> "Revoke the root token after setup, regenerate it from the shares when needed" changed in OpenBao 2.5.3: the unauthenticated `sys/generate-root`
+> endpoints are off by default (405), and the new `sys/generate-root-token` needs a token, so with no token left the shares alone cannot make one. A
+> working break-glass: set the listener's `disable_unauthed_generate_root_endpoints = false` for the run only, restart and unseal, generate, then always
+> restore the config, restart and unseal again (7 s scripted). Decode the token locally (base64, XOR with the one-time pad): the 2.7 CLI's `-decode` calls
+> the server. Right after an unseal raft answers "local node not active" for a few seconds: wait for `sys/health` 200 before the next call.
+
 ## Further reading
 
 Identity and zero trust:

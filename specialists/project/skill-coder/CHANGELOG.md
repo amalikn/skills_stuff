@@ -39,6 +39,9 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- references/errors-and-timeouts.md, Learned 2026-11-25: nested timeouts (inner limit inside the caller's) and keeping the last stderr line of a killed
+  process (continuum BUG-641). references/tooling-and-runtime.md, Learned 2026-11-25: exact-text edit scripts assert one match and re-read after a formatter.
+
 - 2026-11-25 languages/shell/learned-safety.md, Learned 2026-11-25 (c): `read -r` returns 1 at EOF without a trailing newline and stops `set -e` scripts silently (home NAS).
 
 - 2026-11-25 languages/shell.md: shell function comment blocks carry no `#####` banner lines (operator); languages/shell/learned-format-and-lint.md, Learned 2026-11-25 (b): `.shellcheckrc` `external-sources=true` so the IDE follows `source=` directives (home NAS).
