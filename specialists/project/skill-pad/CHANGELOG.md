@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261125_1158
+Last rotated: 20261125_2121
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261125_2130 — decision_log_add follows the log's own header (seven-column logs: stamp and status)](#20261125_2130--decision_log_add-follows-the-logs-own-header-seven-column-logs-stamp-and-status)
 - [20261125_1157 — Housekeeping as the work lands: superseded items, split children, parent-plan comments; in-progress before any reading (v1.0.0)](#20261125_1157--housekeeping-as-the-work-lands-superseded-items-split-children-parent-plan-comments-in-progress-before-any-reading-v100)
 - [20261125_0232 — item-check: plans left open with every child closed; DONE markers on open items](#20261125_0232--item-check-plans-left-open-with-every-child-closed-done-markers-on-open-items)
 - [20261125_0037 — Learned: decisions hidden without --all; rate limit in loops](#20261125_0037--learned-decisions-hidden-without---all-rate-limit-in-loops)
@@ -39,7 +40,12 @@ Last rotated: 20261125_1158
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
-- [20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only](#20261120_1744--pad_decisions-reads-an-architecture-documents-key-decisions-pad_links-links-register-ids-workspace-rename-is-name-only)
+
+## 20261125_2130 — decision_log_add follows the log's own header (seven-column logs: stamp and status)
+
+- scripts/decision_log_add.py: the row's cells now follow the log's header. A `Stamp and source` column needs `--stamp` (the reason cell then carries
+  "reason; who"), a `Status` column takes `--status` (default accepted), and a header with an unknown column is refused. smc-resiliency 2026-11-25: its
+  seven-column log took four six-column rows, the governance check found them (no `| <stamp>: ` cell) and they were repaired by hand. Two tests added (4 pass).
 
 ## 20261125_1157 — Housekeeping as the work lands: superseded items, split children, parent-plan comments; in-progress before any reading (v1.0.0)
 
@@ -183,12 +189,3 @@ references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-pr
 ## 20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits
 
 - references/cli-reference.md: Learned 2026-11-20 from the continuum workspace (pad item list hides done-like items without --all; comment bodies starting with '- ' need --stdin; rate_limited bursts).
-
-## 20261120_1744 — pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only
-
-- `scripts/pad_decisions.py`: `--architecture PATH` mirrors the decision bullets of that document's `## Key decisions` section (unc keeps its decisions in ARCHITECTURE.md, not a DL log); refs are
-  register ids (D17, S20, X2) or `ARCH-<slug>`; a status note without DECIDED, SETTLED, RESOLVED, still open or (operator, date) is skipped and listed; items whose ref left every source are listed as
-  orphaned, never changed (a renamed bullet gets a new slug). Tests: `tests/test_pad_decisions.py` Architecture, orphans. unc: 34 decisions mirrored, a re-run plans 0 creates and 0 updates (3.5 s).
-- `scripts/pad_links.py`: a mirrored register id (`D17`) becomes `[[DECIS-n|D17]]`; never `D17-03` or `D3.6`. New `tests/test_pad_links.py` (4 tests).
-- `references/cli-reference.md` Traps: Learned 2026-11-20, workspace rename is web-UI and name-only (slug read-only); reads are rate-limited too.
-- unc workspace brought to the smc-resiliency and continuum layout: Asks and Decisions collections, baseline conventions plus decisions-mirror and progress-record, 52 bodies laid out, links applied.

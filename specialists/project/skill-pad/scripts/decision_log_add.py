@@ -5,6 +5,9 @@ Written after continuum 2026-11-24, where nine rows were appended by hand: one h
 four answers into a run-on sentence (operator: "each point should be on a separate line at least"). The row is
 `| DL-nnn | YYYY-MM-DD | architecture or process | <intro><br>- point<br>- point<br><closing> | reason | who |`: the next free number, one
 decision per row, its points separated by `<br>` so the table row stays on one line and Pad shows one point per line.
+The row follows the log's own header (smc-resiliency 2026-11-25: its log has seven columns, `| ID | Date | Kind | Decision | Reason | Stamp and
+source | Status |`, and a six-column row went in misaligned): a `Who`/`Decider` column takes --who, a `Stamp and source` column needs --stamp (and the
+reason column then carries "reason; who"), a `Status` column takes --status; a header with any other column is refused.
 
 Usage:
     python3 decision_log_add.py --log docs/architecture-review/DECISION-LOG.md --kind architecture \\
@@ -25,6 +28,34 @@ import sys
 from pathlib import Path
 
 ROW = re.compile(r"^\| DL-(\d{3,}) \|")
+#: Header names (lower case) this script fills, by the value each takes.
+KNOWN = {
+  "id": "dl",
+  "date": "date",
+  "kind": "kind",
+  "decision": "decision",
+  "reason": "reason",
+  "who": "who",
+  "decider": "who",
+  "stamp and source": "stamp",
+  "status": "status",
+}
+
+
+def header(lines: list[str]) -> list[str]:
+  """The decision table's column names, lower case.
+
+  Args:
+      lines: the log's lines.
+
+  Returns:
+      The names of the first table row whose first cell is ID, or the six-column default when the log has none yet.
+  """
+  for line in lines:
+    cells = [c.strip().lower() for c in line.strip().strip("|").split("|")]
+    if line.startswith("|") and cells and cells[0] == "id":
+      return cells
+  return ["id", "date", "kind", "decision", "reason", "who"]
 
 
 def next_id(lines: list[str]) -> str:
@@ -40,7 +71,17 @@ def next_id(lines: list[str]) -> str:
   return f"DL-{(max(ids) + 1 if ids else 1):03d}"
 
 
-def build_row(dl: str, date: str, kind: str, parts: tuple[str, list[str], str], reason: str, who: str) -> str:
+def build_row(
+  dl: str,
+  date: str,
+  kind: str,
+  parts: tuple[str, list[str], str],
+  reason: str,
+  who: str,
+  cols: list[str] | None = None,
+  stamp: str = "",
+  status: str = "accepted",
+) -> str:
   """One decision-log row.
 
   Args:
@@ -50,15 +91,24 @@ def build_row(dl: str, date: str, kind: str, parts: tuple[str, list[str], str], 
       parts: (intro, points, closing); points become "- point" lines, empty intro or closing are left out.
       reason: the reason column.
       who: the decider column.
+      cols: the log's header (header()); None is the six-column default.
+      stamp: the "Stamp and source" cell, required when the header has that column.
+      status: the Status cell.
 
   Returns:
-      The table row.
+      The table row, its cells in the header's order.
 
   Raises:
-      ValueError: a `|` or a line break in any text, or no point and no intro.
+      ValueError: a `|` or a line break in any text, no point and no intro, an unknown header column, or a missing stamp.
   """
   intro, points, closing = parts
-  texts = [intro, closing, reason, who, *points]
+  cols = cols or ["id", "date", "kind", "decision", "reason", "who"]
+  unknown = [c for c in cols if c not in KNOWN]
+  if unknown:
+    raise ValueError(f"the log's header has columns this script does not fill: {', '.join(unknown)}")
+  if "stamp and source" in cols and not stamp:
+    raise ValueError('the log has a `Stamp and source` column: pass --stamp (e.g. "20261125_2017: [SCRATCHPAD.md](../../SCRATCHPAD.md)")')
+  texts = [intro, closing, reason, who, stamp, status, *points]
   if any("|" in t or "\n" in t for t in texts):
     raise ValueError("a `|` or a line break in the text would break the table row; reword it")
   if not points and not intro:
@@ -66,7 +116,18 @@ def build_row(dl: str, date: str, kind: str, parts: tuple[str, list[str], str], 
   pieces = [intro] if intro else []
   pieces += [p if p.startswith("- ") else f"- {p}" for p in points]
   pieces += [closing] if closing else []
-  return f"| {dl} | {date} | {kind} | {'<br>'.join(pieces)} | {reason} | {who} |"
+  has_who = any(KNOWN[c] == "who" for c in cols)
+  value = {
+    "dl": dl,
+    "date": date,
+    "kind": kind,
+    "decision": "<br>".join(pieces),
+    "reason": reason if has_who else f"{reason}; {who}",
+    "who": who,
+    "stamp": stamp,
+    "status": status,
+  }
+  return "| " + " | ".join(value[KNOWN[c]] for c in cols) + " |"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -87,12 +148,15 @@ def main(argv: list[str] | None = None) -> int:
   ap.add_argument("--reason", required=True)
   ap.add_argument("--who", default="Operator.")
   ap.add_argument("--date", default=datetime.date.today().isoformat())
+  ap.add_argument("--stamp", default="", help="the Stamp and source cell, for a log that has that column")
+  ap.add_argument("--status", default="accepted", help="the Status cell, for a log that has that column")
   ap.add_argument("--apply", action="store_true")
   a = ap.parse_args(argv)
   try:
     text = a.log.read_text()
-    dl = next_id(text.splitlines())
-    row = build_row(dl, a.date, a.kind, (a.intro, a.point, a.closing), a.reason, a.who)
+    lines = text.splitlines()
+    dl = next_id(lines)
+    row = build_row(dl, a.date, a.kind, (a.intro, a.point, a.closing), a.reason, a.who, header(lines), a.stamp, a.status)
   except (OSError, ValueError) as e:
     print(f"decision_log_add: {e}", file=sys.stderr)
     return 1

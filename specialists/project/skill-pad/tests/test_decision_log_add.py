@@ -72,5 +72,37 @@ class DecisionLogAdd(unittest.TestCase):
       self.assertEqual(log.read_text(), LOG)
 
 
+class LogHeader(unittest.TestCase):
+  """The row follows the log's own header (smc-resiliency 2026-11-25: a seven-column log got six-column rows)."""
+
+  SEVEN = "| ID | Date | Kind | Decision | Reason | Stamp and source | Status |\n| --- | --- | --- | --- | --- | --- | --- |\n"
+
+  def test_seven_column_log_gets_stamp_and_status(self):
+    """A log with Stamp and source and Status columns gets a seven-cell row; without --stamp it is refused.
+
+    Returns:
+        None.
+    """
+    cols = dla.header(self.SEVEN.splitlines())
+    row = dla.build_row("DL-001", "2026-11-25", "process", ("Chose A.", [], ""), "Why.", "operator", cols, "20261125_2017: [S](S.md)")
+    cells = [c.strip() for c in row.strip().strip("|").split("|")]
+    self.assertEqual(cells, ["DL-001", "2026-11-25", "process", "Chose A.", "Why.; operator", "20261125_2017: [S](S.md)", "accepted"])
+    with self.assertRaises(ValueError):
+      dla.build_row("DL-001", "2026-11-25", "process", ("Chose A.", [], ""), "Why.", "operator", cols)
+
+  def test_six_column_default_unchanged_and_unknown_refused(self):
+    """The six-column log keeps its row; a header with an unknown column is refused.
+
+    Returns:
+        None.
+    """
+    six = dla.header(LOG.splitlines())
+    self.assertEqual(
+      dla.build_row("DL-010", "2026-11-25", "process", ("A.", [], ""), "Why.", "Op.", six), "| DL-010 | 2026-11-25 | process | A. | Why. | Op. |"
+    )
+    with self.assertRaises(ValueError):
+      dla.build_row("DL-010", "2026-11-25", "process", ("A.", [], ""), "Why.", "Op.", ["id", "date", "owner"])
+
+
 if __name__ == "__main__":
   unittest.main()
