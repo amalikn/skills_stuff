@@ -68,3 +68,11 @@ Use a VM when the workload needs its own kernel, kernel modules, a different OS,
 > `lifecycle { ignore_changes = [mount_point, device_passthrough] }` so it does not remove them. In an unprivileged container uid 1000 is host uid 101000 (default
 > idmap), so the shared dataset's top directory is chowned to 101000:101000. A container serving an encrypted dataset gets `start_on_boot = false` and starts after
 > the unlock. Screenshot pending: CT > Resources after the home NAS CT 100 exists.
+
+> **Learned 2026-11-25 (f)** · Proxmox VE 9.2.2 · VERIFIED_PRIMARY (`pveam available --section system` on the node) · Source: home NAS project
+> `scripts/host/pve_image_fetch.sh`, `tests/test_pve_image_fetch.sh` (commit 4e25928) · Falsifier: a 9.2 template index without arm64 entries
+> The 9.2 template index lists arm64 builds beside amd64 (`debian-13-standard_13.6-1_amd64.tar.zst` and `..._arm64.tar.zst`), and `sort -V | tail -1`
+> picks arm64 because it sorts after amd64. Filter by the node's own architecture before choosing the newest:
+> ```bash
+> name="$(pveam available --section system | awk '{print $2}' | grep "^debian-13-standard_.*_$(dpkg --print-architecture)\.tar" | sort -V | tail -1)"
+> ```

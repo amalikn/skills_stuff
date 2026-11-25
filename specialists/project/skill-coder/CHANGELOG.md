@@ -39,6 +39,8 @@ Last rotated: 20261119_1601
 
 ## Unreleased
 
+- 2026-11-25 languages/shell/learned-safety.md, Learned 2026-11-25 (c): `read -r` returns 1 at EOF without a trailing newline and stops `set -e` scripts silently (home NAS).
+
 - 2026-11-25 languages/shell.md: shell function comment blocks carry no `#####` banner lines (operator); languages/shell/learned-format-and-lint.md, Learned 2026-11-25 (b): `.shellcheckrc` `external-sources=true` so the IDE follows `source=` directives (home NAS).
 
 - 2026-11-25 (continuum write-back): references/version-control-and-review.md, Learned 2026-11-25: HTTPS push sends the ref by name, guard the gated sha after pre-push; references/testing.md, Learned 2026-11-25: port-0 server start races parallel tests (try_wait, retry, stderr, probe timeout, forced-failure proof); languages/python/learned-other.md, Learned 2026-11-25: Python 3.13+ VERIFY_X509_STRICT extensions for test CAs; references/tooling-and-runtime.md, Learned 2026-11-25: launchd PATH and python3, cloud-folder hang.

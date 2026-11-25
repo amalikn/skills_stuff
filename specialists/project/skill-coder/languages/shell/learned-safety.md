@@ -72,3 +72,13 @@ Part of [shell.md](../shell.md).
 >   )
 > }
 > ```
+
+> **Learned 2026-11-25 (c)** · bash 3.2 and 5.x, `set -euo pipefail` · VERIFIED_PRIMARY (reproduced: the node setup stopped silently until fixed) · Source:
+> home NAS project `scripts/host/pve_alerts.sh`, `scripts/ct/samba_setup.sh`, `scripts/ct/tailscale_setup.sh` (commit 98ab4a7) · Falsifier: `printf x | { read -r v; echo $?; }` printing 0
+> `read -r v` returns 1 when the input ends without a newline, even though it filled `v`. A secret piped from a password-manager wrapper that strips the
+> newline (`printf '%s'`) therefore stops a `set -e` script at the `read`, with no message. Accept a last line without a newline explicitly, then
+> check the value:
+> ```bash
+> read -r topic || true   # the value arrives without a trailing newline; read returns 1 at EOF
+> [ -n "$topic" ] || { echo "empty value on stdin" >&2; exit 1; }
+> ```

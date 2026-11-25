@@ -182,3 +182,10 @@ ACLs with no matching user ACL; tokens that never expire. Exit 1 on any high fin
 > A pool ACL does not cover a VM while it is being created: the create checks `/vms/<vmid>` before the VM joins the pool (9.1.5 created VM 901
 > with the pool ACL alone; after the upgrade to 9.2.26 VM 902 failed). Grant the role on `/vms/<id>` for each ID in the lab's range
 > (`pveum acl modify /vms/900 ... /vms/909 --roles <role> --users <user> --tokens '<user>!<token>'`), which keeps the token to that range.
+
+> **Learned 2026-11-25 (g)** · Proxmox VE 9.2.2 · VERIFIED_PRIMARY (installed source on the node) · Source: `/usr/share/perl5/PVE/API2/ACMEPlugin.pm`
+> (`check => ['perm', '/', ['Sys.Modify']]` on create, update and delete); home NAS project, `just token_audit` run 2026-11-25 · Falsifier: an ACME plugin
+> call that succeeds with Sys.Modify granted only on `/nodes/<node>`
+> A token that manages ACME plugins or accounts as code needs Sys.Modify on `/` itself; a node path is not enough. The pack's `token_audit` then
+> reports `broad-root-grant` (high) for that role on `/`; it is required when the role carries no Permissions.Modify and no VM rights, so record
+> it as accepted in the project's decision log rather than narrowing the ACL and breaking ACME.

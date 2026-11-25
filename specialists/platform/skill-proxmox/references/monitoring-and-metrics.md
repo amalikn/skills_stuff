@@ -88,3 +88,17 @@ audit. It never runs `apt update`; `--refresh --apply` asks PVE to refresh the l
 > same node taking over 60 s
 > One SSH session running eleven `pvesh get` reads plus a `systemctl show` took about 14 s end to end on a single lab node; most of it is the API's package and repository reads. Budget 30 s per node
 > for the report and run nodes in parallel, bounded, for a cluster.
+
+> **Learned 2026-11-25 (m)** · Proxmox VE 9.2.2 · VERIFIED_PRIMARY (journal `notified via target ntfy` after a test mail; `pvesh usage`) · Source: home NAS
+> project `scripts/host/pve_alerts.sh` (commit 98ab4a7) · Falsifier: mail to root on a 9.2 node that does not reach the notification system
+> One phone channel for everything: root's `.forward` pipes to `/usr/libexec/proxmox-mail-forward`, so anything that mails root (ZED, a systemd
+> `OnFailure=` unit, a cron check) becomes a `system-mail` notification. A webhook target to ntfy plus one matcher (`--mode any`, severity error and
+> warning, `exact:type=system-mail`) then routes PVE's own events and every script's alerts; the topic stays a PVE secret. pvesh takes header, body
+> and secret values base64-encoded. A secret read from stdin without a trailing newline makes `read` return 1 (see skill-coder shell, 2026-11-25).
+> ```bash
+> pvesh create /cluster/notifications/endpoints/webhook --name ntfy --method post --url 'https://ntfy.sh/{{ secrets.topic }}' \
+>   --header "name=Title,value=$(printf '%s' '{{ title }}' | base64 -w0)" --body "$(printf '%s' '{{ message }}' | base64 -w0)" \
+>   --secret "name=topic,value=$(printf '%s' "$topic" | base64 -w0)"
+> pvesh create /cluster/notifications/matchers --name ntfy-alerts --mode any --match-severity error --match-severity warning \
+>   --match-field 'exact:type=system-mail' --target ntfy
+> ```

@@ -123,3 +123,19 @@ Open Proxmox bugzilla entries found on 2026-11-07 (status as captured; check the
 
 > **Learned 2026-11-07** · upgrade · VERIFIED_PRIMARY · Source: smc-resiliency SCRATCHPAD 20261107_1617, lab node log `/root/upgrade-20261107.log` · Falsifier: a 9.1 to 9.2 `apt full-upgrade` that keeps the 6.17 kernel as default
 > A 9.1.5 to 9.2.26 upgrade (289 packages) ran unattended with `DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold full-upgrade` under `nohup`, exit 0, then a reboot brought the node up on kernel 7.0.14 (the 9.2 default kernel moved from 6.17 to 7.0), no failed units, SDN vnets and their dnsmasq back by themselves. Stop or shut down guests first. Before it, tidy the repositories: keep `pve-enterprise.sources` with `Enabled: false`, move `*.disabled` duplicates and an empty `ceph-no-subscription.list` to a backup folder, and write the no-subscription repo as deb822 `proxmox.sources`.
+
+> **Learned 2026-11-25 (n)** · Proxmox VE 9.2.2 (fresh install, no subscription), bpg/proxmox 0.123.1 · VERIFIED_PRIMARY (node API
+> `/nodes/<node>/apt/repositories` and apply output) · Source: home NAS project `tofu/host/main.tf` (commit 4606775) · Falsifier: a 9.2 install whose
+> `ceph.sources` is not enabled, or a handle other than `ceph-squid-enterprise`
+> The 9.2 installer enables two enterprise files: `pve-enterprise.sources` and `ceph.sources` (`ceph-squid` / `enterprise`), so a node without a
+> subscription fails `apt update` on Ceph even when no Ceph is used. Turn both off as code with the standard-repository handles the API lists
+> (`enterprise`, `ceph-squid-enterprise`; 9.2 also lists the `ceph-tentacle-*` handles) and enable `no-subscription`; a re-plan is then clean.
+> ```hcl
+> resource "proxmox_apt_standard_repository" "ceph_enterprise" { handle = "ceph-squid-enterprise"  node = var.node_name }
+> resource "proxmox_apt_repository" "ceph_enterprise" {
+>   enabled   = false
+>   file_path = proxmox_apt_standard_repository.ceph_enterprise.file_path
+>   index     = proxmox_apt_standard_repository.ceph_enterprise.index
+>   node      = proxmox_apt_standard_repository.ceph_enterprise.node
+> }
+> ```

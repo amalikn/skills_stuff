@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-25 (home NAS write-back): upgrade-and-troubleshooting.md (n) 9.2 installer enables Ceph enterprise too, handle ceph-squid-enterprise; lxc-containers.md (f) template index lists arm64, filter by dpkg architecture; access-control.md (g) ACME needs Sys.Modify on `/`, token_audit high accepted; monitoring-and-metrics.md (m) ntfy webhook plus system-mail matcher via proxmox-mail-forward.
+
 - 2026-11-25 references/opentofu-bpg-provider.md: Learned 2026-11-25, bpg 0.123.1 initialization dns list form, vendor_data_file_id beside user_account, pool_membership deprecated, offline `tofu test` with mock_provider (continuum-app).
 
 - 2026-11-25 references/backup-and-restore.md: proxmox_backup_job with prune_backups map (home NAS).
