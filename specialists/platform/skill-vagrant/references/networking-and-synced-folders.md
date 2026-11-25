@@ -121,3 +121,9 @@ not change the DHCP identity.
 
 Parallels' Shared and Host-Only networks use private ranges chosen by Parallels Desktop (`prlsrvctl net list` shows them); this pack's contract test forbids private addresses in authored files, so
 read them from the host rather than from here. Project files keep their lab addresses.
+
+> **Learned 2026-11-25 (b)** · vagrant-parallels 2.4.10, bento/ubuntu-24.04 arm64 202510.26.0 · VERIFIED_PRIMARY (`ip -4 -br addr`, `ip route` in the
+> guest after `vagrant up`) · Source: home NAS vagrant/ios-poc/Vagrantfile at b0d29f9 · Falsifier: a bridged-only guest with one default route
+> `public_network, bridge: "en0"` adds a second adapter: eth0 stays on Parallels Shared (10.211.55.0/24) and eth1 gets a LAN DHCP lease, so the
+> guest has two default routes (metric 100 each). Fine for reaching LAN devices directly (here an iPhone over Wi-Fi, mobdev2); a test that depends on
+> the egress path or on multicast leaving by the LAN adapter should pin the route or the interface.

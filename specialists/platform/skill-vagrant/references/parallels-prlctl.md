@@ -140,3 +140,15 @@ reference p.10 and [parallels-cli-utility.md]). Changing a Parallels network cha
 >   1 MiB blocks): run it first. Real shrink: delete in the guest, `fstrim -av`, stop the VM, `prl_disk_tool compact --hdd <hdd>` (24 GB to 6.4 GB in 11 s after 18.8 GiB trimmed).
 > - `prlctl exec <vm> '<long quoted command>'` failed with "PrlJob_Wait: Invalid argument"; plain argument lists (`prlctl exec vm du -xh --max-depth=2 /`) work.
 > - `scp`/`ssh` with the Vagrant key failed with "Too many authentication failures" while an agent offered other keys: add `-o IdentitiesOnly=yes` (key path from `vagrant ssh-config <vm>`).
+
+> **Learned 2026-11-25** · Parallels Desktop 27.1.0 Pro, macOS 27.2, Apple silicon · VERIFIED_PRIMARY (`prlsrvctl usb --help` and `prlsrvctl usb list` on
+> the host) · Source: home NAS project scripts/nas_ios_poc.sh at b0d29f9 (vagrant_stuff nas-ios-poc 88fa7c8) · Falsifier: a Parallels release where
+> `usb set` no longer binds a device to a VM
+> USB passthrough to a Vagrant-managed VM is a host setting, not a Vagrantfile key: `prlsrvctl usb list` shows each device's id, its
+> Autoconnect-Action (`host`, `ask` or a VM) and Connected-To-Vm; `prlsrvctl usb set <usb-device-id> <vm-name>` connects that device to the VM from
+> then on; `prlsrvctl usb set <id> --autoconnect host` gives it back. Gate it like any write (plan, `--apply`, VM-name guard). For an iPhone inside an
+> Ubuntu guest, usbmuxd is started by udev (`39-usbmuxd.rules`, Apple vendor 05ac), so `inactive` before the phone is attached is expected.
+> ```bash
+> timeout 30 prlsrvctl usb list | grep -E "^Device|Connected-To-Vm"
+> timeout 30 prlsrvctl usb set "$usb_id" nas-ios-poc     # only with --apply, after checking the Vagrantfile names that VM
+> ```
