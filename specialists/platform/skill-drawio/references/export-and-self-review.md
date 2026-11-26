@@ -183,3 +183,8 @@ me."
 > `slides/one-pagers-20261112_1752.drawio` (ee9046df), screenshots `references/screenshots/20261112-one-pager-pages/` · Falsifier: a Calibri label that exports in Calibri on the same machine.
 >
 > The desktop CLI export has no Calibri or Cambria: labels fall back to a serif. A drawing that must match an Office deck uses Helvetica for text and Georgia for titles; the deck keeps its own fonts.
+
+> **Learned 2026-11-26** · skill-drawio scripts/drawio_export.py · VERIFIED_PRIMARY (ModuleNotFoundError: drawio when run by path from a project; works from
+> the scripts folder) · Source: me/nas flow page 11 export, 2026-11-26 · Falsifier: a version that adds its own folder to sys.path
+> Run `drawio_export.py` from the pack's `scripts/` folder (`cd <pack>/scripts && python3 drawio_export.py <file> --page N --out <dir>`): run by path from a
+> project with `python3 -I`, it cannot import the sibling `drawio` package. The pack lives under specialists/platform/skill-drawio.

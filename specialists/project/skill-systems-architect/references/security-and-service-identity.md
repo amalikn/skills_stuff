@@ -491,3 +491,12 @@ let row = sqlx::query("DELETE FROM portal_login WHERE state = $1 AND session_sha
 > (`command="sudo -n /usr/local/sbin/ios-action \"$SSH_ORIGINAL_COMMAND\"",restrict`; sudo drops SSH_ORIGINAL_COMMAND from the environment, so pass it as
 > one argument). A compromised app can then only queue whitelisted jobs. Validate names against the real lists: a systemd template answers
 > `systemctl cat name@anything.timer`, which once started a job for a device that did not exist.
+
+> **Learned 2026-11-26 (b)** · host scanning on Debian 13 and macOS firewall · VERIFIED_PRIMARY (me/nas just scan, just trivy runs; ps of /usr/bin/python3) · Source:
+> me/nas scripts/guests/scan_host.sh, scripts/guests/vm/trivy_scan.sh (commits 285b4c39, c35d7529) · Falsifier: a Lynis release that reads deb822 sources
+> (1) Lynis 3.1.4 reports "Can't find any security repository" on Debian 13 hosts whose sources are deb822 (`/etc/apt/sources.list.d/debian.sources` with
+> `Suites: trixie-security`): a false positive; read the .sources file before acting. (2) debsecan `--only-fixed` counts point-release fixes too, so hosts with
+> security-only unattended upgrades still show dozens: a manual `apt full-upgrade` window clears them. (3) Trivy as a pinned GitHub release, installed only after
+> its sha256 matches the release checksums file; HIGH/CRITICAL with `--ignore-unfixed` on upstream images is fixed by image updates, not local patches; an
+> untagged local build needs a tag to scan. (4) On macOS `/usr/bin/python3` is an xcrun stub; the process that listens is the Command Line Tools Python.app
+> binary (Apple-signed), so an application-firewall block must name that path, and with "allow built-in signed software" on it would pass silently.

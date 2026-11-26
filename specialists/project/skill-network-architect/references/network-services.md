@@ -374,3 +374,13 @@ handle /ops/* {
 	reverse_proxy 127.0.0.1:3100
 }
 ```
+
+> **Learned 2026-11-26 (b)** · Tailscale beside another CGNAT overlay (NetBird) · VERIFIED_PRIMARY (Tailscale docs "IP pool", validated 2026-01-12; tailscale/tailscale
+> issue 12828, open) · Source: me/nas DL-084, scripts/mac/nas_tailscale_policy.py (commit 8cbb4b67) · Falsifier: a Tailscale release that routes only the pool
+> Tailscale's IP pool (beta, `nodeAttrs` `ipPool`) narrows the addresses given to NEW devices only (existing ones keep theirs), and the client still installs
+> a route for all of 100.64.0.0/10, so a pool does not free the range. Two CGNAT overlays coexist on macOS and Windows when their addresses do not overlap
+> (the other overlay's narrower route wins); Linux Tailscale drops other 100.64.0.0/10 traffic unless its CGNAT drop rule is turned off. Check every current
+> device against the other overlay's block before relying on the pool, and avoid 100.100.0.0/24, 100.100.100.0/24, 100.115.92.0/23.
+```json
+"nodeAttrs": [{"target": ["*"], "ipPool": ["100.64.0.0/12"]}]
+```

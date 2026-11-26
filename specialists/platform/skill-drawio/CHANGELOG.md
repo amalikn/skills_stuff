@@ -19,6 +19,10 @@ Last rotated: 20261119_1659
 Sections moved verbatim from this file (read on need; a citation by section name resolves there):
 - [docs/changelog-reference-1-20261122_2350.md](docs/changelog-reference-1-20261122_2350.md): Unreleased.
 
+## 20261126_2020 — drawio_export.py runs from the scripts folder
+
+- references/export-and-self-review.md Learned 2026-11-26: run by path with `python3 -I` from a project it cannot import the `drawio` package. Source: me/nas.
+
 ## 20261126_1449 — Home NAS map: colons in parts, depends_on for Overview links
 
 - references/data-first-diagrams.md: a plain YAML value with ": " breaks a flow-map part; a component needs depends_on to be linked on the Overview (home NAS, 2026-11-26).

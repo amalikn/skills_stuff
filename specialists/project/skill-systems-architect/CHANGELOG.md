@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-26 (me/nas, b): references/security-and-service-identity.md: Lynis deb822 false positive, debsecan counts point releases, pinned Trivy, macOS python3 stub vs firewall.
 - 2026-11-26 (me/nas): references/backup-disaster-recovery.md (Hetzner snapshot space with restic, restart-to-recap upload, prune during first backup, recovery path); security-and-service-identity.md (pull-model dashboard, forced-command with sudo).
 - 2026-11-26 (v2.3.36 -> v2.3.37): references/security-and-service-identity.md, Learned: retire copied unseal shares by a rekey (OpenBao 2.5+ legacy rekey off by default; drill evidence), at most threshold-minus-one shares where automation reads, deploy keys belong on a data-only repo (continuum TD-667, DL-268, DL-269).
 - 2026-11-26 (v2.3.35 -> v2.3.36): as-built engine runs on the Proxmox node (NAS DL-074/075, continuum TASK-680): `ssh = "local"` or no ssh on proxmox-node, pve-pool, pve-tenants, tls-endpoint, command; `[capture] secrets = "file:<path>"` (root-only KEY=VALUE, mode 600 enforced; a missing key fails that target only); pve-pool `inside = "agent"` through `qm guest exec` with a per-call timeout (PVE 9.3.1 qm(1)); new `pve-tenants` probe with scripts/as_built_tenants.py and its 8 tests lifted from me/nas 8d8af5c; per-target `strip` (pve-tenants default false) keeps me/nas's committed tenant files byte-identical (checked on all three). 34 tests, also on Python 3.13.12.
