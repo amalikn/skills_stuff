@@ -469,3 +469,10 @@ HOST_RUN_TIMEOUT=240 infra/apn-unc01/ops/host-run.sh smoke.sh
 >   fi
 >   touch "$sys/busy" "$ZSTATE/active" ;;
 > ```
+
+> **Learned 2026-11-26** · Python 3.15 `-I` with unittest · VERIFIED_PRIMARY (`python3 -I -m unittest scripts/x/test_y.py` failed: "No module named
+> 'scripts'"; `-m unittest discover -s scripts/x -p test_y.py` passed) · Source: continuum-app scripts/deploy/test_as_built_capture.py · Falsifier:
+> the file-path form imports under `-I`
+> Isolated mode drops the current folder from `sys.path`, so `unittest` given a file path cannot import it as a module. Run tests with `discover -s
+> <folder> -p <file>` (the folder becomes the start directory) and load the module under test by path in the test (`importlib.util`).
+

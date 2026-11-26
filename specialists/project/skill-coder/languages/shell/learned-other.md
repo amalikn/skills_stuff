@@ -49,3 +49,13 @@ Part of [shell.md](../shell.md).
 > `grep -c` prints `0` **and** exits 1 when nothing matches, so `n=$(grep -c pat file || echo 0)` holds two lines. Use `n=$(grep -c pat file); n=${n:-0}`
 > (the empty case is only a missing file).
 
+> **Learned 2026-11-26** · GNU coreutils `install` on Ubuntu 26.04 through `sudo` over SSH · VERIFIED_PRIMARY (observed: first write worked, the
+> rewrite of the same file failed) · Source: continuum-app deploy/netbird/install.py put() (042c38e, fixed 0f1f588) · Falsifier: `install -m 0644
+> /dev/stdin <existing file>` with piped input succeeds on the same host · Cause UNVERIFIED
+> `sudo install -m 0600 /dev/stdin <dest>` with the content piped in failed with "install: No such file or directory" once `<dest>` existed. Make the
+> file with its mode from `/dev/null`, then fill it: `sudo install -m 0600 /dev/null <dest> && sudo tee <dest> >/dev/null`.
+>
+> **Learned 2026-11-26** · util-linux `findmnt` · VERIFIED_PRIMARY (two mounted targets given, exit 1) · Falsifier: `findmnt A B` exits 0 with both mounted
+> `findmnt <target> <target>` reads the second argument as a source to match, so it exits 1 even when both are mounted; check each mount point with
+> its own call (or `findmnt --target` once per path) before treating the exit code as a failure.
+

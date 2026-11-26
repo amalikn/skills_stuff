@@ -84,6 +84,12 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 - Ubuntu cloud images need the `virtio-scsi-pci` controller for SCSI disks. `VERIFIED_PRIMARY` (qm chapter).
 - `discard=on` passes TRIM to thin storage; `ssd=1` emulates an SSD (not on VirtIO block). `VERIFIED_PRIMARY` (qm.conf drive options).
 
+> **Learned 2026-11-26** · PVE 9.2.2 virtio-scsi-single, Ubuntu 26.04 guest · VERIFIED_PRIMARY (`udevadm info` in the guest) · Source: deployment
+> VM, `qm config` shows `serial=state` · Falsifier: `/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_<serial>` appears in an Ubuntu guest
+> A disk `serial=` on a SCSI disk lands in `ID_SCSI_SERIAL` (and `lsblk -o SERIAL`), but the udev by-id link comes from the device id:
+> `/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi<N>`. cloud-init `fs_setup` with serial-based paths formats nothing. Use the slot name
+> (`drive-scsi1`) or a filesystem label; the slot is fixed by the VM definition.
+
 ## Cloud-init
 
 - Cloud-init VMs need a CD-ROM drive for the generated config: `qm set <vmid> --ide2 <storage>:cloudinit`. Values: `ciuser`, `cipassword`, `sshkeys`, `ipconfig0` (`ip=dhcp` or `ip=<cidr>,gw=<addr>`),
@@ -91,6 +97,11 @@ agent](../documents/research-sources-20261107/pve-wiki-qemu-guest-agent.md), [Se
 - Custom user, network or meta data come from `snippets` volumes: `--cicustom "user=local:snippets/<file>.yaml"`. `VERIFIED_PRIMARY`.
 - `qm cloudinit update <vmid>` regenerates the config drive (`VERIFIED_PRIMARY`, `qm help` on 9.1.5); `qm cloudinit dump <vmid> user` shows
   what the guest will read. Cloud-init inside the guest acts once per instance, on first boot (`VERIFIED_PRIMARY`, Cloud-Init Support wiki).
+
+> **Learned 2026-11-26** · PVE 9.2.2 cloud-init drive, Ubuntu 26.04 guest · VERIFIED_PRIMARY (`/var/lib/cloud/instance/user-data.txt` line 3)
+> · Source: deployment VM · Falsifier: a line added to `/etc/hosts` survives a reboot without template changes
+> Proxmox's generated user data sets `manage_etc_hosts: true`, and user data overrides vendor data (`cicustom vendor=`), so cloud-init rewrites
+> `/etc/hosts` from `/etc/cloud/templates/hosts.debian.tmpl` at every boot and drops lines a deploy script added. Write such lines to the template too.
 
 ## Guest agent and serial console
 

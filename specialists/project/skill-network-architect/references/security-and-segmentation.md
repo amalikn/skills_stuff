@@ -247,6 +247,16 @@ https://:8445 {
 | Recovery path independent of proxy | Proxy-managed fleets    | One proxy for access and recovery | Proxy or certificate fault strands every site  |
 | Authenticated site sessions        | Sites on NAT or multi-carrier WAN | Source-IP allowlists       | Address drifts; site breaks silently           |
 
+> **Learned 2026-11-26** · exposing a self-hosted control plane (NetBird 0.83.2) from a home router · VERIFIED_PRIMARY for the NetBird facts
+> (getting-started.sh, combined/cmd/config.go and client config.go at tag v0.83.2), assessment for the rest · Source: continuum DL-261 · Falsifier:
+> clients on networks that allow only 443 out keep working on a custom port
+> Non-standard public ports add only scanner-noise reduction: certificate transparency publishes the hostname and scanners sweep all ports. They cost
+> clients on networks that allow only 80/443 out (hotel and work Wi-Fi), which then lose the control plane and the WebSocket relay fallback, and they
+> need hand edits that drift on upgrade. Real controls: admin paths (dashboard, API, login) allow-listed to the operator's source, DNS-01 so port 80 is
+> never forwarded, owner created before any forward (setup endpoints are open until then), the host with no LAN reach, patching.
+> Allow-list the operator's exact address (/32), not the LAN /24: if the router masquerades forwarded traffic, outside clients appear as the router's
+> LAN address. Prove the proxy sees real sources (its access log) and test from outside once the forward is live.
+
 ## Failure modes and tests
 
 | Failure                                   | Symptom                         | Blast radius            | Test that proves the design handles it             |

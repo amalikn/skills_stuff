@@ -37,6 +37,24 @@ chapter](../documents/research-sources-20261107/pve-admin-chapter-pve-firewall.m
 - The newer nftables-based `proxmox-firewall` is needed for rules on forwarded traffic and on VNets. `VERIFIED_PRIMARY` (firewall chapter). Known: with the SDN firewall, DHCP to VNet guests can be
   dropped even with UDP 67/68 allowed (bugzilla 7022, open on 2026-11-07).
 
+> **Learned 2026-11-26** · PVE 9.2.2 VM firewall · VERIFIED_PRIMARY · Source: `man pve-firewall` on the node (pve-manager 9.2.2) · Falsifier: a VM with
+> `ipfilter: 1` and no `ipfilter-net0` set still sends IPv4 from its configured address
+> On a **VM**, `ipfilter: 1` without an `ipfilter-net<N>` IP set behaves as an empty set that holds only the MAC-derived IPv6 link-local address, so every
+> IPv4 packet the VM sends is dropped ("any outgoing traffic with a source IP not matching its interface's corresponding ipfilter set will be dropped").
+> Only containers get their configured addresses added implicitly. Give each VM NIC a set with its own address; that keeps anti-spoofing and works.
+> Proof on a deployment: with the set, ping and HTTPS out work and a spare secondary source address on the same NIC is dropped. bpg/proxmox:
+>
+> ```hcl
+> # continuum-app deploy/nas/tofu/firewall.tofu (b2b6a84)
+> resource "proxmox_virtual_environment_firewall_ipset" "ipfilter" {
+>   for_each  = { for k, v in var.vms : k => v if v.ipv4_address != "dhcp" }
+>   node_name = var.node_name
+>   vm_id     = proxmox_virtual_environment_vm.vm[each.key].vm_id
+>   name      = "ipfilter-net0"
+>   cidr { name = split("/", each.value.ipv4_address)[0] }
+> }
+> ```
+
 ## Hardening checklist
 
 - `root@pam` with TFA; everyday administration through named users in groups, not root. `VERIFIED_SECONDARY` (pveum chapter, TFA and groups).

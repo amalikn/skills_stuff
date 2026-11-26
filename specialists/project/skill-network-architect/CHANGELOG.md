@@ -13,6 +13,7 @@ Kind: log
 
 ## Contents
 
+- [20261126_1440 — DNS-01 checks on authoritative nameservers, Caddy skips ACME under a loaded certificate, non-standard ports and /32 allow-lists (v2.3.23 -> v2.3.24)](#20261126_1440--dns-01-checks-on-authoritative-nameservers-caddy-skips-acme-under-a-loaded-certificate-non-standard-ports-and-32-allow-lists-v2323---v2324)
 - [20261125_1119 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)](#20261125_1119--cloudflare-move-proven-zone-accepted-resolver-servfail-after-delegation-token-needs-zone-read-v2319---v2320)
 - [20261125_0208 — Free registrar hosted API, Cloudflare Free and ntfy for iOS; self-hosted NetBird limits; WireGuard with a static IPv4 (v2.3.18 -> v2.3.19)](#20261125_0208--free-registrar-hosted-api-cloudflare-free-and-ntfy-for-ios-self-hosted-netbird-limits-wireguard-with-a-static-ipv4-v2318---v2319)
 - [20261124_2220 — Home-line classifier; free-subdomain registrars as identity anchors (v2.3.17 -> v2.3.18)](#20261124_2220--home-line-classifier-free-subdomain-registrars-as-identity-anchors-v2317---v2318)
@@ -41,6 +42,13 @@ Kind: log
 - [20261029_1750 — Adopted into skills_stuff conventions and deepened (v1.0.0 -> v1.1.0)](#20261029_1750--adopted-into-skills_stuff-conventions-and-deepened-v100---v110)
 
 ---
+
+## 20261126_1440 — DNS-01 checks on authoritative nameservers, Caddy skips ACME under a loaded certificate, non-standard ports and /32 allow-lists (v2.3.23 -> v2.3.24)
+
+- references/network-services.md, two Learned 2026-11-26 entries: ACME DNS-01 propagation checked on the zone's own nameservers (public recursors cache
+  NXDOMAIN for the SOA minimum); Caddy skips automatic HTTPS for a name any loaded certificate matches (continuum BUG-666).
+- references/security-and-segmentation.md, Learned 2026-11-26: non-standard public ports for a self-hosted control plane only cut scanner noise and
+  break restrictive-egress clients; allow-list the operator's /32 because a masquerading router makes outside clients look local (continuum DL-261).
 
 ## 20261125_1949 — Public record for a private address; negative-cache flapping; --resolve pinning (v2.3.22 -> v2.3.23)
 

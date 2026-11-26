@@ -62,6 +62,10 @@ Kind: log
 - 2026-11-19: linux-unix.md (watchdog open_timeout gap, Ubuntu panic and lockup defaults, cloud-init 22.2 chpasswd, Launchpad +files), macos-and-endpoints.md (TCC raw-disk writes, automount read-back), edge-appliances.md (bench link versus field, media identity); from smc-resiliency.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261126_1445 — Shamir shares in one auto-unlocking vault are one secret (v2.3.32 -> v2.3.33)
+
+- references/security-and-service-identity.md, Learned 2026-11-26: keep threshold-minus-one shares outside a vault that opens without a prompt (continuum TD-667).
+
 ## 20261125_1331 — Rebuild-plus-restore re-keying; OpenBao root regeneration after 2.5.3 (v2.3.28 -> v2.3.29)
 
 - references/backup-disaster-recovery.md, Learned 2026-11-25: what a rebuild-plus-data-restore must re-key (OpenBao old shares and tokens, identity admin

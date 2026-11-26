@@ -225,6 +225,21 @@ RESOLVER RECEIVE PATH: check left to right; buy CPU only at the last box
 > COPY --from=build /usr/bin/caddy /usr/bin/caddy
 > ```
 
+> **Learned 2026-11-26** · ACME DNS-01 propagation checks (Caddy 2.11.9 caddy-dns/cloudflare, Traefik v3.7 lego) · VERIFIED_PRIMARY (deployment:
+> `dig @8.8.8.8` showed the cached SOA with 1146 s of the zone's 1800 s negative TTL left; after switching the check to the zone's own nameservers the
+> certificate issued 21 s after a restart) · Source: continuum-app deploy/coordinator/tls-acme.caddy (be572df) · Falsifier: a public recursor answers a
+> freshly created `_acme-challenge` TXT inside the zone's negative TTL after an earlier NXDOMAIN for that name
+> Point the ACME client's propagation check at the zone's authoritative nameservers, not public recursors. The first lookup of a challenge name
+> before its TXT exists caches NXDOMAIN for the SOA minimum (Cloudflare: 1800 s), and every retry inside that window times out; Caddy then also falls
+> back to the staging CA. Caddy: `tls { dns cloudflare {env.CF_API_TOKEN}; resolvers <ns1> <ns2> }`; Traefik:
+> `--certificatesresolvers.<r>.acme.dnschallenge.resolvers=<ns1>:53,<ns2>:53`. Update the names if the provider moves the zone (`dig NS <zone>`).
+>
+> **Learned 2026-11-26** · Caddy automatic HTTPS with a loaded certificate · VERIFIED_PRIMARY (Caddy log "skipping automatic certificate management
+> because one or more matching certificates are already loaded") · Source: continuum-app deploy/coordinator/bootstrap.py edge_alt_names (be572df) ·
+> Falsifier: Caddy obtains a public certificate for a name an already loaded certificate (`tls <cert> <key>` elsewhere in the config) also covers
+> Caddy does not issue a public certificate for a name that any loaded certificate in the config already matches, even when that site asks for ACME. An
+> internal certificate for other sites must not carry the public names; it then quietly serves the internal one on the public names.
+
 ## Failure modes and tests
 
 | Failure                                    | Symptom                               | Blast radius                | Test that proves the design handles it             |

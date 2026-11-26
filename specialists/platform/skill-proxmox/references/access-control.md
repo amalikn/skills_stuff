@@ -206,3 +206,9 @@ ACLs with no matching user ACL; tokens that never expire. Exit 1 on any high fin
 > runs), so pipe the vault value on stdin into a script that reads one line and never echoes it; then `pvesh set /access/acl --path / --users <u>
 > --roles Administrator`. Prove the login with a ticket request (`/access/ticket`, password as `--data-urlencode password@-`). 2FA enrolment stays a
 > web UI step for the operator.
+
+> **Learned 2026-11-26** · PVE 9.2.2 API, pool-scoped token · VERIFIED_PRIMARY · Source: `/usr/share/perl5/PVE/API2/Qemu.pm`
+> `check_vm_modify_config_perm` ("special case for startup since it changes host behaviour") · Falsifier: a token without Sys.Modify on `/` sets `startup`
+> Setting a VM's `startup` (boot order and delays) needs **Sys.Modify on `/`** on top of VM.Config.Options. A pool-scoped automation token gets
+> HTTP 403 "Permission check failed (/, Sys.Modify)" on VM create when the config has `startup`. Leave `startup` out of the automation (bpg:
+> no `startup` block, `lifecycle { ignore_changes = [startup] }`) and set it once as root: `qm set <vmid> --startup order=N,up=30,down=120`.

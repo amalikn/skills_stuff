@@ -284,6 +284,13 @@ def _usable(path, drive):  # drive None: always-present disk
 > is held by whoever holds the host or any backup of the VM. A vTPM proves the code path (seal, unseal, attestation calls) and not key custody. Treat VM backups that
 > include vTPM state as secrets, and prove custody on real TPM hardware before trusting real workloads to it.
 
+> **Learned 2026-11-26** · Shamir unseal shares (OpenBao 2.7.2, 3 of 5) kept in one password vault that opens without a prompt · assessment,
+> VERIFIED_PRIMARY that the vault opens unattended (its master password is in the macOS Keychain; an agent unsealed with it) · Source: continuum TD-667 ·
+> Falsifier: a process in the logged-in session cannot read the shares without a human step
+> A split key protects only when the holders are separate: every share in one vault that unlocks from the login keychain is one secret, and any process
+> in that session (agents included) can unseal and read everything. Keep at least threshold-minus-one shares elsewhere (a second vault with its own
+> password, paper in a safe) and only what routine restarts need where automation can reach it; record which share lives where.
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.
