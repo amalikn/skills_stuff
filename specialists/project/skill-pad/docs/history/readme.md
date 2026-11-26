@@ -17,6 +17,7 @@ Rotated records, one folder per kind (changelog, scratchpad, roadmap, session-re
 
 ## Change log
 
+- [changelog-20261126_2042.md](changelog/changelog-20261126_2042.md) 1 entry, 2026-11-20 to 2026-11-20: Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted
 - [changelog-20261126_1847.md](changelog/changelog-20261126_1847.md) 1 entry, 2026-11-20 to 2026-11-20: pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)
 - [changelog-20261126_1444.md](changelog/changelog-20261126_1444.md) 1 entry, 2026-11-20 to 2026-11-20: Learned: list hides done items, stdin for bulleted bodies, rate limits
 - [changelog-20261125_2121.md](changelog/changelog-20261125_2121.md) 1 entry, 2026-11-20 to 2026-11-20: pad_decisions reads an architecture document's Key decisions; pad_links links register ids; workspace rename is name-only

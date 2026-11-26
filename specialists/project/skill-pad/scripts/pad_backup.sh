@@ -56,7 +56,9 @@ if [ "$apply" = 0 ]; then
   exit 0
 fi
 
-with_timeout "$TIMEOUT_S" pad db backup --cron --output "$out" || die "pad db backup failed or timed out (${TIMEOUT_S}s)"
-[ -s "$out" ] || die "backup file is empty: $out"
+# A failed or stopped backup leaves an empty file and its -journal (4 of 16 nights, seen 2026-11-26): remove both so no empty backup is kept.
+drop_partial() { rm -f -- "$out" "$out-journal"; }
+with_timeout "$TIMEOUT_S" pad db backup --cron --output "$out" || { drop_partial; die "pad db backup failed or timed out (${TIMEOUT_S}s); partial file removed"; }
+[ -s "$out" ] || { drop_partial; die "backup file is empty: $out (removed)"; }
 printf '%s\n' "$prune" | sed '/^$/d' | while IFS= read -r old; do rm -f -- "$old"; done
 echo "pad_backup: wrote $out ($(du -h "$out" | cut -f1)); kept newest $KEEP; $(( $(date +%s) - start ))s"

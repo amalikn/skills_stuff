@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261126_1847
+Last rotated: 20261126_2042
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261126_2042 — Backup: a failed night no longer leaves an empty pad-*.db](#20261126_2042--backup-a-failed-night-no-longer-leaves-an-empty-pad-db)
 - [20261126_1850 — Plans close with completed, not done](#20261126_1850--plans-close-with-completed-not-done)
 - [20261126_1444 — Comments: dash-leading text needs --](#20261126_1444--comments-dash-leading-text-needs---)
 - [20261126_1235 — decision_log_add: a `Reversible by` column takes the decider again](#20261126_1235--decision_log_add-a-reversible-by-column-takes-the-decider-again)
@@ -40,7 +41,12 @@ Last rotated: 20261126_1847
 - [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
-- [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
+
+## 20261126_2042 — Backup: a failed night no longer leaves an empty pad-*.db
+
+- `scripts/pad_backup.sh`: when `pad db backup` fails or is stopped at the timeout, the partial `pad-<stamp>.db` and its `-journal` are removed
+  (found from the NAS vault copy, 2026-11-26: 4 of 16 nights in OneDrive pad_backups were 0-byte files with a 512-byte journal; the log shows
+  6 runs stopped at 120 s, successful runs take 0-3 s). Tested with a hanging stub `pad`: nothing left behind. Cause still open (SCRATCHPAD).
 
 ## 20261126_1850 — Plans close with completed, not done
 
@@ -175,22 +181,3 @@ references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-pr
   workspace has a Decisions collection) written as plain text, in the body or a comment from 2026-11-20 on. Another workspace's ref or a typo is not reported. 5 tests (77 OK). First run on
   smc-resiliency: 14 findings, cleared by `just links` and a word-for-word bullet conversion; TASK-92's non-existent BUG-89 found and corrected to BUG-91. Operator, 2026-11-20: TASK-53 passed
   item-check while its start comment was one paragraph and its body linked nothing.
-
-## 20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted
-
-- docs/pad-usage-guidelines-20261110_1628.md 3.3: Templates by collection (operator 2026-11-20, Extend and enforce): required and optional labels for plans, tasks, bugs, tech debt, ideas, asks,
-  feature requests (a one-line request keeps the operator's words), decisions, conventions; the closing-comment check is for work only. 3.4: component tags in a workspace shared by several projects or
-  packs (operator 2026-11-20). Section 6 step 6: trial over, Pad adopted for all important projects (unc ASK-237).
-- scripts/pad_item_check.py: required labels per collection; closing-comment and log checks only on work collections (a decision naming its .jsonl ledger is not a log: 102 false findings in
-  continuum); a one-line feature request is exempt even with a cut title; a collection missing from a workspace is skipped. Tests added.
-- scripts/pad_decisions.py: bold labels in both generated bodies (Serves, Question, Decision, Reason, Versions, Source); unc 34, smc-resiliency 100, continuum 191 and enterprise-strategy 128 decisions
-  re-synced.
-- scripts/pad_links.py: agent-written comments linked as well as bodies (operator: "Unblocked: ASK-237 answered" went out unlinked); a person's comment is never edited. Test with a fake pad.
-- scripts/pad_conventions.py: retries a rate-limited call (three of four applies had stopped). Tests.
-- conventions/apn-baseline.toml and ansible-wifi.toml: every content as Rule and Source; writing-standard names every template, links in comments and component tags; pad-owned-trackers drops the old
-  bug first-line form. Applied to unc, smc-resiliency, enterprise-strategy (without pad-owned-trackers) and ansible-wifi; a second plan shows 0 changes. unc's CONVE-24 tracker list restored (an
-  earlier run today had replaced it with docs/trackers/).
-- docs/flows/: draw.io flow map (operator 2026-11-20): 11 flows in four families rendered by skill-drawio's engine; just flows, just flows-check in just check (drift, code citations, layout audits
-  clean).
-- SKILL.md Rules: links in comments and status comments; skill work goes to the skills workspace (operator 2026-11-20). Pad items: skills TASK-12, TASK-13, TASK-14 (tag skill-pad); ansible-wifi items
-  tagged by component (ansible-wifi 20, local-knowledge 7, skill-smc 1).
