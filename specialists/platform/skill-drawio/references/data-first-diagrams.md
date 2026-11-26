@@ -488,3 +488,11 @@ No screenshot: the output is text in the document itself.
 >   elif isinstance(o, dict):
 >     for k, v in o.items(): walk(v, f"{path}.{k}")
 > ```
+
+> **Learned 2026-11-26** · flow-map parts (YAML) · VERIFIED_PRIMARY (home NAS: `just flows` failed "mapping values are not allowed" on a host
+> value "192.168.86.13, Docker: Nextcloud ..."; a new component without depends_on drew as an unlinked box on the Overview) · Source: home NAS
+> docs/flows/parts/components-guests.yaml (73ec27e) · Falsifier: a plain YAML value containing ": " that loads
+> (1) A plain scalar may not contain ": "; reword or quote any description value with a colon followed by a space. (2) A component the
+> Overview should connect needs `depends_on`; adding it as an actor in flows alone leaves it floating. Export and look at the Overview after
+> adding components, not only the flow pages.
+
