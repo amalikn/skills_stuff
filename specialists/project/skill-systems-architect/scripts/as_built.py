@@ -129,6 +129,15 @@ def resolve(value: object, cfg: dict, base: Path, run: probes.Runner, cache: dic
     return value
 
   def one(m: re.Match) -> str:
+    """Resolve one placeholder, once per (resolver, key).
+
+    Args:
+      m: the placeholder match.
+    Returns:
+      The resolved text.
+    Raises:
+      ValueError: unknown resolver or empty answer.
+    """
     name, key = m.group(1), m.group(2)
     if (name, key) not in cache:
       cmd = cfg.get("resolvers", {}).get(name)
