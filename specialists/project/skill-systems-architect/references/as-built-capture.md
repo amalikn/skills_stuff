@@ -47,6 +47,7 @@ Summary: >-
 out = "deploy/as-built/captures"          # relative to the manifest
 identity = "~/.ssh/<key>"                  # optional
 known_hosts = "<project known_hosts file>" # optional; StrictHostKeyChecking=yes when set
+secrets = "kp"                             # default: KeePassXC through kp; "file:<path>" on a host without it (below)
 drop = ['<regex of churn lines, all targets>']
 mask = ['<extra regex to mask>']
 
@@ -63,24 +64,35 @@ No addresses in a manifest when a project keeps them elsewhere: `{resolver:key}`
 the project folder (`lan = "python3 -I scripts/lib/nas_lan.py ip {key}"`). A target's `file` sets its output name (keep a project's existing names
 so git history continues). Dry runs: `--root <project> --out <copy>` against a copy of the committed captures.
 
+Capture on the Proxmox node itself (NAS DL-074/075; continuum TASK-680): `ssh = "local"`, or no `ssh`, runs `proxmox-node`, `pve-pool`,
+`pve-tenants`, `tls-endpoint` and `command` where the engine runs. `secrets = "file:<path>"` reads API tokens from a root-only (mode 600) `KEY=VALUE`
+file instead of KeePassXC: the key is the entry with `/` and `-` turned to `_`, upper-cased, plus the field (`me/malik-nas/cloudflare/api-token` +
+Password -> `ME_MALIK_NAS_CLOUDFLARE_API_TOKEN_PASSWORD`; the URL field -> `..._URL`). The value is never printed; a missing key, or a file readable by
+group or others, fails that target only. The engine needs Python 3.11 or later (the node runs 3.13).
+
 ## Probe types
 
 | Type | Captures | Options |
 | ---- | -------- | ------- |
-| `proxmox-node` | versions, storage, network, cluster firewall, datacenter, pools, users and token ids, ACLs, roles, image and snippet checksums | `ssh`, `script` (run a project script with `bash -s` instead), `extra` |
-| `pve-pool` | per guest: Proxmox config and firewall file; inside a running guest the `linux-host` set | `ssh`, `pool`, `inside` (`ssh` or `none`), `guest_user`, `guest_known_hosts`, `sudo`, `docker`, `dirs`, `apt_dropins`, `extra` |
+| `proxmox-node` | versions, storage, network, cluster firewall, datacenter, pools, users and token ids, ACLs, roles, image and snippet checksums | `ssh` (or `local`), `script` (run a project script with `bash -s` instead), `extra` |
+| `pve-pool` | per guest: Proxmox config and firewall file; inside a running guest the `linux-host` set (LXC through `pct exec`) | `ssh` (or `local`), `pool`, `inside` (`ssh`, `agent` or `none`), `agent_timeout` (s, default 60), `guest_user`, `guest_known_hosts`, `sudo`, `docker`, `dirs`, `apt_dropins`, `extra` |
+| `pve-tenants` | the Proxmox side of every tenant pool, reviewed against the host's tenant rules: `tenants/<pool>.txt` and `tenants/summary.txt` (as_built_tenants.py, lifted from me/nas) | `ssh` (or `local`), `registry` (default `config/tenants.conf`), `budgets` (default `config/guest-budgets.conf`), `provider` (default `me/nas`), `strip` (default false) |
 | `linux-host` | OS, sshd settings, host key fingerprints, update origins, fstab, mounts, timers, listening ports; containers and image digests; file names and modes | `ssh`, `sudo`, `docker`, `dirs`, `apt_dropins`, `extra` |
-| `tls-endpoint` | subject, issuer, expiry and names, read where served | `via_ssh`, `endpoints = [{name, port, connect}]` |
+| `tls-endpoint` | subject, issuer, expiry and names, read where served | `via_ssh` or `ssh` (or `local`), `endpoints = [{name, port, connect}]` |
 | `http-endpoint` | status and allow-listed JSON fields | `endpoints = [{url, fields}]` |
-| `cloudflare-dns` | type, name, content, proxied, ttl per record | `token_entry` (KeePassXC), `zones` |
-| `command` | named read-only commands, locally or over SSH | `ssh`, `sudo`, `commands`, `raw` (one command, output as is, e.g. JSON) |
+| `cloudflare-dns` | type, name, content, proxied, ttl per record | `token_entry` (from `secrets`), `zones` |
+| `command` | named read-only commands, locally or over SSH | `ssh` (or `local`), `sudo`, `commands`, `raw` (one command, output as is, e.g. JSON) |
 | `cloudflare` | DNS records per zone; with an account id, tunnels with ingress, Access apps and policies; sorted JSON | `token_entry`, `account_field`, `zones`, `tunnels`, `access` |
 | `local-tools` | tool versions, git heads | `tools`, `git` |
 | `hand` | operator-checked rows | `rows = [{what, value, checked, source}]` |
 
-Planned, optional, off until identical twice: `tofu-plan` (`tofu plan -detailed-exitcode`, exit 2 = drift; NAS DL-072), `pve-tenants`
-(Proxmox side of each tenant pool from a tenants file; NAS DL-073), `cloudflare-export` (cf-terraforming 0.31.0 or octodns), `ansible-facts`,
-`steampipe`.
+`inside = "agent"` reads a running VM with `qm guest exec <vmid> --timeout <agent_timeout> -- bash -c <commands>` on the node (PVE 9.3.1 qm(1),
+VERIFIED_PRIMARY 2026-11-26), so the node needs no SSH key into guests; `exitcode` and `out-data` of its JSON become the section. When the timeout is
+reached qm returns only the pid: the section is recorded `rc 124` and the target fails. The JSON field names come from the guest-agent API, not
+qm(1) (UNVERIFIED until the first node run).
+
+Planned, optional, off until identical twice: `tofu-plan` (`tofu plan -detailed-exitcode`, exit 2 = drift; NAS DL-072), `cloudflare-export`
+(cf-terraforming 0.31.0 or octodns), `ansible-facts`, `steampipe`.
 
 Measured 2026-11-26: the NAS draft manifest (14 files: node script, guests by SSH and pct exec, Cloudflare tunnels and Access, DigitalPlat,
 Tailscale, Healthchecks, certificates, KeePassXC names, Nextcloud) ran in 86 s and was identical twice; `os-images.txt` matched the NAS's own
@@ -102,7 +114,8 @@ capture byte for byte.
 
 - Masked before anything is compared or written: `key=value` and `key: value` for password, secret, token, API key, private key, passphrase and
   cipassword; OpenBao-style `hvs.`/`s.` tokens; NetBird `nbp_` tokens; every email address. Projects add regexes in `mask`.
-- Churn: lines matching `drop` (manifest-wide and per target) are removed, trailing whitespace stripped. Typical churn: snapshot times, clock and
+- Churn: lines matching `drop` (manifest-wide and per target) are removed, trailing whitespace stripped (`strip = false` on a target keeps it, for
+  files that must stay byte-identical to an earlier writer's; `pve-tenants` defaults to false because a nameless guest's header ends in a space). Typical churn: snapshot times, clock and
   NTP readings, random loopback ports of container runtimes, container "Up 3 hours" text (the engine records State instead).
 
 ## Why not an existing tool

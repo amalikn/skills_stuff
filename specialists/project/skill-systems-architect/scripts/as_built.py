@@ -5,7 +5,8 @@ Run: python3 -I scripts/as_built.py --manifest <project>/as-built.toml [--apply]
 Plan (default): captures every target read-only and prints, per file, same / new / changed against what is on disk; writes nothing.
 --apply: writes the changed and new files (git is the version store; `git diff` is the drift report). Files of targets not captured are left alone.
 --twice: captures twice and fails when any file differs between the runs: the acceptance test for a target's churn filters; writes nothing.
-Manifest (TOML): [capture] out, ssh_options, identity, known_hosts, mask (extra regexes), drop (regexes of churn lines, all targets); [[target]] with
+Manifest (TOML): [capture] out, ssh_options, identity, known_hosts, secrets ("kp", the default, or "file:<path>" for a root-only KEY=VALUE file on a
+host without KeePassXC), mask (extra regexes), drop (regexes of churn lines, all targets); [[target]] with
 name, type (see as_built_probes.PROBES) and the type's options, plus its own `drop` list. Every probe only reads; secrets are never read except an API
 token held in memory for a call; output is masked (secret-shaped values, tokens, email addresses) and churn lines removed before comparison.
 Runtime budget: under 120 s for about ten targets on a LAN (each command times out after 120 s).
@@ -47,10 +48,14 @@ def load_manifest(path: Path) -> tuple[dict, list[dict]]:
     ([capture] block, targets).
 
   Raises:
-    ValueError: a target lacks a name or type, a type is unknown, two targets share a name, or a drop or mask regex does not compile.
+    ValueError: a target lacks a name or type, a type is unknown, two targets share a name, a drop or mask regex does not compile, or secrets is
+      neither "kp" nor "file:<path>".
   """
   data = tomllib.loads(path.read_text())
   cfg = data.get("capture", {})
+  secrets = cfg.get("secrets", "kp")
+  if secrets != "kp" and not (secrets.startswith("file:") and len(secrets) > len("file:")):
+    raise ValueError(f'capture: secrets must be "kp" or "file:<path>", not {secrets!r}')
   targets = data.get("target", [])
   names = set()
   for t in targets:
@@ -87,18 +92,20 @@ def mask(text: str, extra: list[str]) -> str:
   return text
 
 
-def drop_churn(text: str, patterns: list[str]) -> str:
+def drop_churn(text: str, patterns: list[str], strip: bool = True) -> str:
   """Remove lines that change on every run, and trailing whitespace, so two runs of an unchanged system are byte-identical.
 
   Args:
     text: masked text.
     patterns: regexes; a line matching any is dropped.
+    strip: remove trailing whitespace from each line; a target sets `strip = false` when its files must stay byte-identical to an earlier
+      writer's (pve-tenants defaults to false).
 
   Returns:
     The filtered text, ending in one newline.
   """
   regs = [re.compile(p) for p in patterns]
-  lines = [ln.rstrip() for ln in text.splitlines() if not any(r.search(ln) for r in regs)]
+  lines = [ln.rstrip() if strip else ln for ln in text.splitlines() if not any(r.search(ln) for r in regs)]
   return "\n".join(lines).rstrip("\n") + "\n"
 
 
@@ -175,7 +182,8 @@ def capture(cfg: dict, targets: list[dict], run: probes.Runner = probes.run_comm
     for rel, text in raw.items():
       if "== error" in text or re.search(r"^== .* \(rc (?:124|255)\)$", text, re.M):
         failed.append(t["name"])
-      files[rel] = drop_churn(mask(text, cfg.get("mask", [])), [*cfg.get("drop", []), *t.get("drop", [])])
+      strip = t.get("strip", t["type"] != "pve-tenants")
+      files[rel] = drop_churn(mask(text, cfg.get("mask", [])), [*cfg.get("drop", []), *t.get("drop", [])], strip)
   return files, sorted(set(failed))
 
 
@@ -229,8 +237,12 @@ def main(argv: list[str] | None = None) -> int:
     root = (a.root or a.manifest.parent).resolve()
     targets = [resolve(t, cfg, root, probes.run_command, cache) for t in targets]
     for t in targets:
-      if t.get("script") and not Path(t["script"]).is_absolute():
-        t["script"] = str(root / t["script"])
+      if t["type"] == "pve-tenants":
+        t.setdefault("registry", "config/tenants.conf")
+        t.setdefault("budgets", "config/guest-budgets.conf")
+      for key in ("script", "registry", "budgets"):
+        if t.get(key) and not Path(t[key]).is_absolute():
+          t[key] = str(root / t[key])
   except ValueError as e:
     print(f"as-built: {e}", file=sys.stderr)
     return 2

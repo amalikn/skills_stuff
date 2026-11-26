@@ -1,26 +1,37 @@
 """Probe library for as_built.py: read-only capture of one declared target into {relative file: text} (DL-264, DL-265 in continuum).
 
-Imported by scripts/as_built.py, never run on its own. Every probe only reads: shell commands over SSH or locally, HTTPS GETs, and KeePassXC reads of
-an API token's value (never written out). Each probe returns raw text; masking and churn filtering happen in as_built.py so every probe gets them.
-Probe types: proxmox-node, pve-pool, linux-host, tls-endpoint, http-endpoint, cloudflare-dns, cloudflare (DNS, tunnels, Access), command, local-tools, hand. A tool-backed type
+Imported by scripts/as_built.py, never run on its own. Every probe only reads: shell commands over SSH or locally (`ssh = "local"` or no ssh), HTTPS
+GETs, and reads of an API token's value from KeePassXC or a root-only secrets file ([capture] secrets; never written out). Each probe returns raw text;
+masking and churn filtering happen in as_built.py so every probe gets them. Python 3.11+ (the Proxmox node runs 3.13).
+Probe types: proxmox-node, pve-pool, pve-tenants, linux-host, tls-endpoint, http-endpoint, cloudflare-dns, cloudflare (DNS, tunnels, Access), command,
+local-tools, hand. A tool-backed type
 (cloudflare-export through cf-terraforming or octodns, ansible-facts, steampipe) is added here when a project needs it, after it passes the
 identical-twice test.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import json
+import re
 import shlex
 import ssl
 import subprocess
+import time
 import urllib.error
 import urllib.request
 from collections.abc import Callable
 from pathlib import Path
 
 TIMEOUT = 120
+AGENT_TIMEOUT = 60
 KP = str(Path.home() / ".config/keepassxc/kp")
 Runner = Callable[[list[str], str | None, int], tuple[int, str]]
+
+# scripts/ is not a package: load the sibling tenant-review library by path.
+_spec = importlib.util.spec_from_file_location("as_built_tenants", Path(__file__).with_name("as_built_tenants.py"))
+tenants = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(tenants)
 
 
 def run_command(cmd: list[str], stdin: str | None = None, timeout: int = TIMEOUT) -> tuple[int, str]:
@@ -62,6 +73,37 @@ def ssh_argv(target: str, cfg: dict, overrides: dict | None = None) -> list[str]
   return [*argv, target]
 
 
+def prefix_for(t: dict, cfg: dict, key: str = "ssh") -> list[str] | None:
+  """The ssh prefix for a target, or None when it runs where the capture runs.
+
+  Args:
+    t: target options; t[key] is user@host, "local", or absent.
+    cfg: the [capture] block.
+    key: the option holding the destination (ssh, or via_ssh for tls-endpoint).
+
+  Returns:
+    The ssh argv, or None for local.
+  """
+  dest = t.get(key)
+  return None if not dest or dest == "local" else ssh_argv(dest, cfg, t)
+
+
+def argv_for(prefix: list[str] | None, line: str, sudo: bool = False) -> list[str]:
+  """The argv that runs one shell line locally or over SSH.
+
+  Args:
+    prefix: ssh argv, or None to run locally.
+    line: shell command line.
+    sudo: over SSH, run it through sudo bash -c (a local capture already runs as the user it needs).
+
+  Returns:
+    The argv.
+  """
+  if prefix is None:
+    return ["bash", "-c", line]
+  return [*prefix, f"sudo bash -c {shlex.quote(line)}" if sudo else line]
+
+
 def sections(run: Runner, prefix: list[str] | None, commands: dict[str, str], sudo: bool = False) -> str:
   """Run named commands, one '== name' section each, in name order.
 
@@ -76,11 +118,7 @@ def sections(run: Runner, prefix: list[str] | None, commands: dict[str, str], su
   """
   out = []
   for name in sorted(commands):
-    line = commands[name]
-    if prefix is None:
-      rc, text = run(["bash", "-c", line], None, TIMEOUT)
-    else:
-      rc, text = run([*prefix, f"sudo bash -c {shlex.quote(line)}" if sudo else line], None, TIMEOUT)
+    rc, text = run(argv_for(prefix, commands[name], sudo), None, TIMEOUT)
     out.append(f"== {name}" + ("" if rc == 0 else f" (rc {rc})") + "\n" + text.rstrip("\n") + "\n")
   return "".join(out)
 
@@ -148,16 +186,16 @@ def probe_proxmox_node(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """A Proxmox VE node: versions, storage, network, firewall, pools, users, tokens (ids only), ACLs, roles, images and snippets.
 
   Args:
-    t: target (name, ssh, script, extra).
+    t: target (name, ssh = user@host | "local" | absent for the node the capture runs on, script, extra).
     cfg: [capture] block.
     run: runner.
 
   Returns:
     {"<name>.txt": text}; with `script` set, that local shell script runs on the node (bash -s) instead of the built-in commands.
   """
-  prefix = ssh_argv(t["ssh"], cfg, t)
+  prefix = prefix_for(t, cfg)
   if t.get("script"):
-    rc, text = run([*prefix, "bash -s"], Path(t["script"]).read_text(), 300)
+    rc, text = run(["bash", "-s"] if prefix is None else [*prefix, "bash -s"], Path(t["script"]).read_text(), 300)
     return {f"{t['name']}.txt": ("" if rc == 0 else f"== script (rc {rc})\n") + text}
   return {f"{t['name']}.txt": sections(run, prefix, {**PVE_COMMANDS, **t.get("extra", {})})}
 
@@ -166,16 +204,17 @@ def probe_pve_pool(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """Every guest of a Proxmox pool: its config and firewall file, and inside it when running.
 
   Args:
-    t: target (name, ssh, pool, inside = "ssh" | "none", guest_user, guest_known_hosts, sudo, docker, dirs, extra). Running VMs are read over
-      SSH at their ipconfig0 address; running containers through `pct exec` on the node.
+    t: target (name, ssh = user@host | "local" | absent, pool, inside = "ssh" | "agent" | "none", agent_timeout, guest_user, guest_known_hosts,
+      sudo, docker, dirs, extra). Running containers are read through `pct exec` on the node; running VMs over SSH at their ipconfig0 address
+      (inside = "ssh") or through the QEMU guest agent, `qm guest exec` on the node (inside = "agent": the node needs no SSH key into guests).
     cfg: [capture] block.
     run: runner.
 
   Returns:
     {"<name>/<kind>-<vmid>.txt": text} per guest.
   """
-  prefix = ssh_argv(t["ssh"], cfg, t)
-  rc, raw = run([*prefix, f"pvesh get /pools/{shlex.quote(t['pool'])} --output-format json"], None, TIMEOUT)
+  prefix = prefix_for(t, cfg)
+  rc, raw = run(argv_for(prefix, f"pvesh get /pools/{shlex.quote(t['pool'])} --output-format json"), None, TIMEOUT)
   try:
     members = json.loads(raw).get("members", []) if rc == 0 else []
   except ValueError:
@@ -191,8 +230,10 @@ def probe_pve_pool(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
       # A container has no ipconfig0 and often no SSH: read it from the node with pct exec (as root inside the container).
       inner = {k: f"pct exec {vmid} -- bash -c {shlex.quote(v)}" for k, v in linux_commands(t).items()}
       text += sections(run, prefix, inner)
+    elif m.get("status") == "running" and t.get("inside", "ssh") == "agent":
+      text += agent_sections(run, prefix, vmid, linux_commands(t), int(t.get("agent_timeout", AGENT_TIMEOUT)))
     elif m.get("status") == "running" and t.get("inside", "ssh") == "ssh":
-      conf = run([*prefix, f"{tool} config {vmid}"], None, TIMEOUT)[1]
+      conf = run(argv_for(prefix, f"{tool} config {vmid}"), None, TIMEOUT)[1]
       ip = next((p.split("=", 1)[1].split("/")[0] for ln in conf.splitlines() if ln.startswith("ipconfig0:") for p in ln.split(",") if "ip=" in p), "")
       if ip:
         guest = ssh_argv(f"{t.get('guest_user', 'root')}@{ip}", cfg, {"known_hosts": t.get("guest_known_hosts", cfg.get("known_hosts"))})
@@ -205,18 +246,81 @@ def probe_pve_pool(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   return out
 
 
+def agent_sections(run: Runner, prefix: list[str] | None, vmid: int, commands: dict[str, str], timeout: int) -> str:
+  """Run named commands inside a VM through the QEMU guest agent, one '== name' section each, like sections().
+
+  `qm guest exec <vmid> --timeout N -- bash -c <line>` (PVE 9.3 qm(1)) prints JSON; out-data is the command's output and exitcode its status. When
+  the timeout is reached qm returns only the pid, so an answer without exitcode is recorded as rc 124 (timed out), which fails the target.
+
+  Args:
+    run: runner.
+    prefix: ssh argv to the node, or None on the node.
+    vmid: the VM.
+    commands: section name to shell command line.
+    timeout: seconds qm waits for each command.
+
+  Returns:
+    The concatenated sections.
+  """
+  out = []
+  for name in sorted(commands):
+    line = f"qm guest exec {vmid} --timeout {timeout} -- bash -c {shlex.quote(commands[name])}"
+    rc, raw = run(argv_for(prefix, line), None, timeout + 30)
+    text = raw
+    if rc == 0:
+      try:
+        answer = json.loads(raw)
+      except ValueError:
+        answer = None
+      if isinstance(answer, dict) and "exitcode" in answer:
+        rc = int(answer["exitcode"])
+        text = answer.get("out-data", "") + ("[output truncated by the guest agent]\n" if answer.get("out-truncated") else "")
+      elif isinstance(answer, dict):
+        rc, text = 124, f"guest agent did not finish within {timeout} s\n"
+    out.append(f"== {name}" + ("" if rc == 0 else f" (rc {rc})") + "\n" + text.rstrip("\n") + "\n")
+  return "".join(out)
+
+
+def probe_pve_tenants(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
+  """The Proxmox side of every tenant's guests, reviewed against the provider's rules (me/nas doc 10, DL-072): one file per pool and a summary.
+
+  Args:
+    t: target (name, ssh = user@host | "local" | absent, registry, budgets, provider). registry and budgets are made absolute by as_built.py
+      (defaults config/tenants.conf and config/guest-budgets.conf under the project root); provider defaults to "me/nas".
+    cfg: [capture] block.
+    run: runner.
+
+  Returns:
+    {"tenants/<pool>.txt": text, ..., "tenants/summary.txt": text}.
+
+  Raises:
+    ValueError: the node read failed or returned no guests (nothing is written for an empty read).
+  """
+  prefix = prefix_for(t, cfg)
+  rc, text = run(["bash", "-s"] if prefix is None else [*prefix, "bash -s"], tenants.node_script(), 300)
+  if rc != 0:
+    raise ValueError(f"node read failed (rc {rc})")
+  registry = Path(t.get("registry", "config/tenants.conf"))
+  files = tenants.review(
+    text, registry.parent, int(time.time()), registry, Path(t.get("budgets", "config/guest-budgets.conf")), t.get("provider", tenants.PROVIDER)
+  )
+  if not files:
+    raise ValueError("node read gave no guests")
+  return files
+
+
 def probe_tls_endpoint(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """Certificates: subject, issuer, expiry and names, read from where they are served (locally or on a host over SSH).
 
   Args:
-    t: target (name, via_ssh, endpoints = [{name, port, connect}]).
+    t: target (name, via_ssh or ssh = user@host | "local" | absent, endpoints = [{name, port, connect}]).
     cfg: [capture] block.
     run: runner.
 
   Returns:
     {"<name>.txt": text}.
   """
-  prefix = ssh_argv(t["via_ssh"], cfg, t) if t.get("via_ssh") else None
+  prefix = prefix_for(t, cfg, "via_ssh" if t.get("via_ssh") else "ssh")
   cmds = {}
   for e in t["endpoints"]:
     host = e.get("connect", e["name"])
@@ -290,18 +394,59 @@ def probe_http_endpoint(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   return {f"{t['name']}.txt": "".join(out)}
 
 
-def kp_secret(entry: str, run: Runner) -> str:
-  """A KeePassXC entry's password for an API call (kept in memory only).
+def kp_secret(entry: str, run: Runner, cfg: dict | None = None) -> str:
+  """An entry's password for an API call (kept in memory only), from the manifest's secret source.
 
   Args:
     entry: entry path.
     run: runner.
+    cfg: [capture] block (its `secrets` picks the source); None means KeePassXC.
 
   Returns:
-    The value, or "" when missing.
+    The value, or "" when missing in KeePassXC.
+
+  Raises:
+    ValueError: from a secrets file (see file_secret).
+    OSError: the secrets file cannot be read.
   """
-  rc, out = run([KP, "show", "-s", "-a", "Password", entry], None, 30)
-  return out.strip() if rc == 0 else ""
+  return kp_field(entry, "Password", run, cfg)
+
+
+def secret_key(entry: str, field: str) -> str:
+  """The secrets-file key for an entry's field: / and - become _, upper-cased, the field as a suffix.
+
+  Args:
+    entry: entry path, e.g. me/malik-nas/cloudflare/api-token.
+    field: Password, UserName or URL.
+
+  Returns:
+    The key, e.g. ME_MALIK_NAS_CLOUDFLARE_API_TOKEN_PASSWORD.
+  """
+  return re.sub(r"[/-]", "_", entry).upper() + "_" + field.upper()
+
+
+def file_secret(path: str, key: str) -> str:
+  """One value from a root-only KEY=VALUE secrets file (the value is never printed).
+
+  Args:
+    path: the file.
+    key: the key (secret_key()).
+
+  Returns:
+    The value.
+
+  Raises:
+    ValueError: the file is readable by group or others, or lacks the key (that target fails, the others go on).
+    OSError: the file cannot be read.
+  """
+  p = Path(path).expanduser()
+  if p.stat().st_mode & 0o077:
+    raise ValueError(f"secrets file {p} is readable by group or others (chmod 600)")
+  for line in p.read_text().splitlines():
+    k, sep, v = line.partition("=")
+    if sep and not line.lstrip().startswith("#") and k.strip() == key:
+      return v.strip()
+  raise ValueError(f"secret {key} not in {p}")
 
 
 def probe_cloudflare_dns(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
@@ -315,9 +460,9 @@ def probe_cloudflare_dns(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   Returns:
     {"<name>.txt": text}.
   """
-  token = kp_secret(t["token_entry"], run)
+  token = kp_secret(t["token_entry"], run, cfg)
   if not token:
-    return {f"{t['name']}.txt": f"== error\nKeePassXC entry {t['token_entry']} missing or empty\n"}
+    return {f"{t['name']}.txt": f"== error\nsecret {t['token_entry']} missing or empty\n"}
   headers = {"Authorization": f"Bearer {token}"}
   out = []
   for zone in sorted(t["zones"]):
@@ -333,17 +478,25 @@ def probe_cloudflare_dns(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   return {f"{t['name']}.txt": "".join(out)}
 
 
-def kp_field(entry: str, field: str, run: Runner) -> str:
-  """One field of a KeePassXC entry, in memory only.
+def kp_field(entry: str, field: str, run: Runner, cfg: dict | None = None) -> str:
+  """One field of an entry, in memory only: from KeePassXC ([capture] secrets = "kp", the default) or a file (secrets = "file:<path>").
 
   Args:
     entry: entry path.
     field: Password, UserName or URL.
     run: runner.
+    cfg: [capture] block; None means KeePassXC.
 
   Returns:
-    The value, or "" when missing.
+    The value, or "" when missing in KeePassXC.
+
+  Raises:
+    ValueError: from a secrets file (see file_secret).
+    OSError: the secrets file cannot be read.
   """
+  source = (cfg or {}).get("secrets", "kp")
+  if source.startswith("file:"):
+    return file_secret(source[len("file:") :], secret_key(entry, field))
   rc, out = run([KP, "show", "-s", "-a", field, entry], None, 30)
   return out.strip() if rc == 0 else ""
 
@@ -376,9 +529,9 @@ def probe_cloudflare(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   Returns:
     {"<name>.json": sorted JSON}; emails are masked later by the engine.
   """
-  token = kp_field(t["token_entry"], "Password", run)
+  token = kp_field(t["token_entry"], "Password", run, cfg)
   if not token:
-    return {f"{t['name']}.json": f"== error\nKeePassXC entry {t['token_entry']} missing or empty\n"}
+    return {f"{t['name']}.json": f"== error\nsecret {t['token_entry']} missing or empty\n"}
   doc: dict = {"zones": {}}
   for zone in sorted(t.get("zones", [])):
     z = cf_get(f"zones?name={zone}", token)
@@ -386,7 +539,7 @@ def probe_cloudflare(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
     doc["zones"][zone] = sorted(
       ({k: r.get(k) for k in ("name", "type", "content", "proxied")} for r in recs), key=lambda r: (r["name"], r["type"], str(r["content"]))
     )
-  account = kp_field(t["token_entry"], t["account_field"], run) if t.get("account_field") else ""
+  account = kp_field(t["token_entry"], t["account_field"], run, cfg) if t.get("account_field") else ""
   if account and t.get("tunnels"):
     tunnels = []
     for tun in cf_get(f"accounts/{account}/cfd_tunnel?is_deleted=false", token):
@@ -420,19 +573,18 @@ def probe_command(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """Named read-only commands, locally or on a host over SSH (service status endpoints, tool outputs).
 
   Args:
-    t: target (name, ssh optional, sudo, commands, raw: exactly one command whose output is written as it is).
+    t: target (name, ssh = user@host | "local" | absent, sudo, commands, raw: exactly one command whose output is written as it is).
     cfg: [capture] block.
     run: runner.
 
   Returns:
     {"<name>.txt": text}.
   """
-  prefix = ssh_argv(t["ssh"], cfg, t) if t.get("ssh") else None
+  prefix = prefix_for(t, cfg)
   if t.get("raw"):
     # One command whose output is the file as it is (a JSON document, for example); no section header.
     (line,) = t["commands"].values()
-    argv = ["bash", "-c", line] if prefix is None else [*prefix, f"sudo bash -c {shlex.quote(line)}" if t.get("sudo") else line]
-    rc, text = run(argv, None, TIMEOUT)
+    rc, text = run(argv_for(prefix, line, bool(t.get("sudo"))), None, TIMEOUT)
     return {f"{t['name']}.txt": text if rc == 0 else f"== error (rc {rc})\n{text}"}
   return {f"{t['name']}.txt": sections(run, prefix, t["commands"], sudo=t.get("sudo", False))}
 
@@ -472,6 +624,7 @@ def probe_hand(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
 PROBES: dict[str, Callable[[dict, dict, Runner], dict[str, str]]] = {
   "proxmox-node": probe_proxmox_node,
   "pve-pool": probe_pve_pool,
+  "pve-tenants": probe_pve_tenants,
   "linux-host": probe_linux_host,
   "tls-endpoint": probe_tls_endpoint,
   "http-endpoint": probe_http_endpoint,
