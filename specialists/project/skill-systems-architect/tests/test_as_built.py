@@ -116,6 +116,40 @@ class Manifest(unittest.TestCase):
           ab.load_manifest(p)
 
 
+class Placeholders(unittest.TestCase):
+  """Addresses come from the project's resolver, never the manifest; file names can be set."""
+
+  def test_resolve_and_file_name(self):
+    """{lan:node} is replaced through [capture.resolvers]; an unknown resolver is refused; `file` renames the output.
+
+    Args:
+      None.
+    Returns:
+      None.
+    """
+    calls = []
+
+    def run(cmd, stdin=None, timeout=0):
+      """Answer the resolver.
+
+      Args:
+        cmd: argv; stdin: ignored; timeout: ignored.
+      Returns:
+        (0, output).
+      """
+      calls.append(cmd[-1])
+      return 0, "10.0.0.5\n"
+
+    cfg = {"resolvers": {"lan": "lanip {key}"}}
+    t = ab.resolve({"ssh": "root@{lan:node}", "extra": ["{lan:node}"]}, cfg, Path("/tmp"), run, {})
+    self.assertEqual(t, {"ssh": "root@10.0.0.5", "extra": ["10.0.0.5"]})
+    self.assertEqual(len(calls), 1)
+    with self.assertRaises(ValueError):
+      ab.resolve("{nope:x}", cfg, Path("/tmp"), run, {})
+    files, _ = ab.capture({}, [{"name": "h", "type": "hand", "file": "services/hand.json", "rows": []}])
+    self.assertEqual(list(files), ["services/hand.json"])
+
+
 class Probes(unittest.TestCase):
   def test_running_container_read_with_pct_exec(self):
     """A running LXC is read on the node through pct exec, not over SSH.

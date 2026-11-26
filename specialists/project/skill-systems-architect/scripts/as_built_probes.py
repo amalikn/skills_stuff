@@ -2,7 +2,7 @@
 
 Imported by scripts/as_built.py, never run on its own. Every probe only reads: shell commands over SSH or locally, HTTPS GETs, and KeePassXC reads of
 an API token's value (never written out). Each probe returns raw text; masking and churn filtering happen in as_built.py so every probe gets them.
-Probe types: proxmox-node, pve-pool, linux-host, tls-endpoint, http-endpoint, cloudflare-dns, command, local-tools, hand. A tool-backed type
+Probe types: proxmox-node, pve-pool, linux-host, tls-endpoint, http-endpoint, cloudflare-dns, cloudflare (DNS, tunnels, Access), command, local-tools, hand. A tool-backed type
 (cloudflare-export through cf-terraforming or octodns, ansible-facts, steampipe) is added here when a project needs it, after it passes the
 identical-twice test.
 """
@@ -333,11 +333,94 @@ def probe_cloudflare_dns(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   return {f"{t['name']}.txt": "".join(out)}
 
 
+def kp_field(entry: str, field: str, run: Runner) -> str:
+  """One field of a KeePassXC entry, in memory only.
+
+  Args:
+    entry: entry path.
+    field: Password, UserName or URL.
+    run: runner.
+
+  Returns:
+    The value, or "" when missing.
+  """
+  rc, out = run([KP, "show", "-s", "-a", field, entry], None, 30)
+  return out.strip() if rc == 0 else ""
+
+
+def cf_get(path: str, token: str) -> list | dict:
+  """One Cloudflare API v4 GET, returning its result (empty on failure).
+
+  Args:
+    path: path after /client/v4/.
+    token: API token.
+
+  Returns:
+    The result field.
+  """
+  status, body = http_get(f"https://api.cloudflare.com/client/v4/{path}", {"Authorization": f"Bearer {token}"})
+  try:
+    return json.loads(body).get("result") or [] if status == 200 else []
+  except ValueError:
+    return []
+
+
+def probe_cloudflare(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
+  """Cloudflare as JSON: DNS records per zone and, with an account id, tunnels with their ingress and Access apps and policies.
+
+  Args:
+    t: target (name, token_entry, account_field = "URL" holding the account id or omitted, zones, tunnels, access).
+    cfg: [capture] block (unused).
+    run: runner (for kp).
+
+  Returns:
+    {"<name>.json": sorted JSON}; emails are masked later by the engine.
+  """
+  token = kp_field(t["token_entry"], "Password", run)
+  if not token:
+    return {f"{t['name']}.json": f"== error\nKeePassXC entry {t['token_entry']} missing or empty\n"}
+  doc: dict = {"zones": {}}
+  for zone in sorted(t.get("zones", [])):
+    z = cf_get(f"zones?name={zone}", token)
+    recs = cf_get(f"zones/{z[0]['id']}/dns_records?per_page=500", token) if z else []
+    doc["zones"][zone] = sorted(
+      ({k: r.get(k) for k in ("name", "type", "content", "proxied")} for r in recs), key=lambda r: (r["name"], r["type"], str(r["content"]))
+    )
+  account = kp_field(t["token_entry"], t["account_field"], run) if t.get("account_field") else ""
+  if account and t.get("tunnels"):
+    tunnels = []
+    for tun in cf_get(f"accounts/{account}/cfd_tunnel?is_deleted=false", token):
+      conf = cf_get(f"accounts/{account}/cfd_tunnel/{tun['id']}/configurations", token)
+      tunnels.append({"name": tun.get("name"), "id": tun.get("id"), "ingress": (conf.get("config") or {}).get("ingress") if isinstance(conf, dict) else None})
+    doc["tunnels"] = sorted(tunnels, key=lambda x: x["name"] or "")
+  if account and t.get("access"):
+    apps = cf_get(f"accounts/{account}/access/apps", token)
+    doc["access_apps"] = sorted(
+      (
+        {
+          "name": a.get("name"),
+          "domain": a.get("domain"),
+          "type": a.get("type"),
+          "session_duration": a.get("session_duration"),
+          "policies": sorted(p.get("name", "") for p in a.get("policies", [])),
+        }
+        for a in apps
+      ),
+      key=lambda x: x["name"] or "",
+    )
+    pols = cf_get(f"accounts/{account}/access/policies", token)
+    doc["access_policies"] = sorted(
+      ({"name": p.get("name"), "decision": p.get("decision"), "include": p.get("include"), "session_duration": p.get("session_duration")} for p in pols),
+      key=lambda x: x["name"] or "",
+    )
+  return {f"{t['name']}.json": json.dumps(doc, indent=2, sort_keys=True) + "\n"}
+
+
 def probe_command(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """Named read-only commands, locally or on a host over SSH (service status endpoints, tool outputs).
 
   Args:
-    t: target (name, ssh optional, sudo, commands).
+    t: target (name, ssh optional, sudo, commands, raw: exactly one command whose output is written as it is).
     cfg: [capture] block.
     run: runner.
 
@@ -345,6 +428,12 @@ def probe_command(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
     {"<name>.txt": text}.
   """
   prefix = ssh_argv(t["ssh"], cfg, t) if t.get("ssh") else None
+  if t.get("raw"):
+    # One command whose output is the file as it is (a JSON document, for example); no section header.
+    (line,) = t["commands"].values()
+    argv = ["bash", "-c", line] if prefix is None else [*prefix, f"sudo bash -c {shlex.quote(line)}" if t.get("sudo") else line]
+    rc, text = run(argv, None, TIMEOUT)
+    return {f"{t['name']}.txt": text if rc == 0 else f"== error (rc {rc})\n{text}"}
   return {f"{t['name']}.txt": sections(run, prefix, t["commands"], sudo=t.get("sudo", False))}
 
 
@@ -387,6 +476,7 @@ PROBES: dict[str, Callable[[dict, dict, Runner], dict[str, str]]] = {
   "tls-endpoint": probe_tls_endpoint,
   "http-endpoint": probe_http_endpoint,
   "cloudflare-dns": probe_cloudflare_dns,
+  "cloudflare": probe_cloudflare,
   "command": probe_command,
   "local-tools": probe_local_tools,
   "hand": probe_hand,

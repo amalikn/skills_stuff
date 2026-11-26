@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """As-built capture engine: read-only capture of a project's declared targets into stable, masked, diffable files (shared standard, continuum DL-264/265).
 
-Run: python3 -I scripts/as_built.py --manifest <project>/as-built.toml [--apply] [--twice] [--only name,...]   (just as-built <manifest> [...])
+Run: python3 -I scripts/as_built.py --manifest <project>/as-built.toml [--apply] [--twice] [--only name,...] [--root <project>] [--out <folder>]   (just as-built <manifest> [...])
 Plan (default): captures every target read-only and prints, per file, same / new / changed against what is on disk; writes nothing.
 --apply: writes the changed and new files (git is the version store; `git diff` is the drift report). Files of targets not captured are left alone.
 --twice: captures twice and fails when any file differs between the runs: the acceptance test for a target's churn filters; writes nothing.
@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import re
+import shlex
 import sys
 import time
 from pathlib import Path
@@ -101,6 +102,47 @@ def drop_churn(text: str, patterns: list[str]) -> str:
   return "\n".join(lines).rstrip("\n") + "\n"
 
 
+PLACEHOLDER = re.compile(r"\{(\w+):([\w.-]+)\}")
+
+
+def resolve(value: object, cfg: dict, base: Path, run: probes.Runner, cache: dict) -> object:
+  """Replace {resolver:key} placeholders in a target's strings, so a manifest holds no addresses (NAS DL-066).
+
+  Args:
+    value: a target value (string, list or table, walked recursively).
+    cfg: [capture] block; [capture.resolvers] maps a resolver name to a command with {key}, run in the manifest's folder.
+    base: the manifest's folder.
+    run: runner.
+    cache: resolved values, shared across targets.
+
+  Returns:
+    The value with every placeholder replaced.
+
+  Raises:
+    ValueError: an unknown resolver, or its command failed or printed nothing.
+  """
+  if isinstance(value, list):
+    return [resolve(v, cfg, base, run, cache) for v in value]
+  if isinstance(value, dict):
+    return {k: resolve(v, cfg, base, run, cache) for k, v in value.items()}
+  if not isinstance(value, str) or "{" not in value:
+    return value
+
+  def one(m: re.Match) -> str:
+    name, key = m.group(1), m.group(2)
+    if (name, key) not in cache:
+      cmd = cfg.get("resolvers", {}).get(name)
+      if not cmd:
+        raise ValueError(f"unknown resolver {name} in {m.group(0)}")
+      rc, out = run(["bash", "-c", f"cd {shlex.quote(str(base))} && " + cmd.replace("{key}", shlex.quote(key))], None, 30)
+      if rc != 0 or not out.strip():
+        raise ValueError(f"resolver {name} gave nothing for {key} (rc {rc})")
+      cache[(name, key)] = out.strip().splitlines()[0]
+    return cache[(name, key)]
+
+  return PLACEHOLDER.sub(one, value)
+
+
 def capture(cfg: dict, targets: list[dict], run: probes.Runner = probes.run_command) -> tuple[dict[str, str], list[str]]:
   """Capture every target, masked and churn-filtered.
 
@@ -119,6 +161,8 @@ def capture(cfg: dict, targets: list[dict], run: probes.Runner = probes.run_comm
       raw = probes.PROBES[t["type"]](t, cfg, run)
     except (OSError, KeyError, ValueError) as e:
       raw = {f"{t['name']}.txt": f"== error\n{type(e).__name__}: {e}\n"}
+    if t.get("file") and len(raw) == 1:
+      raw = {t["file"]: next(iter(raw.values()))}
     for rel, text in raw.items():
       if "== error" in text or re.search(r"^== .* \(rc (?:124|255)\)$", text, re.M):
         failed.append(t["name"])
@@ -157,6 +201,8 @@ def main(argv: list[str] | None = None) -> int:
   ap.add_argument("--apply", action="store_true")
   ap.add_argument("--twice", action="store_true")
   ap.add_argument("--only", default="")
+  ap.add_argument("--root", type=Path, help="project folder for resolvers, scripts and out (default: the manifest's folder)")
+  ap.add_argument("--out", type=Path, help="write here instead of [capture] out (dry runs against a copy)")
   a = ap.parse_args(argv)
   try:
     cfg, targets = load_manifest(a.manifest)
@@ -169,7 +215,17 @@ def main(argv: list[str] | None = None) -> int:
       print(f"as-built: unknown target(s) {', '.join(sorted(unknown))}", file=sys.stderr)
       return 2
     targets = [t for t in targets if t["name"] in want]
-  out = (a.manifest.parent / cfg.get("out", "as-built/captures")).resolve()
+  try:
+    cache: dict = {}
+    root = (a.root or a.manifest.parent).resolve()
+    targets = [resolve(t, cfg, root, probes.run_command, cache) for t in targets]
+    for t in targets:
+      if t.get("script") and not Path(t["script"]).is_absolute():
+        t["script"] = str(root / t["script"])
+  except ValueError as e:
+    print(f"as-built: {e}", file=sys.stderr)
+    return 2
+  out = (a.out or (root / cfg.get("out", "as-built/captures"))).resolve()
   t0 = time.time()
   files, failed = capture(cfg, targets)
   if a.twice:

@@ -33,6 +33,10 @@ Summary: >-
    are read; output is masked.
 5. **Operator parts** (router, consoles without an API) are `hand` rows in the manifest, with the date they were checked.
 6. Each project's AGENTS.md carries one line linking its manifest and this page.
+7. **Additions adopted with NAS DL-072** (2026-11-26, for every project): a scheduled capture (nightly) that commits only on change; a health
+   area, so a failure diff shows what changed since the last green run; annotated milestone tags `asbuilt/<yyyymmdd>-<name>` at gate passes; on
+   a failure, the journal slice goes into the incident narrative before capped logs age out. Open risk: a job on a laptop records nothing while it
+   sleeps, and local commits stay local until pushed (decided per project).
 
 ## Manifest
 
@@ -55,6 +59,10 @@ guest_user = "ubuntu"
 drop = ['<target-only churn regex>']
 ```
 
+No addresses in a manifest when a project keeps them elsewhere: `{resolver:key}` placeholders are filled by `[capture.resolvers]` commands run in
+the project folder (`lan = "python3 -I scripts/lib/nas_lan.py ip {key}"`). A target's `file` sets its output name (keep a project's existing names
+so git history continues). Dry runs: `--root <project> --out <copy>` against a copy of the committed captures.
+
 ## Probe types
 
 | Type | Captures | Options |
@@ -65,11 +73,18 @@ drop = ['<target-only churn regex>']
 | `tls-endpoint` | subject, issuer, expiry and names, read where served | `via_ssh`, `endpoints = [{name, port, connect}]` |
 | `http-endpoint` | status and allow-listed JSON fields | `endpoints = [{url, fields}]` |
 | `cloudflare-dns` | type, name, content, proxied, ttl per record | `token_entry` (KeePassXC), `zones` |
-| `command` | named read-only commands, locally or over SSH | `ssh`, `sudo`, `commands` |
+| `command` | named read-only commands, locally or over SSH | `ssh`, `sudo`, `commands`, `raw` (one command, output as is, e.g. JSON) |
+| `cloudflare` | DNS records per zone; with an account id, tunnels with ingress, Access apps and policies; sorted JSON | `token_entry`, `account_field`, `zones`, `tunnels`, `access` |
 | `local-tools` | tool versions, git heads | `tools`, `git` |
 | `hand` | operator-checked rows | `rows = [{what, value, checked, source}]` |
 
-Planned, optional, off until identical twice: `cloudflare-export` (cf-terraforming 0.31.0 or octodns), `ansible-facts`, `steampipe`.
+Planned, optional, off until identical twice: `tofu-plan` (`tofu plan -detailed-exitcode`, exit 2 = drift; NAS DL-072), `pve-tenants`
+(Proxmox side of each tenant pool from a tenants file; NAS DL-073), `cloudflare-export` (cf-terraforming 0.31.0 or octodns), `ansible-facts`,
+`steampipe`.
+
+Measured 2026-11-26: the NAS draft manifest (14 files: node script, guests by SSH and pct exec, Cloudflare tunnels and Access, DigitalPlat,
+Tailscale, Healthchecks, certificates, KeePassXC names, Nextcloud) ran in 86 s and was identical twice; `os-images.txt` matched the NAS's own
+capture byte for byte.
 
 > **Learned 2026-11-26** · first runs of the engine · VERIFIED_PRIMARY (continuum-app as-built.toml: 11 files, 29 s per run; first twice-run differed
 > on an unsorted `pveum role list`, identical after sorting) · Source: continuum-app e6ec936 · Falsifier: an unsorted JSON listing from the Proxmox
