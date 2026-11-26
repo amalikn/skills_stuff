@@ -394,3 +394,11 @@ Controls frameworks:
 > cancelled dialog, or an extension or browser passkey provider in the way (seen in a Chromium browser; the V8 wording gives the browser family). Server-side
 > causes (RP ID not a suffix of the host, origin mismatch) give a `SecurityError` instead. Check the realm's `webAuthnPolicyPasswordless*` (RP ID, resident key,
 > user verification) once, then retry in the platform browser (Safari with iCloud Keychain on a Mac); the user's required action stays pending, so a retry is clean.
+
+> **Learned 2026-11-26 (b)** · OrbStack machines publish their loopback listeners on the Mac's loopback · VERIFIED_PRIMARY for the forward (`lsof` on the Mac:
+> `OrbStack ... TCP 127.0.0.1:8180 (LISTEN)` while `ss -ltn` in machine continuum-coord-rehearsal showed Keycloak on `127.0.0.1:8180`); UNVERIFIED that
+> `orb -m <machine> <command>` boots a stopped machine (observed: the machine was down, a script ran `orb -m ... hostname -I`, the machine was running
+> minutes later) · Source: continuum BUG-707 · Falsifier: OrbStack docs or a setting showing loopback-only services stay inside the machine. A service a
+> machine binds to its own 127.0.0.1 is reachable on the Mac's 127.0.0.1 at the same port, so it collides with anything the Mac side expects there (here a
+> test gate's coordinator port: the edge reached Keycloak and the test got a 404). Before a gate binds a fixed loopback port, check who holds it
+> (`lsof -nP -iTCP:<port> -sTCP:LISTEN`) and name the holder in the failure; keep a stopped rehearsal machine stopped by not calling `orb -m` from imports.

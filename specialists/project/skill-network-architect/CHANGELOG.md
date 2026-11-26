@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-26 (v2.3.27 -> v2.3.28): references/security-and-segmentation.md Learned: OrbStack forwards a machine's loopback listeners to the Mac's loopback (port collisions; continuum BUG-707).
 - 2026-11-26 (v2.3.26 -> v2.3.27): references/network-services.md Learned: NetBird service users get 403 on users/current (prove a token with its own token list); references/security-and-segmentation.md Learned: Keycloak passkey registration `reading 'response'` of null is client side (continuum BUG-702).
 - 2026-11-26 (v2.3.25 -> v2.3.26): references/wan-and-remote-access.md Learned: three read permissions are enough for a Cloudflare DNS, tunnel and Access capture (me/nas).
 - 2026-11-26 (v2.3.24 -> v2.3.25): references/wan-and-remote-access.md Learned: two CGNAT overlays and a split-tunnel office VPN on one Mac (partition 100.64/10, --disable-dns --disable-client-routes; continuum DL-277).
