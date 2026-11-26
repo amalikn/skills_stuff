@@ -302,3 +302,11 @@ Carrier edge and satellite:
 > a request at 100 MB: give them a second, private name (LAN and overlay only) and keep the public name for browsers. Records that point at
 > private addresses stay DNS-only; the dashboard's "proxy for protection" banner does not apply to them.
 
+
+> **Learned 2026-11-26** · a read-only Cloudflare token for configuration capture · VERIFIED_PRIMARY (home NAS: the capture with the new token was
+> byte-identical to the one taken with the tunnel-management token: DNS records, tunnel routes, Access apps and policies) · Source: me/nas
+> `as-built.toml` target cloudflare; token policy as created by the operator · Falsifier: a capture field that comes back empty with the read token.
+> Three permissions are enough to record a zone's DNS, its tunnels and Access: Zone · DNS · Read (zone-scoped), Account · Cloudflare Tunnel · Read,
+> Account · Access: Apps and Policies · Read (permission group IDs 82e64a83756745bbbb1c9c2701bf816b, efea2ab8357b47888938f101ae5e053f,
+> 7ea222f6d5064cfa89ea366d7c1fee89 in the token's Terraform export). No expiry is reasonable for a read-only, one-zone token whose
+> failure would only stop a nightly capture; a node that holds it can change nothing.

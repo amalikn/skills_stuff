@@ -2279,3 +2279,33 @@ Evidence:     CANDIDATE: lab test, mutation check and live drop 2026-11-25
   polls `GET /queue?for=<runner>` with a token every minute, runs only whitelisted actions, posts `/result`. Runners are named, so one queue serves two (node, Mac).
 - **Why it works:** the worst a compromised app can do is queue a whitelisted job; tokens flow one way; results and presses are logged.
 - **Pitfalls:** validate names against real lists, not a template; never start a job from a widget that re-polls; refresh-friendly status is a separate GET.
+
+### P-90 One-way mirror that never overwrites an edit made at the destination
+
+> **Learned 2026-11-26** · one-way file copy into a sync service (WebDAV, Nextcloud) · VERIFIED_PRIMARY (home NAS: live test in a scratch folder, a
+> changed copy was kept as `<stem>.phone-<stamp><suffix>`, the master put back, exit 6) · Source: me/nas `scripts/mac/nas_vault_copy.py`,
+> `scripts/lib/nas_webdav.py` (amalikn/nas 5855333) · Falsifier: a destination whose ETag changes without a content change (then every run keeps a
+> copy aside). reusable_candidate until a second project uses it.
+
+- **Problem:** a nightly job copies master files (password vaults, database snapshots) one way into a synced store that people also open on
+  phones. A save made there is silently overwritten by the next run; a reader may open a half-uploaded file.
+- **Solution:** record per file the sha256 of what was uploaded and the destination's ETag after the upload. Next run: ETag changed since our
+  upload -> rename the destination copy aside (`MOVE`, `Overwrite: F`), upload the master, alert; master changed or copy missing -> upload; else
+  nothing. Upload to a hidden temporary name, then `MOVE` over the copy, then check the size. Never delete at the destination. A read-only
+  `--verify` downloads every copy and compares hashes (the restore test).
+- **Why it works:** the ETag is the destination's own change marker, so the job tells "I wrote this" from "someone else wrote this" without
+  reading content; the rename keeps the other edit for a manual merge; the move makes the swap atomic for readers.
+- **Reuse:** any one-way publish into a store others can write (S3 with ETag, SMB with mtime and size, a Git branch with its head).
+- **Pitfalls:** Nextcloud refuses a `.part` file type (400 InvalidPath), so the temporary name is `.<name>.upload`; read the source twice
+  (size and mtime unchanged) and check its signature so a save in progress or an empty failed snapshot is never published; a state file from an
+  older single-file version needs a migration path.
+
+```python
+# me/nas scripts/mac/nas_vault_copy.py (amalikn/nas 5855333)
+def decide(digest: str, state: dict, remote_etag: str | None, force: bool) -> str:
+  if remote_etag is not None and state.get("etag") and remote_etag != state["etag"]:
+    return "keep"   # changed at the destination since our upload: save it aside first
+  if force or remote_etag is None or state.get("sha256") != digest:
+    return "copy"
+  return "current"
+```

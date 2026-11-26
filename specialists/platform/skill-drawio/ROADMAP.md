@@ -53,6 +53,7 @@ assessment](/Volumes/Data/_ai/_project/project_stuff/apn/unified-network-control
   checker question; skill-drawio's routing rules feed its stage 2 by import.
 - [ ] **Archcore flow-map spec and adoption guide** — unblocked by the second project; write them (see `.archcore/index.guide.md`).
 - [ ] **C-D16 on the current app** — re-check "static export draws orthogonal edges through boxes" on draw.io desktop 32.5.5 (checked only on 32.4.1; `compatibility.yaml`).
+- [ ] **Literal asterisk in map text** (2026-11-26, me/nas): `drawio/mxfile.py` reads `*a*` as italics, so a glob pair (`*.kdbx`, `pad-*.db`) loses both asterisks; take `\*` as a literal asterisk before the spans are applied, with a test and `just consumer-check` (visual-style.md Learned 2026-11-26).
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (3.11 is not installed, so the declared floor is untested).
 - [ ] **SCRATCHPAD's "Open items tracker: this file" is read as a path** (seen 2026-11-06 and at 87f5356): `just rotate --apply` moves open items into a tracked file named `this`. Point the header at
   a real tracker (or the skill-ai-it rotate tool should treat "this file" as SCRATCHPAD itself). Done when a rotation leaves no file named `this`.

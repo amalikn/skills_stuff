@@ -36,6 +36,7 @@ Last rotated: 20261126_1847
 
 ## Unreleased
 
+- 2026-11-26 (me/nas): references/design-patterns.md P-90: one-way mirror that never overwrites an edit made at the destination (ETag guard, temp name then MOVE, --verify).
 - 2026-11-26 (me/nas): references/design-patterns.md (pull-model action queue); languages/shell.md (macOS install and pipes, grep -v under pipefail, systemd template cat, quoted-heredoc stubs).
 - 2026-11-26 references/version-control-and-review.md: printing a check's exit code is not gating on it (a red commit, continuum).
 - 2026-11-26 references/design-patterns.md P-89: configuration capture as stable files with churn removed; identical-twice acceptance (home NAS).

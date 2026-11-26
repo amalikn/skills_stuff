@@ -129,3 +129,24 @@ capture byte for byte.
 A survey of 22 FOSS tools (continuum docs/research/as-built-capture-tools-20261126_1500.md) found none that writes stable masked per-area files
 across hypervisor, guests, services and cloud APIs; and none captures application services (OpenBao, Keycloak, NetBird, OpenFGA). Tools such as
 Ansible facts or Steampipe would cover only the host, DNS and certificate layer; they can be added as probe types later (DL-265).
+
+> **Learned 2026-11-26** · the capture run on the node itself, pushing to Git · VERIFIED_PRIMARY (home NAS: node plan showed every shared file
+> "same" as the Mac run except real changes; first run pushed; health file all ok) · Source: me/nas `as-built-node.toml`,
+> `scripts/node/pve_capture_nightly.sh`, `scripts/mac/nas_capture_node.sh` (amalikn/nas 4204326) · Falsifier: a target whose output differs
+> only by where it runs (then the two runs flip the file every night).
+> A node-side twin manifest (`ssh = "local"`, `secrets = "file:<root-only file>"`) must write the same files as the workstation run; prove it with
+> a plan run on the node ("same") and a `--out <scratch> --apply` diff, since plan mode writes nothing even with `--out`. Targets that need the
+> workstation's keys (password manager names, an account-wide registrar key, SSH into guests) stay workstation-only and the manifest says why.
+> A health file (each target ok or failed, no timestamps) changes only when a status flips, so "commit only on change" still records failures.
+> Before giving a box a Git write key: a GitHub deploy key covers a whole repository, so a project inside a monorepo of personal records is split
+> out first (`git subtree split`, the old repo keeps a submodule) and the key goes on the small repo; gitleaks scans `origin/main..HEAD` before
+> each push and a hit keeps the commit local and fails the health check.
+
+```bash
+# me/nas scripts/node/pve_capture_nightly.sh (amalikn/nas 4204326)
+git commit -q -m "as-built: nightly node capture $(date +%F)"
+if ! timeout 120 gitleaks git --no-banner --redact --log-opts="origin/main..HEAD" . >"$D/gitleaks.log" 2>&1; then
+  hc /fail "gitleaks found a possible secret in the new commit; not pushed"; return 1
+fi
+timeout 120 git push -q origin HEAD:main || { timeout 120 git pull -q --rebase origin main && timeout 120 git push -q origin HEAD:main; }
+```

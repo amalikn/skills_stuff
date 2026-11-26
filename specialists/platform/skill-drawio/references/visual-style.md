@@ -215,6 +215,13 @@ single lane. Each row of such a flow is still a short staircase: for it, a flowc
 - A box's heading line (a component name, a step title, an option head, a decision title) is drawn at `look.heading_scale` (default 125%) of the box's font (operator, 2026-10-21: "text size for the
   headings in the boxes should be bigger"); mark it with `drawio.mxfile.heading()` so `wrapped_lines()` sizes the box for it.
 
+> **Learned 2026-11-26** · inline markup in map text · VERIFIED_PRIMARY (home NAS flow page 7: `every OneDrive *.kdbx ... pad-*.db` rendered as
+> "OneDrive .kdbx ... pad-.db" with the span between in italics) · Source: scripts/drawio/mxfile.py ITALIC_SPAN; me/nas docs/flows/parts/components-mac.yaml
+> · Falsifier: an asterisk pair in a label that renders literally.
+> Map text is read as light Markdown: `**bold**`, `*italic*`, backticks. Two asterisks on one label (a glob such as `*.kdbx` and `pad-*.db`) become
+> an italic span and both asterisks vanish. Until the engine takes `\*` as a literal asterisk (ROADMAP), write such labels without asterisks ("every
+> KeePassXC vault", "the Pad backups") and look at the export before shipping.
+
 ## Checklist
 
 - [ ] No two primary families share a colour; secondary arrows are one neutral grey.

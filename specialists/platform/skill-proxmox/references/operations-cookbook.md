@@ -127,3 +127,8 @@ apt update && apt full-upgrade                               # write; never `apt
 | VM firmware and boot    | `qm config`                                 | `qm set --efidisk0 ... --boot order=...`            |
 | Disk from a cloud image | `pvesm list <id> --content import`          | `qm set --scsi0 <st>:0,import-from=<st>:import/<f>` |
 | Least-privilege audit   | `just token_audit --host <node>`            | —                                                   |
+
+> **Learned 2026-11-26** (o) · Proxmox VE 9.2.2 (kernel 7.0.2-6-pve) · VERIFIED_PRIMARY (`git --version` on the node: command not found; Python
+> 3.13.5 present) · Source: me/nas session, node capture install · Falsifier: a 9.x ISO install that has git.
+> A stock PVE 9.2 node has Python 3 but no git: a node-side job that clones or pushes installs it first (`apt-get install -y git`) from a
+> catalogued install step, never by hand; keep the job's files in a root-only folder (0700) and its Git key scoped to one repository.

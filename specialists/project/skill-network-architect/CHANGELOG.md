@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-26 (v2.3.25 -> v2.3.26): references/wan-and-remote-access.md Learned: three read permissions are enough for a Cloudflare DNS, tunnel and Access capture (me/nas).
 - 2026-11-26 (v2.3.24 -> v2.3.25): references/wan-and-remote-access.md Learned: two CGNAT overlays and a split-tunnel office VPN on one Mac (partition 100.64/10, --disable-dns --disable-client-routes; continuum DL-277).
 
 ## Contents
