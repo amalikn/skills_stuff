@@ -290,3 +290,12 @@ Security and practice
 > a serial-console server with /dev/serial/by-id, monitoring); a VM for anything Docker-based (Immich, Nextcloud, a reverse proxy) and for USB-pairing work
 > (iOS backups) where clean passthrough matters more than the 1-2 GB saved. Budget RAM per guest against the ARC before adding guests (32 GB box: ARC 6, apps VM 12,
 > Samba 2, VPN 0.5, iOS VM 2-4).
+
+> **Learned 2026-11-26** · Docker apps behind a reverse proxy on the same VM · VERIFIED_PRIMARY (home NAS VM 110: Nextcloud 35 image, Healthchecks
+> v5.0.3) · Source: home NAS scripts/mac/nas_apps_deploy.sh, apps/healthchecks/env.example (7f34881) · Falsifier: a changed
+> NEXTCLOUD_TRUSTED_DOMAINS taking effect on an installed instance; Healthchecks answering a Host outside ALLOWED_HOSTS
+> (1) The Nextcloud image reads NEXTCLOUD_TRUSTED_DOMAINS only at first install: set `occ config:system:set trusted_domains N --value=...` on every
+> deploy instead; two-factor enforcement is `occ app:enable twofactor_totp` plus `occ twofactorauth:enforce --on` (the first login then asks
+> each user to set up TOTP). (2) A Django app (Healthchecks) called by a sibling on 127.0.0.1 answers 400 unless 127.0.0.1 is in ALLOWED_HOSTS
+> (the default is only SITE_ROOT's host).
+

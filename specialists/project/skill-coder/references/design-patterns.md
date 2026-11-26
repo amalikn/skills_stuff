@@ -2115,6 +2115,28 @@ SELECT r.digest FROM refs r WHERE r.capsule_id = $1 AND r.last_referenced_at < (
   AND NOT EXISTS (SELECT 1 FROM members m JOIN kept ON kept.id = m.capture_id WHERE m.digest = r.digest)
 ```
 
+### P-89 Configuration capture as stable files, churn removed: drift shows in git diff
+
+> **Learned 2026-11-26** · design pattern, any language · CANDIDATE (one project, live) · Source: home NAS
+> `scripts/mac/nas_capture.py`, `scripts/node/pve_capture.sh` (e741cac) · Falsifier: two captures a minute apart that differ with no change made
+
+```text
+Problem:      snapshots of live systems written to dated files pile up and nobody diffs them; and a snapshot that includes
+              clocks, sizes, NTP statistics or timer run times differs on every run, so real drift drowns in noise.
+Solution:     one stable file per area (node, each guest, each online service), overwritten in place by a read-only
+              capture with secrets and emails masked; git history is the version store and `git diff` is the drift report;
+              filter every value that changes without a configuration change, and accept the capture only when two runs
+              a minute apart are byte-identical.
+Why it works: drift becomes a reviewable diff committed with the change that caused it; the identical-twice test proves the
+              filter, and an unexplained diff later is real drift, not noise.
+Reuse:        as-built records for hosts, cloud accounts (DNS, tunnels, access policies), app configs, certificate expiry.
+Pitfalls:     list a value's name never its secret (vault entry names, not values); a "names only" column for timers and
+              sizes; keep hand captures (no API) as rows in the index so they are not forgotten; plan mode prints which files
+              would change.
+Realised in:  Python -> home NAS scripts/mac/nas_capture.py (`just capture [--apply]`, redact(), volatile filter)
+Evidence:     CANDIDATE: two consecutive captures identical after filtering, 2026-11-26
+```
+
 ## Language realisations
 
 Built: the project has it in that language (source named in the pattern). Suggested: a sketch for a project in that language, not yet built anywhere; move it to built, with its source, when a project

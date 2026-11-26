@@ -340,3 +340,10 @@ accepting it.
 > A written rule ("every step keeps how to check, redo and rotate it") was broken by the agent within a day: marking a step done replaced its procedure
 > with one line. A rule about a document's shape needs a check: split the file on `## ` headings and require a `**Check` line and one of
 > `**Redo|Rotate|Undo|Use` per section, run by `just check`. On first run it found 12 more sections with the same gap.
+
+> **Learned 2026-11-26** · catalog coverage after a folder reorganisation · VERIFIED_PRIMARY (home NAS: after scripts/ moved into subfolders the
+> catalog `("scripts", "*.sh")` matched nothing and passed; `**/*.sh` raised 816 to 875 checks and failed on a planted uncatalogued script) ·
+> Source: home NAS scripts/checks/govcheck/config.py (a85e5b9) · Falsifier: a non-recursive catalog glob that still finds files in subfolders
+> A catalog glob is an assumption about layout: when files move into subfolders a flat glob scans an empty set and the coverage check stays
+> green. Use a recursive glob for folders that can grow subfolders, and re-run the negative test (plant an uncatalogued file) after any move.
+

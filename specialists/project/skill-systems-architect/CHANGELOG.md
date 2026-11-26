@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-26 references/containers-and-platforms.md: Nextcloud trusted_domains at install only, 2FA enforcement; Django ALLOWED_HOSTS for loopback callers (home NAS).
 - 2026-11-26 references/linux-unix.md: socket-activated ssh lacks /run/sshd for sshd -T; apt list options add up, #clear for security-only unattended upgrades (home NAS).
 - 2026-11-25 references/macos-and-endpoints.md (c): iCloud rule (power, locked, Wi-Fi); power and charge readable over Wi-Fi; PasswordProtected unreliable mid-backup (home NAS).
 - 2026-11-25 (v2.3.31 -> v2.3.32): references/edge-appliances.md, Learned 2026-11-25: serial consoles on edge boxes: a UART shared with a device link, a runtime pause the reboot restores, a recorder that marks drops (smc-resiliency).

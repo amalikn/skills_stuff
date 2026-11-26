@@ -279,3 +279,11 @@ Carrier edge and satellite:
 > trusting only 127.0.0.1 logs every client as the gateway, and per-IP brute-force protection throttles everyone together. Trust the Docker
 > range (or the gateway) and verify with the app's own per-IP counter, not the web server's access log.
 
+> **Learned 2026-11-26** · Cloudflare Tunnel with Access in front of a sync app · VERIFIED_PRIMARY (home NAS: anonymous request 302 to the team's
+> cloudflareaccess.com; operator passed the email-code flow from mobile data) · Source: home NAS scripts/mac/nas_cf_tunnel.py (44aa8fc) ·
+> Falsifier: a Nextcloud desktop or mobile client completing login through an Access email-code gate
+> Order the build so a name is never public unprotected: tunnel, route, Access policy and application first, connector running, DNS switch last
+> (proxied CNAME to <id>.cfargotunnel.com replacing the private A record). Sync clients cannot answer Access's email code and the free plan caps
+> a request at 100 MB: give them a second, private name (LAN and overlay only) and keep the public name for browsers. Records that point at
+> private addresses stay DNS-only; the dashboard's "proxy for protection" banner does not apply to them.
+

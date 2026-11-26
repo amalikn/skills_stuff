@@ -32,6 +32,7 @@ Last rotated: 20261124_2249
 
 ## Unreleased
 
+- 2026-11-26 patterns/governance-checks.md: flat catalog globs pass on an empty set after a folder move; use recursive globs (home NAS).
 - 2026-11-25 patterns/governance-checks.md, Learned 2026-11-25: operator-steps sections need a Check and a Redo line, enforced by a check (home NAS).
 
 - 2026-11-24 templates/justfile bootstrap names the pinned interpreter by path (its own checker rejected `mise exec -- python`); references/files-records.md CHANGELOG `Archive:` value quoted (a `layout: ` colon broke YAML); Learned entry in references/pitfalls.md (home NAS bootstrap).
