@@ -3,7 +3,7 @@
 Imported by scripts/as_built.py, never run on its own. Every probe only reads: shell commands over SSH or locally (`ssh = "local"` or no ssh), HTTPS
 GETs, and reads of an API token's value from KeePassXC or a root-only secrets file ([capture] secrets; never written out). Each probe returns raw text;
 masking and churn filtering happen in as_built.py so every probe gets them. Python 3.11+ (the Proxmox node runs 3.13).
-Probe types: proxmox-node, pve-pool, pve-tenants, linux-host, tls-endpoint, http-endpoint, cloudflare-dns, cloudflare (DNS, tunnels, Access), command,
+Probe types (ssh = "local" or absent runs on this machine for all but http/cloudflare/hand): proxmox-node, pve-pool, pve-tenants, linux-host, tls-endpoint, http-endpoint, cloudflare-dns, cloudflare (DNS, tunnels, Access), command,
 local-tools, hand. A tool-backed type
 (cloudflare-export through cf-terraforming or octodns, ansible-facts, steampipe) is added here when a project needs it, after it passes the
 identical-twice test.
@@ -157,14 +157,15 @@ def probe_linux_host(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """A Linux VM, LXC or bare host over SSH.
 
   Args:
-    t: target (name, ssh, sudo, docker, dirs, apt_dropins, extra, known_hosts, identity).
+    t: target (name, ssh = user@host | "local" | absent for the machine the capture runs on, sudo, docker, dirs, apt_dropins, extra,
+      known_hosts, identity). Local runs need the rights the commands need (a nightly self-capture runs as root).
     cfg: [capture] block.
     run: runner.
 
   Returns:
     {"<name>.txt": text}.
   """
-  prefix = ssh_argv(t["ssh"], cfg, t)
+  prefix = prefix_for(t, cfg)
   return {f"{t['name']}.txt": sections(run, prefix, linux_commands(t), sudo=t.get("sudo", False))}
 
 

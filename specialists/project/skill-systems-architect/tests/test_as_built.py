@@ -256,6 +256,7 @@ class NodeSide(unittest.TestCase):
       {"name": "pool", "type": "pve-pool", "pool": "p"},
       {"name": "tls", "type": "tls-endpoint", "ssh": "local", "endpoints": [{"name": "a.example"}]},
       {"name": "cmd", "type": "command", "ssh": "local", "commands": {"x": "true"}},
+      {"name": "self", "type": "linux-host", "ssh": "local"},
     ]
     files, failed = ab.capture({}, targets, run)
     self.assertEqual(failed, [])
