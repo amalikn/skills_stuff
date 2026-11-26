@@ -291,6 +291,23 @@ def _usable(path, drive):  # drive None: always-present disk
 > in that session (agents included) can unseal and read everything. Keep at least threshold-minus-one shares elsewhere (a second vault with its own
 > password, paper in a safe) and only what routine restarts need where automation can reach it; record which share lives where.
 
+> **Learned 2026-11-26** · retiring copied unseal shares, and automated pushers · VERIFIED_PRIMARY (OpenBao 2.7.x listener docs and
+> api/system/rekey.mdx read 2026-11-26; drill on OpenBao 2.7.2: default listener answers 405 to `POST sys/rekey/init`, after a rekey the old shares
+> no longer unseal and new ones do) · Source: continuum TD-667, DL-268, DL-269; continuum-app `scripts/dev-stack/bao_rekey_drill.py`,
+> `deploy/coordinator/bootstrap.py` (`rekey`) · Falsifier: an old share that still unseals after a completed rekey.
+> Moving shares to a second vault leaves copies in the first vault's history, recycle bin, backups and sync versions; only a rekey retires them, so
+> plan the split as a rekey whose new shares go straight to their holders. Put at most threshold-minus-one shares where automation can read them;
+> then every unseal needs a person (accept that cost, or design auto-unseal). OpenBao 2.5.0+ refuses the legacy `sys/rekey/*` endpoints by default
+> (`disable_unauthed_rekey_endpoints`) and the authenticated `sys/rotate/*` ones need a token: with no standing root token, enable the legacy ones for
+> the run only and always restore the config. The new shares exist once: keep them in the operator's process until each is read back from where it
+> was saved. Separately: a GitHub deploy key cannot be limited to a branch, so a write key for a nightly job that pushes data belongs on a repo that
+> holds only that data, never on the code repo the operator builds from.
+>
+> ```python
+> conf.write_text(original.replace("  tls_disable = true\n", "  tls_disable = true\n  disable_unauthed_rekey_endpoints = false\n", 1))
+> try: ...; new = rekey(keys, 5, 3)   # print once, then restore config, restart, unseal with the NEW shares
+> ```
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.
