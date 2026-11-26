@@ -46,7 +46,7 @@ def load_manifest(path: Path) -> tuple[dict, list[dict]]:
     ([capture] block, targets).
 
   Raises:
-    ValueError: a target lacks a name or type, a type is unknown, or two targets share a name.
+    ValueError: a target lacks a name or type, a type is unknown, two targets share a name, or a drop or mask regex does not compile.
   """
   data = tomllib.loads(path.read_text())
   cfg = data.get("capture", {})
@@ -60,6 +60,12 @@ def load_manifest(path: Path) -> tuple[dict, list[dict]]:
     if t["name"] in names:
       raise ValueError(f"two targets named {t['name']}")
     names.add(t["name"])
+  for where, pats in [("capture", cfg.get("drop", []) + cfg.get("mask", [])), *[(t["name"], t.get("drop", [])) for t in targets]]:
+    for pat in pats:
+      try:
+        re.compile(pat)
+      except re.error as e:
+        raise ValueError(f"{where}: bad regex {pat!r}: {e}") from e
   return cfg, targets
 
 

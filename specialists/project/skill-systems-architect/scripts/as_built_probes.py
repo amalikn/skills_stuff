@@ -166,7 +166,8 @@ def probe_pve_pool(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
   """Every guest of a Proxmox pool: its config and firewall file, and inside it when running.
 
   Args:
-    t: target (name, ssh, pool, inside = "ssh" | "none", guest_user, guest_known_hosts, sudo, docker, dirs, extra).
+    t: target (name, ssh, pool, inside = "ssh" | "none", guest_user, guest_known_hosts, sudo, docker, dirs, extra). Running VMs are read over
+      SSH at their ipconfig0 address; running containers through `pct exec` on the node.
     cfg: [capture] block.
     run: runner.
 
@@ -186,7 +187,11 @@ def probe_pve_pool(t: dict, cfg: dict, run: Runner) -> dict[str, str]:
     vmid, kind = m["vmid"], m["type"]
     tool = "pct" if kind == "lxc" else "qm"
     text = sections(run, prefix, {"1-config": f"{tool} config {vmid}", "2-firewall": f"cat /etc/pve/firewall/{vmid}.fw 2>/dev/null"})
-    if m.get("status") == "running" and t.get("inside", "ssh") == "ssh":
+    if m.get("status") == "running" and kind == "lxc" and t.get("inside", "ssh") != "none":
+      # A container has no ipconfig0 and often no SSH: read it from the node with pct exec (as root inside the container).
+      inner = {k: f"pct exec {vmid} -- bash -c {shlex.quote(v)}" for k, v in linux_commands(t).items()}
+      text += sections(run, prefix, inner)
+    elif m.get("status") == "running" and t.get("inside", "ssh") == "ssh":
       conf = run([*prefix, f"{tool} config {vmid}"], None, TIMEOUT)[1]
       ip = next((p.split("=", 1)[1].split("/")[0] for ln in conf.splitlines() if ln.startswith("ipconfig0:") for p in ln.split(",") if "ip=" in p), "")
       if ip:

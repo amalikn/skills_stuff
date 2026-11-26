@@ -108,6 +108,7 @@ class Manifest(unittest.TestCase):
         '[[target]]\nname="a"\ntype="nope"\n',
         '[[target]]\ntype="hand"\nrows=[]\n',
         '[[target]]\nname="a"\ntype="hand"\nrows=[]\n[[target]]\nname="a"\ntype="hand"\nrows=[]\n',
+        '[capture]\ndrop=["[z-a]"]\n[[target]]\nname="a"\ntype="hand"\nrows=[]\n',
       ):
         p = Path(d) / "m.toml"
         p.write_text(body)
@@ -116,6 +117,32 @@ class Manifest(unittest.TestCase):
 
 
 class Probes(unittest.TestCase):
+  def test_running_container_read_with_pct_exec(self):
+    """A running LXC is read on the node through pct exec, not over SSH.
+
+    Args:
+      None.
+    Returns:
+      None.
+    """
+    seen = []
+    pool = json.dumps({"members": [{"vmid": 101, "type": "lxc", "status": "running"}]})
+
+    def run(cmd, stdin=None, timeout=0):
+      """Record commands; answer the pool listing.
+
+      Args:
+        cmd: argv; stdin: ignored; timeout: ignored.
+      Returns:
+        (0, output).
+      """
+      seen.append(cmd[-1])
+      return 0, pool if "pvesh get /pools" in cmd[-1] else "x\n"
+
+    ab.capture({}, [{"name": "g", "type": "pve-pool", "ssh": "root@n", "pool": "p"}], run)
+    self.assertTrue(any(c.startswith("pct exec 101 -- bash -c ") for c in seen))
+    self.assertFalse(any("@" in c for c in seen if c.startswith("ssh")))
+
   """Probe shapes: one file per target, pve-pool one per guest, sections in name order."""
 
   def test_pool_files_per_guest(self):
