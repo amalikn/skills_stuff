@@ -359,3 +359,18 @@ AAA:
 > ```bash
 > curl --resolve "malik-nas.example.org:8006:192.168.86.151" https://malik-nas.example.org:8006/api2/json/version   # name verified, no DNS
 > ```
+
+> **Learned 2026-11-26** · Caddy 2 behind cloudflared on the same host · VERIFIED_PRIMARY (Caddy docs, matchers: client_ip and remote_ip; a LAN request returned 200
+> and the rule is in place) · Source: me/nas apps/caddy/Caddyfile (commit 5dd355d), DL-081 · Falsifier: a Caddy release where remote_ip honours trusted_proxies
+> To keep a path private (home LAN and Tailscale only) on a host that cloudflared also serves, match `client_ip`, never `remote_ip`: tunnel requests reach Caddy
+> from 127.0.0.1, which `private_ranges` includes, so a remote_ip rule lets the internet in. With `trusted_proxies static 127.0.0.1/32` and
+> `client_ip_headers Cf-Connecting-Ip`, client_ip is the visitor's public address for tunnel traffic and the real LAN address otherwise. Tailscale through a
+> subnet router arrives SNATed from the router's LAN address; 100.64.0.0/10 covers direct tailnet peers.
+```caddy
+handle /ops/* {
+	@outside not client_ip private_ranges 100.64.0.0/10
+	respond @outside "Only on the home network or Tailscale" 403
+	uri strip_prefix /ops
+	reverse_proxy 127.0.0.1:3100
+}
+```

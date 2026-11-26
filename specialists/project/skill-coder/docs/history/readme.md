@@ -11,6 +11,7 @@ Summary: Rotated records: CHANGELOG, SCRATCHPAD and ROADMAP entries moved out by
 
 ## Change log
 
+- [changelog-20261126_1847.md](changelog-20261126_1847.md) 1 entry, 2026-11-02 to 2026-11-02: Learned: EXIT trap exit code, ruff through a symlink, tracker from records
 - [changelog-20261126_1437.md](changelog-20261126_1437.md) 1 entry, 2026-11-02 to 2026-11-02: Learned: one write frame for many fields
 - [changelog-20261125_1821.md](changelog-20261125_1821.md) 1 entry, 2026-11-01 to 2026-11-01: Learned: guard first and dry-run a gate that hides records
 - [changelog-20261119_1603.md](changelog-20261119_1603.md) release 0.2.0, 92 entries, 2026-10-19 to 2026-11-19 (cut 2026-11-19)

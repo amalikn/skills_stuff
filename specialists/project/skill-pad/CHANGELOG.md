@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261126_1444
+Last rotated: 20261126_1847
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261126_1850 — Plans close with completed, not done](#20261126_1850--plans-close-with-completed-not-done)
 - [20261126_1444 — Comments: dash-leading text needs --](#20261126_1444--comments-dash-leading-text-needs---)
 - [20261126_1235 — decision_log_add: a `Reversible by` column takes the decider again](#20261126_1235--decision_log_add-a-reversible-by-column-takes-the-decider-again)
 - [20261125_2130 — decision_log_add follows the log's own header (seven-column logs: stamp and status)](#20261125_2130--decision_log_add-follows-the-logs-own-header-seven-column-logs-stamp-and-status)
@@ -40,7 +41,10 @@ Last rotated: 20261126_1444
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
-- [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
+
+## 20261126_1850 — Plans close with completed, not done
+
+- references/cli-reference.md Learned 2026-11-26: plan status values are planned, active, completed, paused. Source: me/nas session nas-60.
 
 ## 20261126_1444 — Comments: dash-leading text needs --
 
@@ -190,8 +194,3 @@ references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-pr
   clean).
 - SKILL.md Rules: links in comments and status comments; skill work goes to the skills workspace (operator 2026-11-20). Pad items: skills TASK-12, TASK-13, TASK-14 (tag skill-pad); ansible-wifi items
   tagged by component (ansible-wifi 20, local-knowledge 7, skill-smc 1).
-
-## 20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)
-
-- scripts/pad_retry.sh (new), `just pad` recipe, tests/test_pad_retry.py (4 tests: retry then success with stdin replayed, give up at the limit, no retry on success, bad usage); SKILL.md rule;
-  references/cli-reference.md Learned entry on the per-user limiter (server log of 20 Nov); scripts/README.md, code-map.toml. 63 tests OK.

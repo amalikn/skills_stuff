@@ -13,6 +13,7 @@ Kind: log
 
 ## Contents
 
+- [20261126_1850 — Caddy behind cloudflared: client_ip, not remote_ip](#20261126_1850--caddy-behind-cloudflared-client_ip-not-remote_ip)
 - [20261126_1440 — DNS-01 checks on authoritative nameservers, Caddy skips ACME under a loaded certificate, non-standard ports and /32 allow-lists (v2.3.23 -> v2.3.24)](#20261126_1440--dns-01-checks-on-authoritative-nameservers-caddy-skips-acme-under-a-loaded-certificate-non-standard-ports-and-32-allow-lists-v2323---v2324)
 - [20261125_1119 — Cloudflare move proven: zone accepted, resolver SERVFAIL after delegation, token needs Zone Read (v2.3.19 -> v2.3.20)](#20261125_1119--cloudflare-move-proven-zone-accepted-resolver-servfail-after-delegation-token-needs-zone-read-v2319---v2320)
 - [20261125_0208 — Free registrar hosted API, Cloudflare Free and ntfy for iOS; self-hosted NetBird limits; WireGuard with a static IPv4 (v2.3.18 -> v2.3.19)](#20261125_0208--free-registrar-hosted-api-cloudflare-free-and-ntfy-for-ios-self-hosted-netbird-limits-wireguard-with-a-static-ipv4-v2318---v2319)
@@ -42,6 +43,11 @@ Kind: log
 - [20261029_1750 — Adopted into skills_stuff conventions and deepened (v1.0.0 -> v1.1.0)](#20261029_1750--adopted-into-skills_stuff-conventions-and-deepened-v100---v110)
 
 ---
+
+## 20261126_1850 — Caddy behind cloudflared: client_ip, not remote_ip
+
+- references/network-services.md Learned 2026-11-26: a private path on a host cloudflared also serves must match `client_ip` (tunnel traffic arrives from
+  127.0.0.1, inside `private_ranges`). Source: me/nas DL-081.
 
 ## 20261126_1440 — DNS-01 checks on authoritative nameservers, Caddy skips ACME under a loaded certificate, non-standard ports and /32 allow-lists (v2.3.23 -> v2.3.24)
 

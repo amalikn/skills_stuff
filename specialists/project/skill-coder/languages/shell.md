@@ -73,3 +73,10 @@ The rest of this override lives in [shell/](shell/) (split 2026-11-07 by scripts
 | [learned-safety.md](shell/learned-safety.md) | 4      |
 | [open-items.md](shell/open-items.md) | 3      |
 | [posix-sh.md](shell/posix-sh.md)  | 1      |
+
+> **Learned 2026-11-26** · bash on macOS and systemd hosts · VERIFIED_PRIMARY (me/nas runs) · Source: me/nas scripts/mac/nas_dashboard.sh, nas_restic.sh,
+> scripts/guests/ios/ios_action.sh · Falsifier: a BSD install(1) that reads a pipe
+> (1) macOS `install` cannot read `/dev/stdin` ("Inappropriate file type or format"): write under `umask 077` with a redirect instead. (2) Under
+> `set -o pipefail`, `grep -v` that selects nothing returns 1 and kills the assignment: wrap it `{ grep -v ... || true; }`. (3) `systemctl cat unit@x.timer`
+> succeeds for any instance of a template: check the instance against its own list. (4) Test stubs written with `printf '...$*...'` trip SC2016; a quoted
+> heredoc (`cat >stub <<'STUB'`) does not and needs no suppression.

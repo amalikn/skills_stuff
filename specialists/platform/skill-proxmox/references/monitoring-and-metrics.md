@@ -102,3 +102,16 @@ audit. It never runs `apt update`; `--refresh --apply` asks PVE to refresh the l
 > pvesh create /cluster/notifications/matchers --name ntfy-alerts --mode any --match-severity error --match-severity warning \
 >   --match-field 'exact:type=system-mail' --target ntfy
 > ```
+
+> **Learned 2026-11-26 (n)** · Proxmox VE 9.2 with zram swap · VERIFIED_PRIMARY (free -m, zramctl, /proc/pressure/memory, per-scope memory.swap.current on the
+> node) · Source: home NAS me/nas DL-077/DL-080, scripts/node/pve_alerts.sh, pve_zram.sh · Falsifier: a node where swap stays empty under the same load at swappiness 10
+> A 4 GiB zram swap reads 100% used while 9 GiB stays available and memory PSI is 0: the kernel moves cold guest pages there (a virtiofs VM's memfd/shmem pages
+> show in the scope's memory.swap.current, not in the kvm process's VmSwap), compressed about 2.3:1. It refilled within 30 minutes of a drain even at swappiness 10.
+> Do not alert on swap use with zram; alert on MemAvailable under 10% or PSI "some" avg300 at 5%. Draining 3.7 GiB with swapoff took over 120 s; resetting
+> /sys/block/zram0 while swapoff still ran failed with "Device or resource busy" and left swap off, so wait for swapoff (600 s bound) and stop before the reset.
+```bash
+# me/nas scripts/node/pve_alerts.sh (commit ad0a8cf)
+avail_pct="$(awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{print (t>0)?int(a*100/t):100}' /proc/meminfo)"
+psi="$(awk '/^some/{split($4,x,"="); print int(x[2])}' /proc/pressure/memory)"
+if [ "$avail_pct" -lt 10 ] || [ "${psi:-0}" -ge 5 ]; then problems+=("memory: ...") ; fi
+```

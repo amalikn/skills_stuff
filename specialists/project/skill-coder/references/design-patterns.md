@@ -2268,3 +2268,14 @@ Realised in:  Python -> smc-resiliency lab/adapters/console.py (ConserverSource.
               mid-recording, marker written, reconnect, the next console line captured
 Evidence:     CANDIDATE: lab test, mutation check and live drop 2026-11-25
 ```
+
+> **Learned 2026-11-26** · reusable_candidate · VERIFIED_PRIMARY (me/nas tests/test_dashboard_app.py, test_ios_action.sh) · Source: me/nas apps/dashboard/app.py,
+> scripts/node/pve_dashboard.py (commit 5dd355d) · Falsifier: a second project needing push-style triggers into the privileged side
+
+## Pull-model action queue (privileged side fetches, exposed side only queues)
+
+- **Problem:** a web page in an exposed place must start jobs on a privileged host without holding credentials to it.
+- **Solution:** the exposed app keeps a JSON queue (`queued` → `taken` → `done|failed` with a note); a PIN with lock-out guards each press. The privileged side
+  polls `GET /queue?for=<runner>` with a token every minute, runs only whitelisted actions, posts `/result`. Runners are named, so one queue serves two (node, Mac).
+- **Why it works:** the worst a compromised app can do is queue a whitelisted job; tokens flow one way; results and presses are logged.
+- **Pitfalls:** validate names against real lists, not a template; never start a job from a widget that re-polls; refresh-friendly status is a separate GET.

@@ -482,3 +482,12 @@ let row = sqlx::query("DELETE FROM portal_login WHERE state = $1 AND session_sha
 > When a second project needs a capability on a personal host (here serial consoles), give it its own key bound to a forced command that allows only
 > the verbs it needs (list, read-only spy, attach), not the host's root path: the boundary is enforced by sshd (`restrict` blocks forwards and agent),
 > the key is replaceable without touching root access, and the consumer's code adds one adapter for the new link instead of host access.
+
+> **Learned 2026-11-26** · status/actions dashboard in an internet-facing VM · VERIFIED_PRIMARY (deployed and exercised: wrong PIN 403, unknown action 400, a press
+> run within a minute) · Source: me/nas DL-081, apps/dashboard/app.py, scripts/node/pve_dashboard.py, scripts/guests/ios/ios_action.sh · Falsifier: a design need
+> the pull model cannot meet (a job that must start in under a minute)
+> Pull, never push credentials: the web app in the exposed VM holds no key into the hypervisor or other guests. The hypervisor pushes status to it and fetches
+> queued button presses with a bearer token, checks each against a whitelist and runs it itself; a guest job is reached by a forced-command key
+> (`command="sudo -n /usr/local/sbin/ios-action \"$SSH_ORIGINAL_COMMAND\"",restrict`; sudo drops SSH_ORIGINAL_COMMAND from the environment, so pass it as
+> one argument). A compromised app can then only queue whitelisted jobs. Validate names against the real lists: a systemd template answers
+> `systemctl cat name@anything.timer`, which once started a job for a device that did not exist.

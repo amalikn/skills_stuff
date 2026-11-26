@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261126_1437
+Last rotated: 20261126_1847
 ---
 
 # Changelog
@@ -31,12 +31,12 @@ Last rotated: 20261126_1437
 - [20261119_1646 — design-patterns: misplaced patterns moved into Patterns; exact-commit gate is P-77](#20261119_1646--design-patterns-misplaced-patterns-moved-into-patterns-exact-commit-gate-is-p-77)
 - [20261119_1631 — Periodic review; 90-day review window](#20261119_1631--periodic-review-90-day-review-window)
 - [20261119_1601 — deterministic navigation-control upgrade](#20261119_1601--deterministic-navigation-control-upgrade)
-- [20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records](#20261102_1347--learned-exit-trap-exit-code-ruff-through-a-symlink-tracker-from-records)
 
 ---
 
 ## Unreleased
 
+- 2026-11-26 (me/nas): references/design-patterns.md (pull-model action queue); languages/shell.md (macOS install and pipes, grep -v under pipefail, systemd template cat, quoted-heredoc stubs).
 - 2026-11-26 references/version-control-and-review.md: printing a check's exit code is not gating on it (a red commit, continuum).
 - 2026-11-26 references/design-patterns.md P-89: configuration capture as stable files with churn removed; identical-twice acceptance (home NAS).
 - 2026-11-26 languages/shell/learned-other.md: `install /dev/stdin` over an existing file fails, use /dev/null then tee; findmnt with two targets exits 1; references/testing.md: unittest file paths under `python -I` (continuum).
@@ -194,7 +194,3 @@ Rust: age + zstd streaming pass and its finish order (learned-crates; guide-keys
 - Generated outputs remain support-only; no `.archcore/` promotion was performed.
 
 Applied to: AI_NAVIGATION.md
-
-## 20261102_1347 — Learned: EXIT trap exit code, ruff through a symlink, tracker from records
-
-`languages/shell.md`, `languages/python.md`, `references/design-patterns.md` P-49, from ansible-wifi (2026-11-02).

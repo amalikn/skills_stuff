@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-26 (me/nas): references/monitoring-and-metrics.md Learned (n): zram swap fills with cold guest pages; alert on MemAvailable/PSI; swapoff before zram reset.
 - 2026-11-26 (continuum NAS deployment): references/security-certificates-firewall.md (VM ipfilter needs ipfilter-net0), qemu-vms.md (SCSI by-id is drive-scsiN, not the serial; Proxmox user data manage_etc_hosts), access-control.md (startup needs Sys.Modify on /).
 
 - 2026-11-26 references/opentofu-bpg-provider.md: VM NIC firewall flag applies live, CT one reboots; ACME domain change needs a forced order plus state re-import (home NAS).

@@ -388,3 +388,18 @@ PostgreSQL
 [pbs-overview]: https://pbs.proxmox.com/docs/technical-overview.html
 [pbs-maint]: https://pbs.proxmox.com/docs/maintenance.html
 [aws-dr]: https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html
+
+> **Learned 2026-11-26** · restic 0.18 to a Hetzner Storage Box (SFTP) · VERIFIED_PRIMARY (Hetzner docs "Storage Box Snapshots" 2026-09-02; restic FAQ; Hetzner API
+> stats fields) · Source: me/nas DL-075 to DL-080, docs/research/hetzner-snapshot-space-20261126_1801.md, scripts/node/pve_restic.sh · Falsifier: Hetzner counting new
+> files against snapshot space, or restic losing uploaded packs on interrupt
+> Hetzner automatic snapshots are free but use the box's capacity, and only for files changed or deleted after the snapshot. Restic only adds pack files and
+> deletes them in prune, so snapshot overhead is about the data pruned within the snapshot window; the API reports stats.size_snapshots separately. They are
+> the off-site copy's protection against a compromised client deleting the repository over SFTP. Restic writes index files every few minutes, so a backup can be
+> restarted on purpose to change `--limit-upload` (full speed by night, a cap by day) and resumes from its last index. A prune during the days-long first
+> backup fails on the lock: skip it while the backup unit is active. KeePassXC 2.8 will not keep `sftp:` in an entry's URL field, so read the repository
+> location from Notes. The Console adds an SSH key only at box creation; recovery without the client is password reset, SSH Support (port 23),
+> `install-ssh-key`, then `restic -o sftp.args='-i <key>'`.
+```bash
+# me/nas scripts/node/pve_restic.sh (commit c0d1933): cap chosen at start; nas-restic-window.timer restarts the run at 07:00 and 23:00
+upload_limit() { local h=$((10#$1)); ...; if [ "$h" -ge "$NIGHT_START" ] || [ "$h" -lt "$NIGHT_END" ]; then return 0; fi; echo "--limit-upload $LIMIT_UPLOAD_DAY_KIB"; }
+```

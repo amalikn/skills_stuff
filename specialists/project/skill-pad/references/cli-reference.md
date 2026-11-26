@@ -290,3 +290,8 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > home NAS workspace) · Falsifier: an accepted decision listed without `--all`
 > `pad item list <collection>` hides done, completed and archived items, which includes accepted decisions; use `pad item list decisions --all` to find a decision's
 > ref (for `[[DECIS-n|DL-nnn]]` links). Plain `pad` calls in a loop hit the shared rate limit (`rate_limited`, retry after 1 s); go through `just pad` (retry wrapper).
+
+> **Learned 2026-11-26** · pad CLI · VERIFIED_PRIMARY (`pad item update PLAN-160 --status done` refused: allowed planned, active, completed, paused) · Source: me/nas
+> session nas-60 · Falsifier: a Pad release that accepts done on plans
+> Plans use `completed`, not `done` (tasks use done). `pad item comment` text that starts with `-` must follow `--` (`pad item comment TASK-1 -- "- note"`), or the
+> CLI reads it as a flag.
