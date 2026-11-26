@@ -137,3 +137,9 @@ There is no attachment delete or replace, and an upload sniffed as application/o
 > before work starts (track the rest in one tech-debt item). (2) A word check proves nothing was lost, not that a label is right: read every bullet labelled
 > Decision against the decision log (two of eleven were agent advice). (3) `just links` lengthens comments, so one just under 200 characters can cross into the
 > bullet-form rule: rerun item-check after links. Closing a plan refuses while a child is open (`open_children`); do not `--force` a DONE onto it.
+
+> **Learned 2026-11-26** · pad CLI comments and notes · VERIFIED_PRIMARY (home NAS: `pad item note TASK-115 "- 2026-11-26 ..."` failed with
+> "unknown shorthand flag: ' ' in - 2026-11-26 ..."; `pad item comment TASK-115 -- "- ..."` succeeded) · Source: home NAS session 2026-11-26 ·
+> Falsifier: a dash-leading comment accepted without `--`
+> The bullet comment form starts with `-`, which the CLI parses as a flag. Put `--` before the text: `pad item comment <ref> -- "- <date>: ..."`.
+

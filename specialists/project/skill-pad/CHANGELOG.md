@@ -9,13 +9,14 @@ Summary: Newest entries only; older ones rotate to docs/history (just history <t
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261125_2121
+Last rotated: 20261126_1444
 ---
 
 # Changelog — skill-pad
 
 ## Contents
 
+- [20261126_1444 — Comments: dash-leading text needs --](#20261126_1444--comments-dash-leading-text-needs---)
 - [20261126_1235 — decision_log_add: a `Reversible by` column takes the decider again](#20261126_1235--decision_log_add-a-reversible-by-column-takes-the-decider-again)
 - [20261125_2130 — decision_log_add follows the log's own header (seven-column logs: stamp and status)](#20261125_2130--decision_log_add-follows-the-logs-own-header-seven-column-logs-stamp-and-status)
 - [20261125_1157 — Housekeeping as the work lands: superseded items, split children, parent-plan comments; in-progress before any reading (v1.0.0)](#20261125_1157--housekeeping-as-the-work-lands-superseded-items-split-children-parent-plan-comments-in-progress-before-any-reading-v100)
@@ -40,7 +41,10 @@ Last rotated: 20261125_2121
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
-- [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
+
+## 20261126_1444 — Comments: dash-leading text needs --
+
+- references/items-and-edits.md: a dash-leading comment needs `--` before the text (`pad item comment <ref> -- "- ..."`), else the CLI reads it as a flag (home NAS, 2026-11-26).
 
 ## 20261126_1235 — decision_log_add: a `Reversible by` column takes the decider again
 
@@ -191,7 +195,3 @@ references/cli-reference.md: Bugs refuse resolved (allowed: open confirmed in-pr
 
 - scripts/pad_retry.sh (new), `just pad` recipe, tests/test_pad_retry.py (4 tests: retry then success with stdin replayed, give up at the limit, no retry on success, bad usage); SKILL.md rule;
   references/cli-reference.md Learned entry on the per-user limiter (server log of 20 Nov); scripts/README.md, code-map.toml. 63 tests OK.
-
-## 20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits
-
-- references/cli-reference.md: Learned 2026-11-20 from the continuum workspace (pad item list hides done-like items without --all; comment bodies starting with '- ' need --stdin; rate_limited bursts).
