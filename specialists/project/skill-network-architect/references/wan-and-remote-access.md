@@ -268,3 +268,14 @@ Carrier edge and satellite:
 [rfc8899]: https://www.rfc-editor.org/rfc/rfc8899.html
 [rfc8900]: https://www.rfc-editor.org/rfc/rfc8900.html
 [wg]: https://www.wireguard.com/papers/wireguard.pdf
+
+> **Learned 2026-11-26** · Tailscale subnet router (Debian 13 LXC), reverse proxy behind Docker · VERIFIED_PRIMARY (home NAS: `tailscale lock status`;
+> Nextcloud `security:bruteforce:attempts` per IP) · Source: home NAS docs/operator-steps/home-network.md and apps/nextcloud/env.example at f55a994, 03c6c7e
+> · Falsifier: a new node with an auth key joining a Tailnet-Lock tailnet with connectivity before any signature
+> (1) In a tailnet with Tailnet Lock on, a node joined with a pre-approved auth key is still "LOCKED OUT" until a trusted signing node runs
+> `tailscale lock sign nodekey:... tlpub:...`; check `tailscale lock status` before promising remote access, and keep the signing step in the
+> runbook. An untagged key gives a user-owned node whose key expiry stays on (disable it for routers).
+> (2) A proxy reaching an app through Docker's published loopback port arrives from the bridge gateway (172.x.0.1), not 127.0.0.1: an app
+> trusting only 127.0.0.1 logs every client as the gateway, and per-IP brute-force protection throttles everyone together. Trust the Docker
+> range (or the gateway) and verify with the app's own per-IP counter, not the web server's access log.
+
