@@ -384,3 +384,13 @@ handle /ops/* {
 ```json
 "nodeAttrs": [{"target": ["*"], "ipPool": ["100.64.0.0/12"]}]
 ```
+
+> **Learned 2026-11-26 (c)** · NetBird (self-hosted 0.83.2) service users and `GET /api/users/current` · VERIFIED_PRIMARY (HTTP 403 `permission denied` with a
+> fresh service-user token that lists users and its own tokens fine) · Source: continuum-app `deploy/netbird/overlay.py` `cmd_service_token` (b3a3772) ·
+> Falsifier: a NetBird release answering `users/current` for a service user. A service user's personal access token (role admin) works for the management API,
+> but `users/current` is refused, because there is no signed-in human behind it. To prove a newly minted token, call something the service user may read,
+> e.g. its own token list. Service-user tokens are the right automation identity: they cannot sign in to the dashboard as a person; mint them with an
+> expiry (`expires_in` days) and alert before it.
+> ```python
+> check = Api(token()).call("GET", f"users/{svc['id']}/tokens") or []   # not users/current: 403 for a service user
+> ```

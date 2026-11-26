@@ -387,3 +387,10 @@ Controls frameworks:
 > "storage"` when it refuses a stale session cookie, wiping the edge origin's data; note that cookies do not separate by port, so on one host it also clears the portal's cookies.
 > Leave-no-trace on someone else's PC: no-store everywhere, session cookies (no Max-Age), Clear-Site-Data at sign-out; a normal window's history stays out of the server's reach.
 
+> **Learned 2026-11-26** · Keycloak passkey registration fails with `Cannot read properties of null (reading 'response')` · VERIFIED_PRIMARY (Keycloak event
+> `UPDATE_CREDENTIAL_ERROR` `invalid_registration`, `web_authn_registration_error_detail` as quoted, realm policy read through the admin API; the retry in Safari
+> registered the passkey at once) · Source: continuum BUG-702 (Pad comments 2026-11-26) · Falsifier: the same detail with a browser that did return a credential.
+> The detail comes from Keycloak's page script: the browser's `navigator.credentials.create()` returned null, so no credential reached the server: a closed or
+> cancelled dialog, or an extension or browser passkey provider in the way (seen in a Chromium browser; the V8 wording gives the browser family). Server-side
+> causes (RP ID not a suffix of the host, origin mismatch) give a `SecurityError` instead. Check the realm's `webAuthnPolicyPasswordless*` (RP ID, resident key,
+> user verification) once, then retry in the platform browser (Safari with iCloud Keychain on a Mac); the user's required action stays pending, so a retry is clean.

@@ -161,3 +161,11 @@ sqlx::query("SELECT 1 FROM capsule WHERE capsule_id = $1 FOR NO KEY UPDATE").bin
 > injections", `SqlSafeStr` not implemented for `&String`) · Source: continuum-app `apps/coordinator/src/lost.rs` and `tests/handoff/recover.rs` (3f988ff) ·
 > Falsifier: an sqlx release relaxing `SqlSafeStr`. Write the SQL as a literal and pass values with `.bind()`, intervals as `make_interval(days => $n)`; a shared
 > fragment (a `to_char` timestamp) is repeated in each literal rather than spliced. Tests too: fixtures built with `format!` fail to compile.
+
+> **Learned 2026-11-26** · reqwest 0.13 `tls_certs_only` versus `add_root_certificate` · VERIFIED_PRIMARY (agent enrol against Keycloak behind Let's Encrypt:
+> `InvalidCertificate(UnknownIssuer)` with `tls_certs_only([private root])`; a device link came back with `add_root_certificate`) · Source: continuum-app
+> `apps/agent/src/tls.rs` `keycloak_client` (b3a3772) · Falsifier: a reqwest release where `add_root_certificate` replaces the platform roots. `tls_certs_only`
+> makes the given roots the only trust; `add_root_certificate` adds one to the platform verifier's roots (feature `rustls`). When one program talks to a private
+> service and a public identity provider, use two clients: the pinned one for the private service, platform-plus-extra for the provider. Never widen the pinned
+> client with a public bundle to make the provider work: the pin is what the device saves and reuses, so it would then trust every public CA for the private
+> service. `Certificate::from_pem` also reads only the first certificate of a bundle.

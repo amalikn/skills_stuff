@@ -2,7 +2,7 @@
 name: skill-network-architect
 description: "Network architecture design, review and troubleshooting: IP/VLAN/VRF plans, routing, segmentation, WAN, Wi-Fi, failover."
 metadata:
-  version: "2.3.26"
+  version: "2.3.27"
   reviewed: "2026-10-29"
   scope: "Vendor-neutral domain architecture"
 ---

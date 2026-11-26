@@ -18,6 +18,7 @@ Written for: you, learning Rust. Part 1 (cargo, ownership, enums, errors, struct
 
 - [7. Async with tokio](#7-async-with-tokio)
 - [8. A web API with axum](#8-a-web-api-with-axum)
+- [Calling other services: one client per trust rule](#calling-other-services-one-client-per-trust-rule)
 - [9. A database with sqlx](#9-a-database-with-sqlx)
 - [10. Running other programs, with a timeout](#10-running-other-programs-with-a-timeout)
 - [11. Tests](#11-tests)
@@ -70,6 +71,35 @@ What to notice: the argument types are the API: `Path<(String, String)>` both pa
 extractors stop at 2 MiB unless a route raises the limit.
 
 Read next: [axum docs](https://docs.rs/axum/latest/axum/).
+
+### Calling other services: one client per trust rule
+
+A reqwest `Client` carries its own rule for which certificates it trusts. The agent needs two rules: the coordinator is private (signed by the project's own root, and
+only that root may vouch for it), while the sign-in server is public (Let's Encrypt). So it builds two clients instead of loosening one.
+
+```rust
+// apps/agent/src/tls.rs (continuum-app b3a3772)
+pub fn client(ca: &[u8], identity: Option<&[u8]>) -> Result<reqwest::Client, Error> {
+  let mut b = reqwest::Client::builder()
+    .timeout(Duration::from_secs(15))
+    .tls_certs_only([reqwest::Certificate::from_pem(ca)?]);   // ONLY this root: the pin
+  if let Some(id) = identity { b = b.identity(reqwest::Identity::from_pem(id)?); }
+  Ok(b.build()?)
+}
+
+pub fn keycloak_client(ca: &[u8]) -> Result<reqwest::Client, Error> {
+  Ok(reqwest::Client::builder()
+    .timeout(Duration::from_secs(15))
+    .add_root_certificate(reqwest::Certificate::from_pem(ca)?)  // the system's roots PLUS this one
+    .build()?)
+}
+```
+
+What to notice: the builder pattern: each call returns the builder, `build()` ends it, and `?` turns a bad PEM or a TLS setup error into the function's error.
+`Result<reqwest::Client, Error>` with `Ok(...)` around the last expression is how a function that can fail returns its value. Python's `requests` puts the same
+choice in `verify=` (a path replaces the trusted set, like `tls_certs_only`), which is why "just point it at a bigger bundle" is the tempting and wrong fix here.
+
+Read next: [reqwest ClientBuilder](https://docs.rs/reqwest/latest/reqwest/struct.ClientBuilder.html).
 
 ## 9. A database with sqlx
 
