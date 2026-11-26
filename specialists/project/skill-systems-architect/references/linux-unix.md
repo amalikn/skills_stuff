@@ -257,3 +257,11 @@ Network receive path:
 >   `instance-id` in meta-data makes cloud-init run the per-instance modules again.
 > - Superseded Ubuntu .debs stay downloadable by file name from Launchpad: `https://launchpad.net/ubuntu/+archive/primary/+files/<pkg>_<version>_<arch>.deb` (303 to the librarian), useful to pin a
 >   bench box to a fleet's exact versions when the archive index has moved on.
+
+> **Learned 2026-11-26** · Debian 13 (trixie) · VERIFIED_PRIMARY (home NAS containers and VMs) · Source: home NAS scripts/guests/sshd_baseline.sh,
+> scripts/guests/security_updates.sh at 03c6c7e and d8adeec · Falsifier: `sshd -T` succeeding with no /run/sshd; Origins-Pattern replacing earlier files' values
+> (1) Debian 13 containers run ssh socket-activated: /run/sshd exists only after a connection, and `sshd -T` / `sshd -t` refuse without it
+> ("Missing privilege separation directory"); create it first, and use `systemctl try-reload-or-restart ssh.service` (no-op when idle).
+> (2) apt.conf list options add up across files: a drop-in `Unattended-Upgrade::Origins-Pattern` adds to the default 50unattended-upgrades
+> origins (point releases too). For security-only updates start the drop-in with `#clear Unattended-Upgrade::Origins-Pattern;`; verify with
+> `unattended-upgrade --dry-run -v` ("Allowed origins are: ...-security").

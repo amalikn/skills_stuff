@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-26 references/opentofu-bpg-provider.md: VM NIC firewall flag applies live, CT one reboots; ACME domain change needs a forced order plus state re-import (home NAS).
 - 2026-11-26 references/qemu-vms.md: adding a virtiofs block to a running VM stops and starts it (bpg, PVE 9.2); several mappings per VM (home NAS).
 - 2026-11-25 references/lxc-containers.md (m): guests start on UTC; set the zone live with timedatectl; OnCalendar with a zone suffix (home NAS).
 - 2026-11-25 references/opentofu-bpg-provider.md (b), lxc-containers.md (l): ACME token as write-only data_wo; account-name default trap; devN hotplug into a running CT (home NAS).

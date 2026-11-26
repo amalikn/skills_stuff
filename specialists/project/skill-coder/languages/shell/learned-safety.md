@@ -93,3 +93,22 @@ Part of [shell.md](../shell.md).
 > addrs="$(ip -6 -br addr)"
 > [[ "$addrs" =~ (^|$'\n')lo\ [^$'\n']*::1/128 ]]
 > ```
+
+> **Learned 2026-11-26** (a) · bash, `set -euo pipefail` with an EXIT trap · VERIFIED_PRIMARY (home NAS test: a job's success case exited 1)
+> · Source: home NAS `scripts/guests/ios/icloud_photos_job.sh` at 03c6c7e · Falsifier: a trap naming a function-local variable that runs clean after the function returned
+> An EXIT trap runs after `main` has returned, when its `local` variables are gone; under `set -u` the trap's `"$out"` is unbound and the
+> script exits 1 even on success. Keep anything a trap reads global (one upper-case name, commented why).
+> ```bash
+> OUT="$(mktemp)" # global: the EXIT trap runs after main returns
+> trap 'rm -f "$OUT"' EXIT
+> ```
+
+> **Learned 2026-11-26** (b) · bash, `set -e` and optional helpers · VERIFIED_PRIMARY (reasoned from bash's errexit rules, caught before deploy) · Source: home NAS
+> `scripts/guests/ios/ios_backup_job.sh` at 27f4232 · Falsifier: `cmd_missing && cmd` as a function's last line returning 0
+> `command -v helper >/dev/null && helper ...` returns non-zero when the helper is absent; as the last command of a function (or of the script) that
+> status becomes the function's, and `set -e` ends the caller. Guard optional calls with `if command -v helper >/dev/null; then helper ...; fi`.
+
+> **Learned 2026-11-26** (c) · Docker Compose single-file bind mounts · VERIFIED_PRIMARY (home NAS: new Caddyfile copied, site still served the old
+> headers until restart) · Source: home NAS `scripts/mac/nas_apps_deploy.sh` at 03c6c7e · Falsifier: a running container seeing a file replaced by scp
+> A bind mount of one file pins its inode; `scp` or `install` replaces the file with a new inode, which the running container never sees, so
+> `up -d` (no compose change) and even a reload keep the old content. Restart the container after copying, or mount the directory.

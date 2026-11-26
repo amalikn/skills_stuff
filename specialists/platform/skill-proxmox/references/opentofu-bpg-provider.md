@@ -242,3 +242,17 @@ and IDs 900 to 909.
 > data_wo         = { CF_Token = var.cloudflare_api_token }
 > data_wo_version = 1
 > ```
+
+> **Learned 2026-11-26** · bpg/proxmox 0.123.1, PVE 9.2.2 · VERIFIED_PRIMARY (node task log and plans) · Source: home NAS tofu/guest_firewall.tf,
+> tofu/host/main.tf, scripts/mac/nas_tofu.sh at 60e2ca4 and 99aea2d · Falsifier: a CT network change applied without a vzreboot task; an ACME domain change applied without force
+> (1) `firewall = true` added to a running VM's `network_device` applies live (no qmstop or reboot); the same flag on a container's
+> `network_interface` reboots the container (`vzreboot`). (2) Changing `proxmox_acme_certificate` domains fails with "Custom certificate exists but
+> 'force' is not set"; `force = true` would re-order on every apply, so do a one-off `pvenode acme cert order --force` on the node, then
+> `tofu state rm` and `tofu import <addr> <node>`: the provider does not re-read `domains` on refresh, so a refresh-only apply leaves a perpetual diff.
+> ```hcl
+> # home NAS tofu/apps_vm.tf (60e2ca4)
+> network_device {
+>   bridge   = "vmbr0"
+>   firewall = contains(var.guest_firewall, "apps")
+> }
+> ```
