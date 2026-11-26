@@ -150,6 +150,21 @@ keepalive interval < carrier mapping timeout (measure it)
 > same listener for networks that block other UDP, is the low-exposure answer: no third party, no new host, and a port that stays silent to anyone without the
 > server key. The gap left is networks that block all UDP. An overlay (NetBird) waits for a concrete trigger: guests or more devices.
 
+> **Learned 2026-11-26** · two CGNAT overlays and a split-tunnel office VPN on one Mac · VERIFIED_PRIMARY (Tailscale kb/1105 other-vpns,
+> validated 2026-01-12; docs/reference/cgnat-interoperability, validated 2026-07-01; docs/reference/ip-pool; NetBird v0.83.2 client/cmd/system.go
+> flags; office routes read on the Mac 2026-11-26) · Source: continuum DL-277, TASK-692; me/nas DL-084 · Falsifier: a tailnet node that cannot
+> reach a NetBird peer in a disjoint CGNAT /16 on macOS.
+> An overlay that must work on any network belongs in 100.64.0.0/10 (RFC 6598): home and office LANs do not use it, while any RFC 1918 choice
+> collides with some LAN. The only clash is another overlay in the same block. Tailscale's macOS and Windows clients do not drop other CGNAT
+> traffic (its Linux client does, unless the drop rule is turned off), so partition the block: the tailnet in an IP pool (100.64.0.0/12), the
+> other overlay in its own /16. Beside a split-tunnel corporate VPN, join the second overlay without DNS or routes (NetBird `--disable-dns
+> --disable-client-routes`) and publish its names in public DNS pointing at overlay addresses, so the corporate resolvers stay in charge; read
+> the VPN's pushed routes while connected (they are not in the client config) before choosing any range.
+>
+> ```bash
+> sudo netbird up --management-url https://nb.example --setup-key-file "$f" --disable-dns --disable-client-routes
+> ```
+
 ## Patterns and anti-patterns
 
 | Pattern                                 | Use when                             | Anti-pattern                   | Why it fails                                  |

@@ -156,6 +156,17 @@ fn console_locked() -> Result<bool, Error> {
 - osquery and other FOSS tools cover inventory, configuration and security checks. MDM enrollment still needs an MDM server with an APNs certificate.
 - No FOSS tool replaces Apple Business itself (device ownership, ADE assignment, apps). The MDM server is replaceable; see below.
 
+> **Learned 2026-11-26** · macOS application firewall under a default-deny manifest · VERIFIED_PRIMARY (Apple Platform Security, Firewall security
+> in macOS; Apple Support, Change Firewall settings on Mac; socketfilterfw(8); codesign on the Command Line Tools Python) · Source: tools_stuff
+> host-firewall (6ab4309, 8c4d19d, 21000b4); continuum DL-276 · Falsifier: a bundle-id firewall entry changed by `socketfilterfw --blockapp`.
+> Keep "automatically allow built-in software" on (Apple's default): turned off, macOS asks about its own daemons (replicatord, rapportd) and a
+> default-deny tool blocks them. Govern only third-party listeners in the manifest. Entries macOS stores by bundle id (com.github.Electron.helper)
+> cannot be changed by `socketfilterfw` on macOS 15 (paths only); `--add <bundle-id>` makes a bogus path entry. `/usr/bin/python3` is a small
+> xcrun launcher: the executable that accepts connections is the Command Line Tools Python.app, Apple-signed, so it is auto-allowed unless the
+> manifest blocks that path explicitly. Docker on the Mac (OrbStack) exposes each network on a bridge; its default 192.168.x pool can shadow a
+> VPN's routes (here the office DNS server): set `default-address-pools` (~/.orbstack/config/docker.json, `orb restart docker`) to a block clear
+> of every VPN, the LAN and CGNAT; networks move when recreated.
+
 ## FOSS and low-cost MDM
 
 Free Apple services (VERIFIED_PRIMARY unless marked, checked 2026-10-29):

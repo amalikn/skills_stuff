@@ -110,6 +110,12 @@ capture byte for byte.
 > rules) in its own capture; the tenant reads that committed file (`git -C <host repo> show HEAD:./<path>`) instead of reading the host. A dry
 > run for another project is that project's to run: hand it the engine and a draft, not your reads of its systems.
 
+> **Learned 2026-11-26** · twin captures, one manifest · VERIFIED_PRIMARY (continuum-app 83a752f: `just as-built-twin` byte-identical for three
+> VMs) · Source: continuum DL-270; me/nas as-built-node.toml · Falsifier: a VM's self-capture differing from the Mac run with no change between.
+> When a machine captures itself (nightly, ssh = "local") and a central run also captures it, build the machine's manifest from the central
+> manifest's own target for it (ssh replaced by local, everything else copied), write the same file name, and check byte equality; two
+> hand-kept manifests drift. Resolve addresses from the infrastructure-as-code settings (`{vm:<key>}` from OpenTofu tfvars), never literals.
+
 ## Masking and churn
 
 - Masked before anything is compared or written: `key=value` and `key: value` for password, secret, token, API key, private key, passphrase and

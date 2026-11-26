@@ -11,6 +11,10 @@ Kind: log
 
 # Changelog
 
+## Unreleased
+
+- 2026-11-26 (v2.3.24 -> v2.3.25): references/wan-and-remote-access.md Learned: two CGNAT overlays and a split-tunnel office VPN on one Mac (partition 100.64/10, --disable-dns --disable-client-routes; continuum DL-277).
+
 ## Contents
 
 - [20261126_2020 — Tailscale IP pool beside a CGNAT overlay](#20261126_2020--tailscale-ip-pool-beside-a-cgnat-overlay)
