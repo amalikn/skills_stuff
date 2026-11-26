@@ -10,7 +10,8 @@ Summary: Every helper in scripts/, its inputs, outputs, safety class, exit codes
 
 # Offline script catalogue
 
-Standard library only; run through the working-cache venv (`just bootstrap` once, then the recipes). No helper touches a host, hypervisor or network, and none writes a file.
+Standard library only; run through the working-cache venv (`just bootstrap` once, then the recipes). No helper writes to a host; only `as_built.py` reads hosts
+(SSH, read-only commands) and writes files, and only its capture folder with `--apply`.
 
 ## Helpers
 
@@ -25,6 +26,7 @@ Standard library only; run through the working-cache venv (`just bootstrap` once
 | [check_links.py](check_links.py) | `just links` | Skill folder -> every cited external URL probed (HEAD, GET fallback); failures and redirects with citing files | Read-only but uses the network; 8 workers, 15 s timeout, 2,000 URLs; symlink to skill-network-architect (canonical) |
 | [fetch_sources.py](fetch_sources.py) | `just fetch-sources [--apply]` | Both packs' Markdown -> RFC .txt, PDFs and all-scraper Markdown snapshots in `sources/`, indexed in `sources/index.json` | Plan by default; writes only the store with --apply; resumable; 4 workers, timeouts, process-group kill; symlink to skill-network-architect (canonical) |
 | [sources_ledger.py](sources_ledger.py) | `just ledger [--add f.json] [--apply]` | Pack Markdown + curated lists + store index -> rebuilt `sources.json` (curated evidence kept, every other cited URL as CITED, local copy paths) | Plan by default; writes only sources.json with --apply; symlink to skill-network-architect (canonical) |
+| [as_built.py](as_built.py) + [as_built_probes.py](as_built_probes.py) | `just as-built <manifest> [--apply\|--twice]` | A project's `as-built.toml` -> stable masked files per area (references/as-built-capture.md) | Reads hosts over SSH, HTTPS and one KeePassXC token value in memory; writes only its capture folder with `--apply`; 120 s per command; exit 0 ok, 1 a target failed or churn, 2 bad manifest |
 | [check_package.py](check_package.py) | `just check` | Skill folder -> broken links, headers, JSON and Python syntax | Read-only; symlink to skill-network-architect (canonical) |
 
 Exit status for every helper: 0 = no findings, 1 = findings, 2 = invalid input.

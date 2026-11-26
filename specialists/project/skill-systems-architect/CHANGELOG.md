@@ -63,6 +63,12 @@ Kind: log
 - 2026-11-19: linux-unix.md (watchdog open_timeout gap, Ubuntu panic and lockup defaults, cloud-init 22.2 chpasswd, Launchpad +files), macos-and-endpoints.md (TCC raw-disk writes, automount read-back), edge-appliances.md (bench link versus field, media identity); from smc-resiliency.
 - 2026-11-11: front-matter description shortened to cut startup tokens; the full original text is kept verbatim in the new `## Full description` section of SKILL.md.
 
+## 20261126_1530 — As-built capture standard and engine: as_built.py, probe library, references/as-built-capture.md (v2.3.33 -> v2.3.34)
+
+- scripts/as_built.py and as_built_probes.py (`just as-built <manifest>`): the shared as-built engine agreed by continuum and the home NAS (continuum DL-264,
+  DL-265; NAS DL-070, DL-071): manifest of typed targets, read-only probes, masking, churn filters, stable files, --twice acceptance; tests/test_as_built.py (6).
+- references/as-built-capture.md: the standard, manifest schema, probe types, Learned entry from the first runs (continuum, identical twice in 29 s).
+
 ## 20261126_1445 — Shamir shares in one auto-unlocking vault are one secret (v2.3.32 -> v2.3.33)
 
 - references/security-and-service-identity.md, Learned 2026-11-26: keep threshold-minus-one shares outside a vault that opens without a prompt (continuum TD-667).

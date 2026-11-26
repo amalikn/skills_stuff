@@ -76,6 +76,10 @@ fetch-sources *ARGS: _require-venv
 ledger *ARGS: _require-venv
     {{py}} -B scripts/sources_ledger.py . --store ../skill-network-architect/sources {{ARGS}}
 
+# As-built capture (references/as-built-capture.md): read-only, a project's manifest -> stable masked files; plan by default, --apply writes, --twice tests churn. Reads hosts over SSH and APIs
+as-built MANIFEST *ARGS: _require-venv
+    {{py}} -B scripts/as_built.py --manifest {{MANIFEST}} {{ARGS}}
+
 # Ruff lint and format check (ruff.toml: two-space indent, 160 columns)
 lint: _require-venv
     {{py}} -m ruff check .
