@@ -115,3 +115,11 @@ avail_pct="$(awk '/^MemTotal/{t=$2} /^MemAvailable/{a=$2} END{print (t>0)?int(a*
 psi="$(awk '/^some/{split($4,x,"="); print int(x[2])}' /proc/pressure/memory)"
 if [ "$avail_pct" -lt 10 ] || [ "${psi:-0}" -ge 5 ]; then problems+=("memory: ...") ; fi
 ```
+
+> **Learned 2026-11-26 (o)** · Proxmox VE 9.2 notifications on a home line · VERIFIED_PRIMARY (postfix journal: status=bounced dsn=5.7.26; `pvesh usage
+> /cluster/notifications/matchers/default-matcher --command set -v` lists --disable) · Source: me/nas DL-083, scripts/node/pve_alerts.sh setup · Falsifier: an ISP
+> address with SPF that Gmail accepts
+> The stock `default-matcher` (mode all, target mail-to-root) mails every notification, a vzdump result included, to root@pam's address by direct SMTP. From a
+> home IP Gmail rejects it (550 5.7.26, no SPF or DKIM), and the bounce comes back to root as system mail, so a phone matcher on `type=system-mail` turns
+> every notification into a bounce alert. When a webhook (ntfy) is the channel, disable the default matcher (`--disable 1`, keeps it for later) or give
+> postfix an authenticated relay.
