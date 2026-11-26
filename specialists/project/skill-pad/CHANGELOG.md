@@ -16,6 +16,7 @@ Last rotated: 20261125_2121
 
 ## Contents
 
+- [20261126_1235 — decision_log_add: a `Reversible by` column takes the decider again](#20261126_1235--decision_log_add-a-reversible-by-column-takes-the-decider-again)
 - [20261125_2130 — decision_log_add follows the log's own header (seven-column logs: stamp and status)](#20261125_2130--decision_log_add-follows-the-logs-own-header-seven-column-logs-stamp-and-status)
 - [20261125_1157 — Housekeeping as the work lands: superseded items, split children, parent-plan comments; in-progress before any reading (v1.0.0)](#20261125_1157--housekeeping-as-the-work-lands-superseded-items-split-children-parent-plan-comments-in-progress-before-any-reading-v100)
 - [20261125_0232 — item-check: plans left open with every child closed; DONE markers on open items](#20261125_0232--item-check-plans-left-open-with-every-child-closed-done-markers-on-open-items)
@@ -40,6 +41,11 @@ Last rotated: 20261125_2121
 - [20261120_1827 — Templates for every collection, enforced; draw.io flow map; links in comments; component tags; trial adopted](#20261120_1827--templates-for-every-collection-enforced-drawio-flow-map-links-in-comments-component-tags-trial-adopted)
 - [20261120_1812 — pad_retry.sh and just pad: single calls retry while the shared server rate-limits (operator, option 3)](#20261120_1812--pad_retrysh-and-just-pad-single-calls-retry-while-the-shared-server-rate-limits-operator-option-3)
 - [20261120_1811 — Learned: list hides done items, stdin for bulleted bodies, rate limits](#20261120_1811--learned-list-hides-done-items-stdin-for-bulleted-bodies-rate-limits)
+
+## 20261126_1235 — decision_log_add: a `Reversible by` column takes the decider again
+
+- scripts/decision_log_add.py: continuum's log (sixth column `Reversible by`, holding "Operator." since the six-column default) was refused as an unknown
+  column after 20261125_2130; the column now maps to the decider, as before. One test added (5 pass). Found by continuum 2026-11-26 recording DL-259.
 
 ## 20261125_2130 — decision_log_add follows the log's own header (seven-column logs: stamp and status)
 

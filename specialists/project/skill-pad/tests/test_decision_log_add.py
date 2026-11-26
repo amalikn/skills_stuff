@@ -90,6 +90,18 @@ class LogHeader(unittest.TestCase):
     with self.assertRaises(ValueError):
       dla.build_row("DL-001", "2026-11-25", "process", ("Chose A.", [], ""), "Why.", "operator", cols)
 
+  def test_reversible_by_column_takes_the_decider(self):
+    """A log whose sixth column is Reversible by (continuum) gets the decider there, as before the header-following change.
+
+    Returns:
+        None.
+    """
+    head = "| ID | Date | Kind | Decision | Reason | Reversible by |\n| -- | -- | -- | -- | -- | -- |"
+    cols = dla.header(head.splitlines())
+    row = dla.build_row("DL-001", "2026-11-26", "process", ("Chose A.", [], ""), "Why.", "Operator.", cols)
+    cells = [c.strip() for c in row.strip().strip("|").split("|")]
+    self.assertEqual(cells, ["DL-001", "2026-11-26", "process", "Chose A.", "Why.", "Operator."])
+
   def test_six_column_default_unchanged_and_unknown_refused(self):
     """The six-column log keeps its row; a header with an unknown column is refused.
 

@@ -37,6 +37,8 @@ KNOWN = {
   "reason": "reason",
   "who": "who",
   "decider": "who",
+  # continuum's log names its sixth column "Reversible by"; since DL-1xx it holds the decider ("Operator."), as the six-column default wrote it.
+  "reversible by": "who",
   "stamp and source": "stamp",
   "status": "status",
 }
