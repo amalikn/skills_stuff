@@ -38,6 +38,7 @@ Last rotated: 20261125_1821
 
 ## Unreleased
 
+- 2026-11-26 references/safety-and-writes.md: pick a device by its defining property with exactly one match; secret into a tmux paste buffer (home NAS).
 - 2026-11-25 references/design-patterns.md P-88 a streaming reader that is never silent (gap marker, bounded restart); languages/shell/learned-processes-and-timeouts.md, Learned 2026-11-25 (e): macOS `sync <file>` is a global sync that waits on a busy network share (smc-resiliency).
 - 2026-11-25 scripts/table_width.py (`just table-width`, 6 tests): markdown tables at or over the hook's 200-column aligned width or already split; languages/python/learned-data-formats.md (new topic file; learned-other.md was at its budget): plistlib naive UTC dates (home NAS).
 - 2026-11-25 languages/shell/learned-safety.md and learned-format-and-lint.md: `| grep -q` under pipefail fails by SIGPIPE; check must run lint; `*.sh` globs miss extension-less scripts (home NAS).

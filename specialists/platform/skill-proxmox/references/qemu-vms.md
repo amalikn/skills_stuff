@@ -223,3 +223,21 @@ agent: enabled=0,...
 >   cache   = "auto"
 > }
 > ```
+
+> **Learned 2026-11-26** · Proxmox VE 9.2, bpg/proxmox 0.123.1 · VERIFIED_PRIMARY (node /var/log/pve/tasks/index: `qmstop:120` then `qmstart:120` by the
+> OpenTofu token right after the apply; `qm config` then showed `virtiofs1`) · Source: home NAS `tofu/ios_vm.tf` at 0c6c9f5 · Falsifier: a virtiofs block added to a
+> running VM by the provider with no qmstop/qmstart task
+> Adding a second `virtiofs {}` block to a running VM is planned as "update in-place" but the provider stops and starts the VM (virtiofs is not hotplugged), so
+> apply it when nothing runs inside the guest. A VM may carry several mappings (`virtiofs0`, `virtiofs1`); each needs its own `proxmox_hardware_mapping_dir` first,
+> and the guest mounts each tag (`mount -t virtiofs <mapping> <dir>`). Screenshot pending: Hardware tab of the VM, next session on the node.
+> ```hcl
+> # home NAS tofu/ios_vm.tf (0c6c9f5)
+> virtiofs {
+>   mapping = "nas-ios-backups"
+>   cache   = "auto"
+> }
+> virtiofs {
+>   mapping = "nas-icloud-photos"
+>   cache   = "auto"
+> }
+> ```

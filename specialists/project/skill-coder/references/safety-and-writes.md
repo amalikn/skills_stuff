@@ -273,3 +273,23 @@ def classify(cmdline, held):
 >     rel, n = f"{base}-{n}.md", n + 1
 >   return rel
 > ```
+
+> **Learned 2026-11-26** · any language, tools that act on "the connected device" · VERIFIED_PRIMARY (the device list held only an iPad reachable over
+> Wi-Fi while the operator believed an iPhone was on USB; the old `d[0]` would have re-paired the iPad) · Source: home NAS `scripts/nas_ios_vm.sh` `pair` at
+> 0c6c9f5 · Falsifier: a device list that never mixes transports
+> Select the write target by the property that makes it the intended one (here the transport, USB) and require exactly one match; never take the first entry of a
+> discovery list. A list that also shows network-reachable devices makes "first" a different device than the one the operator plugged in.
+> ```bash
+> # home NAS scripts/nas_ios_vm.sh pair (0c6c9f5)
+> udid="$(timeout 30 "$pmd3" usbmux list 2>/dev/null | python3 -c 'import json,sys; d=[x for x in json.load(sys.stdin) if x.get("ConnectionType") == "USB"]; print(d[0]["UniqueDeviceID"] if len(d) == 1 else "")')"
+> ```
+
+> **Learned 2026-11-26** · any language, secrets typed into an interactive prompt on a remote host · reusable_candidate (one project) · Source: home NAS
+> `scripts/nas_icloud.sh` `auth` at 0c6c9f5 · Falsifier: the secret visible in `ps` or the tmux history after the call
+> When a tool only takes a password at a console prompt (and waits there for a second factor), start it in a detached tmux session and feed the secret through
+> stdin into a named paste buffer that is pasted and deleted in one call; the secret never appears on a command line, and the session waits for the code.
+> ```bash
+> # home NAS scripts/nas_icloud.sh auth (0c6c9f5)
+> nas_kp_field Password "$KP_PREFIX$n" | on_vm 60 "sudo tmux load-buffer -b pw - && sudo tmux paste-buffer -d -b pw -t $s && sudo tmux send-keys -t $s Enter"
+> ```
+
