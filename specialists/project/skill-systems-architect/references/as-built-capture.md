@@ -92,6 +92,12 @@ capture byte for byte.
 > Proxmox's JSON listings are not ordered: sort them in the probe. The first capture also showed a leftover `_acme-challenge` TXT record in
 > Cloudflare from failed DNS-01 attempts, which no other check had shown; captures find drift nobody looks for.
 
+> **Learned 2026-11-26** · ownership between projects sharing a host · USER_STATED (operator: a project owns its own guests; the host and other
+> guests belong to the host's project) · Source: continuum and NAS sessions · Falsifier: none, an ownership rule
+> A project's manifest captures only what it owns. The host project publishes a tenant view of each tenant's pool (configs, budget, quota, backups,
+> rules) in its own capture; the tenant reads that committed file (`git -C <host repo> show HEAD:./<path>`) instead of reading the host. A dry
+> run for another project is that project's to run: hand it the engine and a draft, not your reads of its systems.
+
 ## Masking and churn
 
 - Masked before anything is compared or written: `key=value` and `key: value` for password, secret, token, API key, private key, passphrase and

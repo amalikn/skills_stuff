@@ -37,6 +37,7 @@ Last rotated: 20261126_1437
 
 ## Unreleased
 
+- 2026-11-26 references/version-control-and-review.md: printing a check's exit code is not gating on it (a red commit, continuum).
 - 2026-11-26 references/design-patterns.md P-89: configuration capture as stable files with churn removed; identical-twice acceptance (home NAS).
 - 2026-11-26 languages/shell/learned-other.md: `install /dev/stdin` over an existing file fails, use /dev/null then tee; findmnt with two targets exits 1; references/testing.md: unittest file paths under `python -I` (continuum).
 - 2026-11-26 languages/shell/learned-safety.md (a)-(c): EXIT trap and function locals under set -u; `&&` as a function's last line under set -e; single-file bind mounts keep the old inode (home NAS).

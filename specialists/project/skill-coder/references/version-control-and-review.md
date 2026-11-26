@@ -240,3 +240,9 @@ git -C "$repo" for-each-ref --format='%(objectname) %(refname)' refs/heads refs/
 
 > **Learned 2026-11-22** · commit only after the check passes, again · VERIFIED_PRIMARY (incident) · Source: continuum 2dedfe5 (fixed 3e45de9) · Falsifier: none. A run that
 > printed `check 1` and then committed in the same command line: the commit step did not read the check's exit code. Capture it (`just check; rc=$?`) and commit only on 0.
+
+> **Learned 2026-11-26** · gating a commit on a check · VERIFIED_PRIMARY (skills_stuff 853ae5ec went in while `just check` exited 1; fixed in
+> 0f91d00c) · Source: continuum session 2026-11-26 · Falsifier: `check >/dev/null 2>&1; echo rc=$?; git commit ...` refuses to commit on rc 1
+> Printing the exit code is not gating on it: `check; echo check_rc=$?; git commit` commits anyway. Capture the code and branch on it in the same
+> command: `check >/dev/null 2>&1; rc=$?; if [ $rc -eq 0 ]; then git commit ...; fi` (or `check && git commit`), and read the result before any push.
+
