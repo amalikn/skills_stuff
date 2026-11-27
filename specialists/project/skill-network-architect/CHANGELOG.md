@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-27 (v2.3.28 -> v2.3.29): references/foss-and-tool-selection.md: Teleport row Disputed (size-limited Community binaries from v16); Learned: open-source tools with size-limited official binaries (Teleport, Pomerium), Boundary CE archived
 - 2026-11-26 (v2.3.27 -> v2.3.28): references/security-and-segmentation.md Learned: OrbStack forwards a machine's loopback listeners to the Mac's loopback (port collisions; continuum BUG-707).
 - 2026-11-26 (v2.3.26 -> v2.3.27): references/network-services.md Learned: NetBird service users get 403 on users/current (prove a token with its own token list); references/security-and-segmentation.md Learned: Keycloak passkey registration `reading 'response'` of null is client side (continuum BUG-702).
 - 2026-11-26 (v2.3.25 -> v2.3.26): references/wan-and-remote-access.md Learned: three read permissions are enough for a Cloudflare DNS, tunnel and Access capture (me/nas).

@@ -87,6 +87,18 @@ Upstream licence files read 2026-10-29. These are file observations, not legal a
 - Graylog licence change announcement: <https://graylog.org/post/graylog-v4-0-licensing-sspl/>
 - Redis moved to source-available terms; Redis 8 adds an AGPL-3.0 option. Licence file:
   - <https://raw.githubusercontent.com/redis/redis/unstable/LICENSE.txt>
+> **Disputed 2026-11-27** · Teleport row above · VERIFIED_PRIMARY · Source: gravitational/teleport `LICENSE` per branch, `build.assets/LICENSE-community` on v16-v18,
+> <https://goteleport.com/blog/teleport-community-license/> (2024-03-08) · Falsifier: a v16+ Community binary licence without the size limit
+> "Community binaries modified Apache-2.0" holds only for v15 binaries. Source: Apache-2.0 up to v14, AGPL-3.0 from v15. From v16 the official Community binaries are
+> "AVAILABLE ONLY TO ORGANIZATIONS THAT HAVE LESS THAN ONE HUNDRED (100) EMPLOYEES AND LESS THAN TEN MILLION DOLLARS ($10,000,000.00) IN ANNUAL REVENUE"; self-built AGPL binaries carry
+> no such limit; since 2025-06 a "Critical Security Exception" lets any company run designated security patch versions.
+
+> **Learned 2026-11-27** · licence pattern for access tools · VERIFIED_PRIMARY · Source: Teleport (above); Pomerium licence for official builds released after 2026-11-01;
+> hashicorp/boundary README (archived 2026-10-08), `LICENSE` BUSL · Falsifier: either vendor withdrawing the size-limited binary terms
+> **Open source, size-limited official binaries** is now a pattern: AGPL or Apache source, but the vendor's own builds free only under 100 staff and US$10M revenue (Teleport from v16,
+> Pomerium from 2026-11-01). Record the binary licence separately from the source licence, ask the operator's headcount and revenue, and cost "build it yourself" (signing, multi-arch,
+> every patch) as the free path. HashiCorp Boundary Community Edition is BSL and archived. Evidence: ansible-wifi AWS-to-Proxmox plan section 6 (local-knowledge-ansible).
+
 - Other candidates to investigate, licences not certified here: Linux/KVM/libvirt, OpenZFS, Ceph, Kubernetes, Podman, restic, Borg, BIND, Unbound, HAProxy, nftables, WireGuard, FreeRADIUS, FreeIPA,
   Samba, osquery.
 

@@ -1228,6 +1228,39 @@ Operator report: Graylog answers Internal Server Error since 2026-10-08. Read-on
   opened 9000 and 12202 within a minute and took GELF again; `/api/system/indexer/cluster/health` green (49 active shards, none unassigned); all three target groups healthy at 13:13. Graylog then
   logged GELF `invalid "timestamp"` warnings for messages from 10.240.2.151 (the ALB side); whether those predate the outage is not checked.
 
+## 2026-11-27 — Moving Teleport off AWS: the backdoor shares its IP, `/etc/hosts` keeps the old IP, versions are out of support (INFO)
+
+Found while planning the AWS-to-Proxmox move (local-knowledge-ansible `ansible-wifi/plans/aws-to-proxmox-migration-plan-20261127_1628.md`, Pad ansible-wifi PLAN-47):
+
+- **One address, two access paths.** The autossh backdoor dials `ssh-portfwding@{{ teleport_address }}`: the Teleport host's own IP. A Teleport host or IP move takes the Teleport
+  agent and the backdoor down together. Split the bastion onto its own host and variable before moving Teleport.
+- **`/etc/hosts` keeps the old IP.** `smc_dns_mgmt` matches the hosts line by the IP, so a new `teleport_address` adds a second line for `teleport_fqdn`; the old line comes first and
+  keeps winning. Remove the old line explicitly in the change, and check with `getent hosts <teleport_fqdn>` on the canary.
+- **Versions:** APN 13.4.24, CW 12.4.32, apn-jenkins tbot 12.0.4: all out of support. Teleport supports the current and previous major for 24 months (v18 to August 2027); upgrades go one
+  major at a time (Auth, Proxy, then agents, agents at most one major behind), so APN 13 to 18 is five steps over the whole fleet.
+- **Licence:** source Apache-2.0 up to v14, AGPL-3.0 from v15; official v15 binaries stayed Apache-2.0; from v16 official Community binaries are free only below 100 employees and
+  US$10M revenue; self-built AGPL binaries have no such limit (gravitational/teleport `build.assets/LICENSE-community`, goteleport.com blog 2024-03-08).
+- **Moving a cluster:** `teleport backend clone` copies all backend items, CAs included, so a cluster rebuilt with the same name and cloned state keeps agent trust; agents offline through
+  a CA rotation's grace period are forced out, so avoid a rotation during the move.
+
+```yaml
+# ansible-wifi roles/smc_dns_mgmt/tasks/main.yml (e40406eb): the line is found by IP, not by name
+- name: Ensure teleport FQDN is defined in /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ teleport_address|replace(".", "\.") }}'
+    line: '{{ teleport_address }} {{ teleport_fqdn }}'
+```
+
+```text
+# roles/smc_autossh/templates/autossh-teleport-openssh.service.j2 (e40406eb): the backdoor goes to the Teleport IP
+ExecStart=/usr/bin/autossh -M 0 ... -N -4 -R {{ openssh_remoteport }}:127.0.0.1:22 ssh-portfwding@{{ teleport_address }}
+```
+
+Graylog Open archive to S3 (same day, BUG-41 report section 8): plain OpenSearch snapshots, not licence-gated; Data Node 6.3.1 wires S3 only through `s3_client_default_*` keys in
+`datanode.conf` (all of endpoint, access and secret key); any snapshot setting adds the `search` role and a 10 GB cache check (set `node_roles`); Graylog's `/api/datanodes/any/opensearch/`
+proxy refuses `_snapshot` unless `datanode_proxy_api_allowlist = false`; repo storage classes exclude Glacier. Untested on a Data Node: lab first.
+
 ## 2026-11-27 — Graylog ingest stopped about 22 Nov: apn-datanode01 disk at flood stage (RESOLVED 2026-11-27 15:57)
 
 Read-only diagnosis 2026-11-27 (full analysis: `local-knowledge-ansible/ansible-wifi/issues/graylog-datanode-disk-full-20261127_1525.md`):

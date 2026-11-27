@@ -1557,6 +1557,14 @@
    "generated": true
   },
   {
+   "id": "C-453f5fd5",
+   "title": "goteleport.com",
+   "url": "https://goteleport.com/blog/teleport-community-license/",
+   "evidence": "CITED",
+   "note": "cited in references/foss-and-tool-selection.md",
+   "generated": true
+  },
+  {
    "id": "C-729d1278",
    "title": "graylog.org",
    "url": "https://graylog.org/post/graylog-v4-0-licensing-sspl/",

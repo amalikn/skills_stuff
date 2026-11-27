@@ -161,6 +161,23 @@ PNR = point of no return: the target accepted a write the source cannot receive
 - Record the switch moment, replication direction, conflict prevention (freeze, fencing, read-only source) and the reconciliation check.
 - Account for data gravity, transfer time on real bandwidth, egress cost and the restore path at the target.
 
+> **Learned 2026-11-27** · migrating a remote-fleet access gateway · VERIFIED_PRIMARY (code read) · Source: ansible-wifi `roles/smc_autossh/templates/autossh-teleport-openssh.service.j2`,
+> `roles/smc_dns_mgmt/tasks/main.yml` (e40406eb); AWS-to-Proxmox plan sections 3 and 6 (local-knowledge-ansible) · Falsifier: a fleet whose fallback path survives the gateway's address change
+> - **Check whether the out-of-band path shares the in-band gateway's host or address.** Here the site boxes' fallback reverse tunnel dialled the access proxy's own IP, so moving the
+>   proxy would cut both paths at once over satellite. Split the fallback onto its own host and variable, prove every box on it, then move the gateway.
+> - **Pinned addresses on the fleet outlive DNS.** A hosts-file entry written by a "line by IP" rule gains a second line on an IP change and the old line keeps winning; the change must
+>   remove the old entry and the canary must show the new address (`getent hosts`).
+> - **Move first, upgrade after.** Rebuild the gateway at the same version with its state cloned (same cluster name, same CAs), so the fleet only sees an address change; climb versions
+>   afterwards, one supported step at a time. Avoid CA rotation during the move: boxes offline through the grace period drop out.
+
+```yaml
+# roles/smc_dns_mgmt/tasks/main.yml (e40406eb): matched by IP, so a new IP leaves the old line in place
+- lineinfile:
+    path: /etc/hosts
+    regexp: '^{{ teleport_address|replace(".", "\.") }}'
+    line: '{{ teleport_address }} {{ teleport_fqdn }}'
+```
+
 ## Hybrid constraints and handoff
 
 - Model identity federation and sync, DNS views and split-horizon, time sources on both sides, address overlap, private access, latency and site/region outages.

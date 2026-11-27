@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261127_1634 — Teleport off AWS: backdoor and /etc/hosts coupling, versions, licence (v0.17.2 -> v0.17.3)](#20261127_1634--teleport-off-aws-backdoor-and-etchosts-coupling-versions-licence-v0172---v0173)
 - [20261127_1609 — Graylog datanode disk-full incident, graylog_storage.py (v0.17.1 -> v0.17.2)](#20261127_1609--graylog-datanode-disk-full-incident-graylog_storagepy-v0171---v0172)
 - [20261125_1937 — RCT serial console shares ttyS0 with tstik's AVR link (v0.17.0 -> v0.17.1)](#20261125_1937--rct-serial-console-shares-ttys0-with-tstiks-avr-link-v0170---v0171)
 - [20261120_2155 — pre-push hook lints the pushing worktree (v0.16.9 -> v0.17.0)](#20261120_2155--pre-push-hook-lints-the-pushing-worktree-v0169---v0170)
@@ -42,6 +43,10 @@ Last reviewed: 2026-10-27
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
 
 ---
+
+## 20261127_1634 — Teleport off AWS: backdoor and /etc/hosts coupling, versions, licence (v0.17.2 -> v0.17.3)
+
+- `references/13_known-issues.md`: 2026-11-27 entry: the autossh backdoor uses the Teleport IP; `smc_dns_mgmt` keeps the old Teleport IP in /etc/hosts on an IP change; fleet Teleport versions out of support; licence and upgrade path; Graylog Open S3 snapshot facts.
 
 ## 20261127_1609 — Graylog datanode disk-full incident, graylog_storage.py (v0.17.1 -> v0.17.2)
 
