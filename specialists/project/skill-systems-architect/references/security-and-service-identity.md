@@ -308,6 +308,23 @@ def _usable(path, drive):  # drive None: always-present disk
 > try: ...; new = rekey(keys, 5, 3)   # print once, then restore config, restart, unseal with the NEW shares
 > ```
 
+> **Learned 2026-11-27** · a manual-unseal secrets store after an unplanned host restart · VERIFIED_PRIMARY (OpenBao 2.7.2 on continuum VM 702 after a
+> Proxmox host update: `sys/seal-status` read `"sealed": true`, token renew answered 503; systemd 255 `systemctl show` read after the boot) · Source:
+> continuum BUG-708, DL-282; continuum-app `scripts/deploy/bao_escrow_weekly.py` (`seal_note`), `scripts/deploy/vm_health.py` (`renew_finding`),
+> `deploy/nas/systemd/continuum-vm-health.timer` · Falsifier: a sealed OpenBao answering an authenticated call with something other than 503.
+> A host patch reboot seals every manual-unseal store on it, so "unseal" is the last step of host maintenance and the seal alert runs at boot, not only
+> on a daily calendar: a timer with both `OnCalendar=` and `OnBootSec=10min` pushes within minutes. Clients must read the unauthenticated
+> `/v1/sys/seal-status` when a call returns 503 and say "sealed: unseal with <command>"; reporting it as "not reachable" sends the operator to the network.
+> A weekly job that fails before its alert code fails silently: alert on every early exit. A boot-time health check that reads a service's
+> `ExecMainExitTimestamp` false-alarms "never ran" after every reboot (systemd keeps it in memory only); fall back to the timer's persistent
+> `LastTriggerUSec`. Pre-MVP power policy follows the same cost: keep the store's VM always on, stop VMs whose restart costs no person.
+>
+> ```python
+> except OSError as error:          # renew-self refused
+>   note = seal_note(addr)          # GET /v1/sys/seal-status: sealed -> "run `just coordinator-unseal --apply`"
+>   if note: raise RuntimeError(note) from error
+> ```
+
 ## Platform, recovery and shared review
 
 - Plan privilege separation, Secure Boot where supported, patch and vulnerability management, application isolation, host policy, encryption, off-host logging.

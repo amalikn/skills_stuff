@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-27 (v2.3.42 -> v2.3.43): references/security-and-service-identity.md Learned: manual-unseal store after a host restart (unseal as the last maintenance step, OnBootSec seal alert, 503 means sealed, alert on early exits, ExecMainExitTimestamp resets at boot -> LastTriggerUSec; continuum BUG-708).
 - 2026-11-27 (v2.3.41 -> v2.3.42): references/macos-and-endpoints.md Learned: Time Machine after completion (band mtimes are not a write signal, Disputed vs 2026-11-25; Spotlight indexes the backup in the image; tmutil latestbackup needs Full Disk Access; SnapshotHistory.plist completion dates); Nextcloud File Provider blocked by macOS Local Network privacy on a private-IP server (from me/nas)
 - 2026-11-27 (v2.3.40 -> v2.3.41): references/migration-and-hybrid.md Learned: migrating a remote-fleet access gateway (out-of-band path on the gateway's IP, pinned hosts entries, move first then upgrade); shared foss-and-tool-selection: Teleport row Disputed, size-limited official binaries pattern (in skill-network-architect)
 - 2026-11-26 (v2.3.39 -> v2.3.40): references/as-built-capture.md Learned: node-side twin manifest proved identical, health file, deploy key covers a whole repo (split first), gitleaks before push (me/nas).
