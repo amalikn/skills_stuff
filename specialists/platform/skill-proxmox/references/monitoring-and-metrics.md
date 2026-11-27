@@ -77,6 +77,17 @@ webhook secrets) in `/etc/pve/priv/notifications.cfg`. All `VERIFIED_PRIMARY` ([
 - **Templates**: defaults in `/usr/share/pve-manager/templates/default/`; override per type in `/etc/pve/notification-templates/default/` (`<type>-subject.txt.hbs`,
   `<type>-body.txt.hbs`, `<type>-body.html.hbs`); a missing or broken override falls back to the default.
 
+> **Learned 2026-11-27 (p)** · Proxmox VE 9.3.1, node at full CPU · VERIFIED_PRIMARY (top, /proc/<pid>/cmdline, timed SSH reads on the node) · Source: home NAS
+> me/nas session record 20261127_2217 · Falsifier: `qm status` answering in under a second per guest at load 8 on 8 threads
+> Which guest burns the CPU: in the node's `top` every VM is one `kvm` process whose %CPU is the sum of its vCPU threads (350% = three and a half of its
+> four vCPU); map PID to VMID from `/proc/<pid>/cmdline` (`-id <vmid>`). At load 8 on 8 threads a loop of `qm config` plus `qm status` per guest timed out
+> at 40 s, while reading `/etc/pve/qemu-server/*.conf` and `/etc/pve/lxc/*.conf` (pmxcfs) answered at once: read the config files for sizing under load.
+```bash
+# me/nas session 2026-11-27 (read-only, on the node)
+for p in $(pgrep -x kvm); do echo "$p $(tr '\0' ' ' </proc/$p/cmdline | grep -oE -- '-id [0-9]+')"; done
+grep -hE '^(name|hostname|cores|memory):' /etc/pve/qemu-server/*.conf /etc/pve/lxc/*.conf | paste - - -
+```
+
 ## The node report
 
 `just node_report --host <node>` (read-only, one SSH round trip, about 15 s on the lab node) prints version, kernel, uptime, memory and root fill, quorum rows, pending updates with the PVE-stack

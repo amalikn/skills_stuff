@@ -14,6 +14,7 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-27 (me/nas): references/monitoring-and-metrics.md Learned (p): kvm PID to VMID from cmdline; read /etc/pve configs, not qm, under full load.
 - 2026-11-27: Learned entries in references/storage.md (transient `zfs load-key` "encryption failure" right after boot, retry) and references/upgrade-and-troubleshooting.md (9.2.2 to 9.3.1 by full-upgrade, guarded plan) from the home NAS.
 
 - 2026-11-26 (me/nas): references/operations-cookbook.md Learned (o): stock PVE 9.2.2 has Python 3 but no git; node jobs install it from a catalogued step.
