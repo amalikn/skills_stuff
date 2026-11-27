@@ -134,6 +134,15 @@ M/M/1 response time R = S / (1 - U): latency rises non-linearly near saturation
 | Shared element as a series block         | availability models         | parallel formula over shared power/ToR | overstates availability by orders of magnitude     |
 | Headroom from the measured latency curve | headroom policy             | fixed 80% everywhere                   | some resources knee at 60%, others run fine at 90% |
 
+> **Learned 2026-11-27** · single-node home server, media platform after a bulk import · VERIFIED_PRIMARY (node top, container stats, job-queue counts,
+> upload rows per hour) · Source: me/nas DL-100, session record 20261127_2217 · Falsifier: a platform whose post-upload work runs inline with the upload
+> A bulk import into a photo or document platform leaves a post-processing backlog (metadata, thumbnails, ML, OCR: ~33k jobs for 31k assets) that holds
+> the app VM at 100% for hours. Do not answer with more vCPU when the host is already saturated (here 14 vCPU on 8 threads, host load 8): it only takes
+> time from the other guests. Instead: (1) pause the queue groups not needed now through the platform's own API (ML first; media too if a client is
+> uploading), (2) check whether the client is actually sending before tuning the server (here the phone had uploaded nothing for hours while the server
+> was idle), (3) make the backlog visible (queue counts on the dashboard, paused groups labelled so frozen numbers read as on hold, not stuck).
+> Count client uploads excluding derived or hidden assets the backlog itself creates (Live Photo videos hidden by extraction looked like 3,000 uploads).
+
 ## Failure modes and tests
 
 | Failure                        | Symptom                                | Blast radius                     | Proving test                                                               |
