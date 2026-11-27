@@ -16,6 +16,7 @@ Last rotated: 20261126_2042
 
 ## Contents
 
+- [20261127_2221 — Learned: a piped tail hid the dash-leading comment error](#20261127_2221--learned-a-piped-tail-hid-the-dash-leading-comment-error)
 - [20261127_1608 — Learned: body rewrite while the item is open in the web UI](#20261127_1608--learned-body-rewrite-while-the-item-is-open-in-the-web-ui)
 - [20261126_2042 — Backup: a failed night no longer leaves an empty pad-*.db](#20261126_2042--backup-a-failed-night-no-longer-leaves-an-empty-pad-db)
 - [20261126_1850 — Plans close with completed, not done](#20261126_1850--plans-close-with-completed-not-done)
@@ -42,6 +43,11 @@ Last rotated: 20261126_2042
 - [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
+
+## 20261127_2221 — Learned: a piped tail hid the dash-leading comment error
+
+- references/items-and-edits.md: the dash-leading comment rule broken again (me/nas); the flag error repeats the text, so `| tail` made it look
+  saved. Judge a Pad write by exit code or comment count, never by echoed text.
 
 ## 20261127_1608 — Learned: body rewrite while the item is open in the web UI
 

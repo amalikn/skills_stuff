@@ -99,6 +99,13 @@ register`; an unregistered session falls back to its agent name.
   finishing the item does NOT acknowledge it.
 - `pad item star|unstar|starred` for quick access; `pad tag list` for tags in use.
 
+
+> **Learned 2026-11-27** · pad CLI comments, seen again · VERIFIED_PRIMARY (`pad item comments TASK-178 --format json`: count unchanged after two
+> dash-leading calls, +1 after `--stdin`) · Source: me/nas session record 20261127_2217 · Falsifier: the flag error not repeating the comment text
+> The 2026-11-26 rule above was broken again, and missed because the call was piped into `tail -2`: the "unknown shorthand flag" error repeats the
+> comment text, so the tail showed only the text and looked like success. Never judge a Pad write by its echoed text: read the exit code unpiped, or
+> the count (`pad item comments <ref> --format json`), and pass bullet comments with `--` or on `--stdin`.
+
 ## Dependencies and moves
 
 - `pad item block <src> <tgt>` (src blocks tgt), `blocked-by <src> <tgt>`, `unblock`, `deps <ref>`; also `implements`, `supersedes`, `split-from` with their `un...` forms, `related`, `backlinks`,
