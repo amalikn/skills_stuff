@@ -139,3 +139,10 @@ Open Proxmox bugzilla entries found on 2026-11-07 (status as captured; check the
 >   node      = proxmox_apt_standard_repository.ceph_enterprise.node
 > }
 > ```
+
+> **Learned 2026-11-27** · Proxmox VE 9.2.2 to 9.3.1, no-subscription repository, single node · VERIFIED_PRIMARY (node `pveversion` before and after) · Source: home NAS session 2026-11-27 (me/nas scripts/mac/nas_node_upgrade.sh, commit 3e62594) · Falsifier: a 9.3.x upgrade that needs steps beyond full-upgrade and reboot
+> `apt-get update` then `apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold full-upgrade` took the node from
+> pve-manager 9.2.2 to 9.3.1 (244 packages, kernel 7.0.2-6-pve to 7.0.14-30-pve, ZFS 2.4.4) in about 11 minutes with no prompts; the reboot,
+> scheduled by `systemd-run --on-active=5 /bin/systemctl reboot` so the SSH session could return first, brought the node back on SSH within 40 s.
+> Guard before the upgrade: no backup job running (`systemctl is-active` on the backup units, `pgrep -c -x vzdump`). The simulated count
+> (`apt-get -s -o Debug::NoLocking=1 full-upgrade | grep -c '^Inst'`) reads the current lists without locking and serves as a read-only plan.

@@ -60,3 +60,19 @@ Part of [shell.md](../shell.md).
 > · Falsifier: a project whose check already runs lint over every executable
 > The project's closing check must run its lint recipe, or new code drifts while "check passes"; and a glob like `*.sh` misses extension-less
 > executables (wrappers, forced commands), so list them or lint by shebang.
+
+> **Learned 2026-11-27** · bash, shellcheck 0.11.0, SSH remote commands · VERIFIED_PRIMARY (`just lint` failed on SC2016, passed after the change) · Source: me/nas scripts/mac/nas_node_upgrade.sh, commit 3e62594 · Falsifier: a shellcheck release that flags quoted heredoc bodies
+> A remote command written as a single-quoted string (`ssh host 'n=$(...); echo $n'`) trips SC2016 (info), and the rule bans an inline disable.
+> Send the remote script on stdin as a quoted heredoc instead: shellcheck does not parse the body, the `$` expand on the far side, and the
+> command reads as a normal script. Inside `$( )`, shfmt puts the call on its own line:
+>
+> ```bash
+> # me/nas scripts/mac/nas_node_upgrade.sh (commit 3e62594)
+> busy="$(
+>   node_run 30 'bash -s' <<'EOF'
+> a=$(systemctl is-active nas-restic-backup.service nas-restic-maintain.service 2>/dev/null | grep -c "^active")
+> v=$(pgrep -c -x vzdump)
+> echo $((a + v))
+> EOF
+> )"
+> ```

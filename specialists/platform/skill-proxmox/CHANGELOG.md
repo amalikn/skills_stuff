@@ -14,6 +14,8 @@ Last reviewed: 2026-11-08
 
 ## Unreleased
 
+- 2026-11-27: Learned entries in references/storage.md (transient `zfs load-key` "encryption failure" right after boot, retry) and references/upgrade-and-troubleshooting.md (9.2.2 to 9.3.1 by full-upgrade, guarded plan) from the home NAS.
+
 - 2026-11-26 (me/nas): references/operations-cookbook.md Learned (o): stock PVE 9.2.2 has Python 3 but no git; node jobs install it from a catalogued step.
 - 2026-11-26 (me/nas): references/monitoring-and-metrics.md Learned (o): default-matcher mails from home bounce at Gmail and loop to a system-mail phone matcher; disable it.
 - 2026-11-26 (me/nas): references/monitoring-and-metrics.md Learned (n): zram swap fills with cold guest pages; alert on MemAvailable/PSI; swapoff before zram reset.

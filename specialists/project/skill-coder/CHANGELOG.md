@@ -36,6 +36,8 @@ Last rotated: 20261126_1847
 
 ## Unreleased
 
+- 2026-11-27: Learned entry in languages/shell/learned-format-and-lint.md: remote SSH commands as quoted heredocs instead of single-quoted strings (SC2016 without a suppression), from me/nas.
+
 - 2026-11-26 (continuum BUG-702): languages/python/learned-other.md: `python -I` drops the script's folder; ssh joins argv (quote with shlex.join); a justfile `export` beats an env-first fallback. languages/rust/learned-crates.md: reqwest `tls_certs_only` vs `add_root_certificate` (one client per trust rule); guide-services.md section on the same.
 - 2026-11-26 (me/nas): references/design-patterns.md P-90: one-way mirror that never overwrites an edit made at the destination (ETag guard, temp name then MOVE, --verify).
 - 2026-11-26 (me/nas): references/design-patterns.md (pull-model action queue); languages/shell.md (macOS install and pipes, grep -v under pipefail, systemd template cat, quoted-heredoc stubs).

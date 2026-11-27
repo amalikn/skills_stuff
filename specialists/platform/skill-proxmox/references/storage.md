@@ -154,3 +154,19 @@ Proxmox VE runs Ceph on the cluster nodes themselves and manages it with `pvecep
 > systemctl reset-failed zramswap.service; timeout 60 systemctl start zramswap.service
 > grep -q '\[zstd\]' /sys/block/zram0/comp_algorithm && [ "$(cat /sys/block/zram0/disksize)" = $((4096*1024*1024)) ]
 > ```
+
+> **Learned 2026-11-27** · Proxmox VE 9.3.1, kernel 7.0.14-30-pve, ZFS 2.4.4-pve1, native encryption (aes-256-gcm, passphrase, keylocation=prompt) · UNVERIFIED cause, observed once · Source: home NAS session 2026-11-27 (me/nas commit 3e62594) · Falsifier: a load-key right after boot that fails the same way on every retry, or a documented ICP/crypto readiness fix
+> About 90 s after a reboot, `zfs load-key` of an encryption root read from stdin failed with `Key load error: encryption failure`, not the wrong-key message
+> (`Incorrect key provided`). `zfs load-key -n` with the same passphrase then reported `1 / 1 key(s) successfully verified`, and the real load
+> succeeded about 2 minutes later. Treat "encryption failure" right after boot as transient: retry before suspecting the passphrase. The unlock step now
+> retries:
+>
+> ```bash
+> # me/nas justfile, recipe unlock (commit 3e62594)
+> for try in 1 2 3; do
+>   kp show -s -a Password "$NAS_KP_ZFS_ENTRY" | timeout 120 ssh "root@$host" \
+>     'zfs get -H -o value keystatus tank/secure | grep -q available || zfs load-key tank/secure' && break
+>   [ "$try" = 3 ] && exit 1
+>   echo "load-key try $try failed; retrying in 20 s" >&2; sleep 20
+> done
+> ```
