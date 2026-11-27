@@ -131,6 +131,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-85 | Test identity bot with software credentials driving the real flows | End-to-end tests of sign-in, approval and second-factor flows without a person |
 | P-86 | Run log attached to the work item | A result whose evidence cannot be found later |
 | P-91 | Progress by payload growth; completion from the writer's own record | A touch time or a permission-gated client call reported as progress or completion |
+| P-92 | Audit against an outside truth; fix only the unambiguous, list the rest | Bulk-correcting data a tool imported wrong, when two sources disagree |
 
 ## Patterns
 
@@ -2346,4 +2347,33 @@ def last_growth(hist: list[list[float]], now: float) -> tuple[int, int, int]:
 - **Evidence:** VERIFIED_PRIMARY: before, `just tm-status` printed "last write 0s ago" while idle; after, "last write 17s ago (data growth, 448 MiB in
   the last 10 min)" from real `used` samples; the dashboard card moved from "none yet" to "Last completed 35 min ago (2 on the NAS)" (screenshot
   pending: /ops/backups Time Machine card, redacted, next engagement).
+
+### P-92 Audit against an outside truth; fix only the unambiguous, list the rest
+
+> **Learned 2026-11-27** · correcting data a bulk importer got wrong (dates, names, tags) · VERIFIED_PRIMARY (home NAS: 29k photo assets matched to their
+> source files in 9.7 s; 7,700 of 8,386 processed assets right, 92 wrong; a reviewer flagged that the source's date and the file's own date can disagree) ·
+> Source: me/nas `scripts/mac/nas_immich_dates.py` (amalikn/nas 83bf1c9) · Falsifier: a dataset where the outside source is always right, so a review
+> list stays empty. reusable_candidate until a second project uses it.
+
+- **Problem:** an importer wrote wrong values into a platform for an unknown share of records; a later platform job also rewrites some of them; a
+  second source (the original files' own metadata) sometimes disagrees with the outside truth.
+- **Solution:** read-only `audit` first: join every record to its source by a key that survives the import (file name plus modification second),
+  classify the difference (ok, small offset, wrong, unmatched) and write a TSV. `fix` writes only rows where the outside truth is the only
+  evidence; rows where two sources disagree go to a review list for a person; the write is refused while the platform's own job is still pending
+  (it would overwrite the fix); old and new values go to a rollback file.
+- **Why it works:** the audit measures the problem before anyone guesses its size; refusing while the platform job runs avoids a race; splitting
+  "unambiguous" from "disputed" keeps the tool from overruling better evidence it cannot judge.
+- **Reuse:** metadata after a media migration, tags after a ticket-system import, device names after an inventory sync.
+- **Pitfalls:** the first fix plan would have set every off record to the outside value, overruling the files' own dates; the review rule came from a
+  second reader. A key on name alone collides (IMG_0629 in several years): add the modification second.
+- **Realised in:** Python -> me/nas `scripts/mac/nas_immich_dates.py` (83bf1c9):
+
+```python
+off = [r for r in rows if r["cls"] in ("timezone", "wrong")]
+inside = embedded_dates([r["orig"] for r in off])          # the file's own capture date, read with the platform's tool
+targets = [r for r in off if r["orig"] not in inside]      # only the outside truth exists: safe to write
+review = [r for r in off if r["orig"] in inside and r["cls"] == "wrong"]  # two sources disagree: a person decides
+if apply and pending:                                       # the platform's own job would overwrite the fix
+  return 1
+```
 
