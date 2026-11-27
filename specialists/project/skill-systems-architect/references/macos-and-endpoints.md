@@ -364,6 +364,43 @@ Baselines:
 > ps -axo stat=,comm= | awk '$1 ~ /^U/ && $2 ~ /(diskutil|NetAuthSysAgent|backupd-helper|mount_smbfs)/ {n++} END {print n+0}'
 > ```
 
+> **Learned 2026-11-27** · Time Machine to an SMB share, after a backup completes (macOS 27.2 client) · VERIFIED_PRIMARY (Mac `log show` for
+> com.apple.TimeMachine, `tmutil`, the sparsebundle on the NAS, ZFS `used` samples every minute) · Source: me/nas scripts/node/pve_dashboard.py
+> (tm_history), scripts/node/pve_tm_growth.py, scripts/mac/nas_tm_status.sh at 8af0152 · Conflicts: the 2026-11-25 entry above ("its newest file
+> time show whether data still arrives") · Falsifier: band mtimes that stay still while the image is mounted for browsing, or a completed backup
+> missing from SnapshotHistory.plist.
+> - **Disputed (2026-11-25 claim):** the newest band file time is not a write signal. After "Backup succeeded", backupd remounts the image "for
+>   browsing" and keeps it attached; band files (0, 1a to 1c and others) get new mtimes every minute with no size change. Judge progress by the
+>   dataset or bundle size growing (sample `zfs get used` over time) and by the completed count, never by mtimes.
+> - Right after a backup, `mdsync` (Spotlight) indexes the new backup inside the image: about 1.3 GiB written over 5 minutes while `tmutil status`
+>   already says `Running = 0`. A growth alarm keyed to "idle" must allow for it; a one-hour growth window kept showing "+5.8 GiB/h" while idle.
+> - `tmutil latestbackup` needs Full Disk Access (exit 80, "requires Full Disk Access privileges") even for a launchd agent; `tmutil status` does not.
+>   Read completions server-side instead: `com.apple.TimeMachine.SnapshotHistory.plist` in the bundle holds one dict per completed backup with
+>   `com.apple.backupd.SnapshotCompletionDate` (UTC) and `SnapshotName`; two backups gave two dicts (the 2026-11-25 count by `<dict>` minus one holds).
+>   The completion date equals the snapshot name's time (16:50), not the log's "Backup succeeded" time (16:58).
+>
+> ```python
+> # me/nas scripts/node/pve_dashboard.py (node, root): completed backups from the bundles on the dataset
+> for f in Path(mountpoint).glob("*/*.sparsebundle/com.apple.TimeMachine.SnapshotHistory.plist"):
+>   snaps = plistlib.loads(f.read_bytes()).get("Snapshots", [])
+>   for snap in snaps:
+>     when = snap.get("com.apple.backupd.SnapshotCompletionDate")
+>     if isinstance(when, datetime.datetime):
+>       count += 1
+>       newest = max(newest, when.replace(tzinfo=when.tzinfo or datetime.UTC).timestamp())
+> ```
+
+> **Learned 2026-11-27 (b)** · Nextcloud desktop client 35.0.3 virtual files (File Provider) on macOS 27.2, server on a private LAN address ·
+> VERIFIED_PRIMARY (Mac unified log, /Library/Preferences/com.apple.networkextension.plist) and VERIFIED_SECONDARY (nextcloud/desktop#11354 open,
+> #10996, PR #11127 in 35.0.1) · Source: me/nas docs/research/nextcloud-finder-file-provider-20261127_1741.md, scripts/mac/nas_nextcloud_finder_check.sh ·
+> Falsifier: a client release where FileProviderExt connects to a private-IP server, or a Local Network rule appearing for the extension.
+> - macOS Local Network privacy blocks an app's File Provider extension even when the app itself is allowed: rules exist per signing identifier
+>   (here the app and its FinderSyncBroker), none for FileProviderExt, and no prompt is shown for it. Finder shows "<App> is signed out" and Sign In
+>   spins at "Authenticating..."; the extension logs "Not fetching item because account was never set up" and NSURLError -1009 "Network is down".
+> - It bites only when the server name resolves to a private address (split DNS at home). Workarounds: classic sync folder (full local copies,
+>   limited by selective sync), or reach the server outside the private ranges. Check before blaming credentials: read the extension's log and the
+>   Local Network rule list, both read-only.
+
 > **Learned 2026-11-25 (b)** · iPhone (iOS 27.2.1) and iPad (iPadOS 26.7.3) backed up headless with pymobiledevice3 11.63.1 from a Linux VM on a NAS ·
 > VERIFIED_PRIMARY (installed pymobiledevice3 source: osu/posix_util.py, pair_records.py, cli backup2; live runs) · Source: home NAS project
 > scripts/nas_ios_vm.sh, scripts/ios/ios_backup_job.sh at 6df2786 · Falsifier: an iOS release that backs up over Wi-Fi without a passcode prompt on

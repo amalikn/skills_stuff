@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-27 (v2.3.41 -> v2.3.42): references/macos-and-endpoints.md Learned: Time Machine after completion (band mtimes are not a write signal, Disputed vs 2026-11-25; Spotlight indexes the backup in the image; tmutil latestbackup needs Full Disk Access; SnapshotHistory.plist completion dates); Nextcloud File Provider blocked by macOS Local Network privacy on a private-IP server (from me/nas)
 - 2026-11-27 (v2.3.40 -> v2.3.41): references/migration-and-hybrid.md Learned: migrating a remote-fleet access gateway (out-of-band path on the gateway's IP, pinned hosts entries, move first then upgrade); shared foss-and-tool-selection: Teleport row Disputed, size-limited official binaries pattern (in skill-network-architect)
 - 2026-11-26 (v2.3.39 -> v2.3.40): references/as-built-capture.md Learned: node-side twin manifest proved identical, health file, deploy key covers a whole repo (split first), gitleaks before push (me/nas).
 - 2026-11-26 (v2.3.38 -> v2.3.39): Learned: macOS application firewall under default deny (built-in auto-allow on, bundle-id entries, CLT Python behind /usr/bin/python3, Docker pools vs VPN routes); as-built twin captures from one manifest (continuum DL-270, DL-276, DL-278).

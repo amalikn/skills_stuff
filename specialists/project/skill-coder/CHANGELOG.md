@@ -9,7 +9,7 @@ Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
 Summary: Release history and governance changes of skill-coder; the release heading holds the version of record.
-Last rotated: 20261126_1847
+Last rotated: 20261127_1745
 ---
 
 # Changelog
@@ -30,12 +30,12 @@ Last rotated: 20261126_1847
 - [20261119_1657 — Write-back test reads every entry; topic-file headers repaired; scripts promoted](#20261119_1657--write-back-test-reads-every-entry-topic-file-headers-repaired-scripts-promoted)
 - [20261119_1646 — design-patterns: misplaced patterns moved into Patterns; exact-commit gate is P-77](#20261119_1646--design-patterns-misplaced-patterns-moved-into-patterns-exact-commit-gate-is-p-77)
 - [20261119_1631 — Periodic review; 90-day review window](#20261119_1631--periodic-review-90-day-review-window)
-- [20261119_1601 — deterministic navigation-control upgrade](#20261119_1601--deterministic-navigation-control-upgrade)
 
 ---
 
 ## Unreleased
 
+- 2026-11-27: references/design-patterns.md P-91 progress by payload growth, completion from the writer's own record (from me/nas TASK-195); index row added.
 - 2026-11-27: check green again: ROADMAP done item rotated (docs/history/roadmap-20261127_1602.md); languages/python/learned-other.md split (5 entries to learned-imports-and-cli.md) and languages/rust/guide-services.md split (parts 12-14 to guide-tooling.md, the guide is now 4 parts); language_split.py --lang python would have overwritten learned-other.md (17 lines), so the splits were done by entry boundary.
 - 2026-11-27: Learned entry in languages/shell/learned-format-and-lint.md: remote SSH commands as quoted heredocs instead of single-quoted strings (SC2016 without a suppression), from me/nas.
 
@@ -187,15 +187,3 @@ Rust: age + zstd streaming pass and its finish order (learned-crates; guide-keys
 
 - Periodic review (operator, 2026-11-19): every due doc re-read in full and dated 2026-11-19; references, Summaries and Scopes fixed, body rules aligned with their Learned entries. Review window now
   90 days (`--window-days 90` in the justfile).
-
-## 20261119_1601 — deterministic navigation-control upgrade
-
-<!-- skill-ai-it-upgrade: 2026-10-14-compact-v2 -->
-
-- Applied `skill-ai-it` deterministic navigation-control upgrade.
-- Upgraded managed navigation/scripts blocks to version `2026-10-14-compact-v2`.
-- Ensured `context-map.yaml` contains `skill_ai_it_version`, `audit_checks`, `promotion_rules`, `context_recovery`, and `update_rules`.
-- Preserved user-authored content outside managed blocks.
-- Generated outputs remain support-only; no `.archcore/` promotion was performed.
-
-Applied to: AI_NAVIGATION.md

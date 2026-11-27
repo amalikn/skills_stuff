@@ -12,6 +12,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- **20261127_1745** v2.3.42: `references/macos-and-endpoints.md` Learned entries from me/nas: Time Machine after completion (mtimes not a write signal, Disputed vs 2026-11-25; Spotlight index writes; tmutil latestbackup needs FDA; SnapshotHistory.plist dates) and Nextcloud File Provider vs macOS Local Network privacy.
 - **20261127_1635** v2.3.41: `references/migration-and-hybrid.md` Learned entry (remote-fleet access gateway: out-of-band path on the gateway IP, pinned hosts entries, move first then upgrade); shared licence module Disputed/Learned in skill-network-architect v2.3.29.
 - **20261125_1630** v2.3.30: `references/backup-disaster-recovery.md` Learned entry (workstation pull copy: read-and-list key, never overwrite, hard stop on a shared APFS pool).
 - **20261119_1109** v2.3.14: `references/backup-disaster-recovery.md` keyless verification of a pulled restic copy and SeaweedFS S3 open by default (Continuum TASK-30).

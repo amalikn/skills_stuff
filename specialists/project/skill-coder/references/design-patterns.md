@@ -130,6 +130,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-84 | Retention by membership, time rule as fallback | Keep what kept captures name, without trusting incomplete membership |
 | P-85 | Test identity bot with software credentials driving the real flows | End-to-end tests of sign-in, approval and second-factor flows without a person |
 | P-86 | Run log attached to the work item | A result whose evidence cannot be found later |
+| P-91 | Progress by payload growth; completion from the writer's own record | A touch time or a permission-gated client call reported as progress or completion |
 
 ## Patterns
 
@@ -2309,3 +2310,40 @@ def decide(digest: str, state: dict, remote_etag: str | None, force: bool) -> st
     return "copy"
   return "current"
 ```
+
+### P-91 Progress by payload growth; completion from the writer's own record
+
+> **Learned 2026-11-27** · monitoring a long writer you do not control (backup client, sync, import) · VERIFIED_PRIMARY (home NAS: a Time Machine
+> image kept its band mtimes fresh with no size change while mounted for browsing; `tmutil latestbackup` exited 80 without Full Disk Access) ·
+> Source: me/nas `scripts/node/pve_dashboard.py` (tm_history, growth window), `scripts/node/pve_tm_growth.py`, `scripts/mac/nas_tm_status.sh`
+> (amalikn/nas 8af0152) · Falsifier: a writer whose payload grows without progress (preallocation), or whose record lags its real completion.
+> reusable_candidate until a second project uses it.
+
+- **Problem:** a status page or stall check asks "is it still writing?" and "when did it last finish?". Modification times say "something touched
+  it", not "data arrived"; the client's own status call may need a privilege the monitor should not hold.
+- **Solution:** sample the payload size (dataset `used`, bundle bytes) on a timer into a short rolling history; "last write" is the last sample that
+  grew, and the rate comes from a short window (10 min) so it drops to 0 when writing stops. Completion comes from the record the writer itself
+  keeps beside the data (a history file, a manifest), read where the data lives, not from a privileged client call.
+- **Why it works:** size only moves when payload arrives; the writer's record is written as part of committing a run, so it cannot claim a
+  completion that did not happen, and reading it needs only access to the storage.
+- **Reuse:** backup targets (restic repo size and snapshot list), photo or media imports (library size and the importer's log), replication
+  (received bytes and the last received snapshot).
+- **Pitfalls:** a one-hour window kept showing the tail of a finished run as "+5.8 GiB/h while idle"; post-run housekeeping (an index the client
+  builds after "done") is real growth, so an idle alarm needs a grace period; keep the history longer than the stall threshold that reads it.
+- **Realised in:** Python -> me/nas `scripts/node/pve_tm_growth.py` (8af0152):
+
+```python
+def last_growth(hist: list[list[float]], now: float) -> tuple[int, int, int]:
+  since, added = -1, 0
+  for (_, before), (t, after) in zip(hist, hist[1:], strict=False):
+    if after > before:
+      added += int(after - before)
+      since = int(now - t)
+  span = int(hist[-1][0] - hist[0][0]) if len(hist) > 1 else 0
+  return since, added, span
+```
+
+- **Evidence:** VERIFIED_PRIMARY: before, `just tm-status` printed "last write 0s ago" while idle; after, "last write 17s ago (data growth, 448 MiB in
+  the last 10 min)" from real `used` samples; the dashboard card moved from "none yet" to "Last completed 35 min ago (2 on the NAS)" (screenshot
+  pending: /ops/backups Time Machine card, redacted, next engagement).
+
