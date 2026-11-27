@@ -36,6 +36,7 @@ Last rotated: 20261126_1847
 
 ## Unreleased
 
+- 2026-11-27: check green again: ROADMAP done item rotated (docs/history/roadmap-20261127_1602.md); languages/python/learned-other.md split (5 entries to learned-imports-and-cli.md) and languages/rust/guide-services.md split (parts 12-14 to guide-tooling.md, the guide is now 4 parts); language_split.py --lang python would have overwritten learned-other.md (17 lines), so the splits were done by entry boundary.
 - 2026-11-27: Learned entry in languages/shell/learned-format-and-lint.md: remote SSH commands as quoted heredocs instead of single-quoted strings (SC2016 without a suppression), from me/nas.
 
 - 2026-11-26 (continuum BUG-702): languages/python/learned-other.md: `python -I` drops the script's folder; ssh joins argv (quote with shlex.join); a justfile `export` beats an env-first fallback. languages/rust/learned-crates.md: reqwest `tls_certs_only` vs `add_root_certificate` (one client per trust rule); guide-services.md section on the same.

@@ -110,7 +110,8 @@ The rest of this override lives in [python/](python/) (split 2026-11-07 by scrip
 
 | File             | Blocks |
 | ---------------- | ------ |
-| [learned-other.md](python/learned-other.md) | 15     |
+| [learned-other.md](python/learned-other.md) | 10     |
+| [learned-imports-and-cli.md](python/learned-imports-and-cli.md) | 5      |
 | [open-items.md](python/open-items.md) | 2      |
 | [learned-network.md](python/learned-network.md) | 1      |
 | [learned-data-formats.md](python/learned-data-formats.md) | 1      |

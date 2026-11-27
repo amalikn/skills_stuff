@@ -38,8 +38,6 @@ Detail and order: UNC's [retirement assessment](/Volumes/Data/_ai/_project/proje
 - [ ] **Python 3.11 floor** — `mise install python@3.11`, then `just test-matrix` (the declared floor is untested).
 - [ ] **Shell limits** — the 100-line warn is now sourced (`documents/research-sources-20261019/google-shell-style.txt` line 53, "more than 100 lines long"); the 200-line fail in `code_size.py`
   `LANG_LIMITS` has no source: record it as the pack's own decision or find one (reviewed 2026-11-19).
-- [x] **Write-back contract test red** (found 2026-11-12) — green 2026-11-19: 9 headers repaired and 6 entries logged late, then the test was made to collect every
-  problem and to read `languages/<lang>/` topic files, which surfaced 7 more headers and 4 unlogged Python entries (all fixed). Done 2026-11-19.
 - [ ] **Ansible and YAML size** — `code_size.py` measures no `.yml` files; decide a task-file limit once `languages/ansible.md` has a source.
 
 ## Open items (tools)

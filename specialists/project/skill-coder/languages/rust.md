@@ -61,7 +61,7 @@ The Rust API Guidelines (checklist and documentation chapter), The Rust Programm
 
 ## Learning Rust
 
-A reading guide for the operator, built from continuum-app's real code with links to the official docs: [part 1, the language](rust/guide-basics.md) and [part 2, services, tests and tooling](rust/guide-services.md) and [part 3, keys and secrets](rust/guide-keys.md).
+A reading guide for the operator, built from continuum-app's real code with links to the official docs: [part 1, the language](rust/guide-basics.md) and [part 2, services and tests](rust/guide-services.md), [part 3, keys and secrets](rust/guide-keys.md) and [part 4, tooling and a Python phrasebook](rust/guide-tooling.md).
 
 Rule (operator, 2026-11-19: "I want to learn that language ... proper documentation there which I can read at any time"): every session that writes Rust adds its lessons to the
 `learned-*.md` files and, when a concept is new to the guide, a part with a real excerpt, what to notice and the official chapter to read.
