@@ -191,6 +191,15 @@ test_smc_inventory_add: _require-venv
 topology_variance *args: _require-venv
     @{{py}} scripts/ansible/topology_variance.py {{args}}
 
+# Graylog storage: index sets and retention, per-index sizes, GB/day, disk needed, journal, notifications. Read-only; about 1 s, about 110 s with --top.
+# Example: just graylog_storage --top
+graylog_storage *args: _require-venv
+    @{{py}} scripts/metrics/graylog_storage.py {{args}}
+
+# Offline test for graylog_storage.py.
+test_graylog_storage: _require-venv
+    @{{py}} scripts/metrics/test_graylog_storage.py
+
 # Offline test for topology_variance.py.
 test_topology_variance: _require-venv
     @{{py}} scripts/ansible/test_topology_variance.py

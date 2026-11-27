@@ -1228,6 +1228,35 @@ Operator report: Graylog answers Internal Server Error since 2026-10-08. Read-on
   opened 9000 and 12202 within a minute and took GELF again; `/api/system/indexer/cluster/health` green (49 active shards, none unassigned); all three target groups healthy at 13:13. Graylog then
   logged GELF `invalid "timestamp"` warnings for messages from 10.240.2.151 (the ALB side); whether those predate the outage is not checked.
 
+## 2026-11-27 — Graylog ingest stopped about 22 Nov: apn-datanode01 disk at flood stage (RESOLVED 2026-11-27 15:57)
+
+Read-only diagnosis 2026-11-27 (full analysis: `local-knowledge-ansible/ansible-wifi/issues/graylog-datanode-disk-full-20261127_1525.md`):
+
+- apn-datanode01 `/` 291G at 95%; 271G is OpenSearch data (`/var/lib/graylog-datanode/opensearch/data`). 15 `graylog_*` indices, 17-21 GB each, rotating
+  every 3-4 days: about 5.5 GB/day. Write index `graylog_68` blocked `read_only_allow_delete`; apn-graylog01 journal over its 5 GB limit (58M uncommitted,
+  read 0/s), so messages from about 22 Nov to 26 Nov 20:27 UTC are lost.
+- Cause: Default index set data tiering `hot_only`, `index_lifetime_min P60D`, `index_lifetime_max P90D`. An index is deleted only once it **closed** more than
+  min ago (Graylog `TimeBasedRetentionExecutor.exceedsAgeLimit`, source). 64 days x 5.5 GB = about 350 GB on a 291 GB disk. Oldest `graylog_54` closed
+  2026-10-07: nothing ages out before about 2026-12-06.
+- Host: t2.medium, 3.8 GiB RAM, heap 2g; root `vol-020c1a29528abeb85` gp2 300 GB. `repository-s3` plugin ships with the Data Node's OpenSearch.
+- Safe space: delete whole old indices in Graylog (System > Indices), never files under `/var/lib/graylog-datanode`. The block releases by itself below the
+  high watermark (OpenSearch docs). Lasting fix: grow EBS online (gp3, about 500 GB for 60 days) or cut min lifetime (30 days fits 300 GB).
+- EFS for the OpenSearch data path is not advised (OpenSearch: "Avoid using a network file system for node storage in a production workflow"; EFS 0.36 vs
+  gp3 0.096 USD/GB-month Sydney). Graylog Archiving and the warm tier are Enterprise-only; an Open archive would be OpenSearch snapshots to S3 (untested).
+- Volume by path (10 days): `/var/log/syslog` 52%, RISE healthcheck log+json about 16%; top SMC 3.4%.
+- **Resolved 2026-11-27 (operator: keep all data, 500 GB gp3, 60 days; Pad ansible-wifi BUG-41).** Snapshot `snap-0f49efecb70caa46d`, then
+  `aws ec2 modify-volume --size 500 --volume-type gp3` (online, about a minute to `optimizing`), then `growpart /dev/xvda 1 && resize2fs /dev/xvda1` on the
+  live host: 485G at 58%. Watermark and block notifications cleared within a minute with no manual `_settings` call; the journal drained 58M entries in
+  about 22 minutes on the t2.medium. Messages already dropped by the full journal (about 22 Nov to 27 Nov 07:27) are lost.
+
+Read it again with (the helper module's `_curl`, from `scripts/metrics/smc_graylog.py`):
+
+```python
+ov = g._curl([f"{g.API}/system/indexer/overview"])     # per-index bytes, range, is_deflector
+sets = g._curl([f"{g.API}/system/indices/index_sets?stats=true"])  # data_tiering min/max
+j = g._curl([f"{g.API}/system/journal"])               # uncommitted entries, read/append rate
+```
+
 ## 2026-10-09 — what Graylog holds of the units behind a low-touch SMC (INFO)
 
 Searched read-only through `scripts/metrics/smc_graylog.py` after the 2026-10-09 recovery (unified-network-controller, old-looma): the units' own syslog reaches the SMC as

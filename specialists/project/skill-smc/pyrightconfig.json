@@ -1,0 +1,5 @@
+{
+  "//": "Editor analysis only (Pylance/pyright). scripts/metrics imports its shared libraries (smc_graylog, smc_prom) through sys.path at run time; extraPaths lets the editor resolve them. typeCheckingMode off keeps Pylance's own default.",
+  "extraPaths": ["scripts/metrics"],
+  "typeCheckingMode": "off"
+}

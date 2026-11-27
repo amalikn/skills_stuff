@@ -6,7 +6,7 @@ Summary: Newest entries only; older ones rotate to docs/history (search with --f
 Kind: log
 Budget: 200 lines, 25 KB
 Archive: docs/history/ (`--find`, `--show`)
-Last rotated: 20261125_1939
+Last rotated: 20261127_1609
 Authority: record
 Scope: Dated changes to this project
 Last reviewed: 2026-10-27
@@ -16,6 +16,7 @@ Last reviewed: 2026-10-27
 
 ## Contents
 
+- [20261127_1609 — Graylog datanode disk-full incident, graylog_storage.py (v0.17.1 -> v0.17.2)](#20261127_1609--graylog-datanode-disk-full-incident-graylog_storagepy-v0171---v0172)
 - [20261125_1937 — RCT serial console shares ttyS0 with tstik's AVR link (v0.17.0 -> v0.17.1)](#20261125_1937--rct-serial-console-shares-ttys0-with-tstiks-avr-link-v0170---v0171)
 - [20261120_2155 — pre-push hook lints the pushing worktree (v0.16.9 -> v0.17.0)](#20261120_2155--pre-push-hook-lints-the-pushing-worktree-v0169---v0170)
 - [20261120_2140 — 24.04 role differences and the relative-playbook trap from the role builds (v0.16.8 -> v0.16.9)](#20261120_2140--2404-role-differences-and-the-relative-playbook-trap-from-the-role-builds-v0168---v0169)
@@ -39,9 +40,14 @@ Last reviewed: 2026-10-27
 - [20261118_2152 — Pi 4 early watchdog, 2022 bootloaders ignore the A/B selector, EEPROM staging on an A/B card (v0.15.0 -> v0.15.1)](#20261118_2152--pi-4-early-watchdog-2022-bootloaders-ignore-the-ab-selector-eeprom-staging-on-an-ab-card-v0150---v0151)
 - [20261118_2049 — storage identity readable on x86 and Pi; low-touch description record (name, locid) (v0.14.9 -> v0.15.0)](#20261118_2049--storage-identity-readable-on-x86-and-pi-low-touch-description-record-name-locid-v0149---v0150)
 - [20261118_1553 — rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)](#20261118_1553--rct-tstik-board-restarts-a-stuck-smc-operator-wh-flavours-have-none-v0148---v0149)
-- [20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)](#20261117_1922--smc_change-state-file-timing-connect-timeout-30-s-offline-smcs-fail-incomplete-ssh_handshake_timesh-v0147---v0148)
 
 ---
+
+## 20261127_1609 — Graylog datanode disk-full incident, graylog_storage.py (v0.17.1 -> v0.17.2)
+
+- `references/13_known-issues.md`: 2026-11-27 apn-datanode01 flood-stage incident (retention min 60 days from close vs about 5.7 GB/day on 291 GB), resolved by an online EBS grow to 500 GB gp3; EFS for the data path not advised; Archiving and warm tier Enterprise-only.
+- `scripts/metrics/graylog_storage.py` (new, read-only) with offline test `test_graylog_storage.py`; recipes `just graylog_storage [--top]`, `just test_graylog_storage`; catalogued in `scripts/README.md`. Smoke run 2026-11-27: 1 s, 108 s with `--top`; disk needed for 60 days at 80%: 454 GB.
+- `pyrightconfig.json` (new): `extraPaths` `scripts/metrics` so the editor resolves `smc_graylog` and `smc_prom`; editor only, run time unchanged.
 
 ## 20261125_1937 — RCT serial console shares ttyS0 with tstik's AVR link (v0.17.0 -> v0.17.1)
 
@@ -186,12 +192,3 @@ Last reviewed: 2026-10-27
 - references/06_failure-modes.md: Learned 2026-11-18 (USER_STATED): the tstik is a physical board wired to the Pi and restarts a stuck rct SMC by rules such as loss of the internet; the SMC restart
   sits in the board's AVR firmware, outside the rct-tstik app read on 2026-10-07, so that reading stands. The wh flavours (wh, nbn_wh) have no such board and no automatic restart.
 - From the apn smc-resiliency concept deck session (6128bdd9), where the operator corrected a slide that said nothing restarts any hung SMC.
-
-## 20261117_1922 — smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)
-
-`references/19_smc-change-role.md` (smc_change_multiple bullets): a change's state file is written per SMC at its stage 11 under strategy free, never in check mode, and the SMSC play waits for the
-whole AVR play; "banner exchange" timeouts are the ssh plugin's 10 s default against a ~9 s Teleport handshake, now `ansible_ssh_timeout: 30` in both smc_change playbooks (ansible-wifi chat f516e57d).
-
-New read-only `scripts/access/ssh_handshake_time.sh` (`just ssh_handshake_time`, offline test `just test_ssh_handshake_time`, smoke-run on wujal-wujal-booth-smc01, catalogued in `scripts/README.md`);
-reference 19: any SMC a run did not finish (offline, no record, unreachable, refused, failed, held back) is noted and fails INCOMPLETE, in the wrapper's last play when `smc_change_defer_incomplete` is
-set (operator; side-agent note on later plays).

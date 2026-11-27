@@ -214,6 +214,17 @@ Who: **A** an agent may run it (reads freely; writes after confirmation), **H** 
 > - `pad item comment <ref> "- **What:** ..."` fails ("unknown shorthand flag"): text starting with "-" needs `pad item comment <ref> -- "<text>"`.
 > - Body rewrites: `pad item update <ref> --stdin --replace` (a blank stdin is refused, nothing sent).
 
+> **Learned 2026-11-27** · Pad CLI v0.21.1 · VERIFIED_PRIMARY · Source: ansible-wifi BUG-41, `pad item update BUG-41 --stdin --replace` while the operator had the item open in the web UI · Falsifier: the same rewrite with the item open saving at once and `pad item show` returning the new body
+> - With the item open in a browser tab, `pad item update <ref> --stdin --replace` does not save: it prints "body sent to the open editor (N bytes); the stored copy was M bytes and a following
+>   `pad item show` may return that OLD body until a tab flushes, which is not guaranteed to happen". `item-check` keeps failing on the stored body. Either the tab saves it, or
+>   `--overwrite-pending-edits` forces it, which discards anything unsaved in that tab: ask the operator first.
+> - `pad item create` refuses a value outside the collection's field options (`priority "critical" is not in allowed options [low medium high]` in ansible-wifi bugs); read
+>   `pad item create --help-collections` first. Its success line names the collection in words (`Created 🔧 Tech Debt TD-42: ...`), so parse the ref with `[A-Z]+-[0-9]+:`, not by field position.
+> - `pad item comment-edit <ref> <id>` needs the full comment UUID: the 8-character id `item-check` prints gives "Comment not found". Get it from
+>   `pad item comments <ref> --format json`.
+> - The `--comment` of an `item update` (a priority or status change) is stored as a comment, so a long one-line reason fails `item-check`'s bullet-form rule; keep it short or write
+>   it as `- **What:** ... - **Why:** ...`.
+
 > **Learned 2026-11-19** · Pad CLI v0.21.0 · VERIFIED_PRIMARY · Source: `pad workspace init skills --template startup` run from the skills_stuff repo root by an agent, no terminal, `pad auth whoami` a real user · Falsifier: the same command opening a browser or waiting for input when signed in
 > With a signed-in user it created the workspace and wrote `.pad.toml` (`workspace = "skills"`) without a browser or a prompt, and it still wrote `.claude/skills/pad/SKILL.md` and
 > `.agents/skills/pad/SKILL.md` (delete both, Rules). One `.pad.toml` at a repo root serves every folder under it, so a monorepo of packs shares one workspace. The `conventions` recipe split a spaced

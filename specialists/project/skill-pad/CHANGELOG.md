@@ -16,6 +16,7 @@ Last rotated: 20261126_2042
 
 ## Contents
 
+- [20261127_1608 — Learned: body rewrite while the item is open in the web UI](#20261127_1608--learned-body-rewrite-while-the-item-is-open-in-the-web-ui)
 - [20261126_2042 — Backup: a failed night no longer leaves an empty pad-*.db](#20261126_2042--backup-a-failed-night-no-longer-leaves-an-empty-pad-db)
 - [20261126_1850 — Plans close with completed, not done](#20261126_1850--plans-close-with-completed-not-done)
 - [20261126_1444 — Comments: dash-leading text needs --](#20261126_1444--comments-dash-leading-text-needs---)
@@ -41,6 +42,10 @@ Last rotated: 20261126_2042
 - [20261120_2335 — Comment edits work again (Disputed); statuses are per collection; list is partial](#20261120_2335--comment-edits-work-again-disputed-statuses-are-per-collection-list-is-partial)
 - [20261120_2218 — item-check finds in-progress items left idle (stale); session start handles them (operator)](#20261120_2218--item-check-finds-in-progress-items-left-idle-stale-session-start-handles-them-operator)
 - [20261120_2210 — item-check reports comments not in the bullet form and references not written as links (operator)](#20261120_2210--item-check-reports-comments-not-in-the-bullet-form-and-references-not-written-as-links-operator)
+
+## 20261127_1608 — Learned: body rewrite while the item is open in the web UI
+
+- `references/cli-reference.md`: Learned 2026-11-27 (Pad 0.21.1): a body rewrite with the item open in a browser tab goes to that tab, not the store; `--overwrite-pending-edits` only with the operator's consent. `item create` refuses field values outside the collection options; parse the created ref with a regex. `comment-edit` needs the full comment UUID; an update's `--comment` counts for the bullet-form check. Source: ansible-wifi BUG-41.
 
 ## 20261126_2042 — Backup: a failed night no longer leaves an empty pad-*.db
 
