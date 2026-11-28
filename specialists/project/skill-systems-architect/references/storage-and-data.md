@@ -21,6 +21,7 @@ Summary: Storage, filesystems and data architecture decisions, failure modes and
 - [Patterns and anti-patterns](#patterns-and-anti-patterns)
 - [Failure modes and tests](#failure-modes-and-tests)
 - [Worked example](#worked-example)
+- [Growing a VM disk](#growing-a-vm-disk)
 - [Review checklist](#review-checklist)
 - [Further reading](#further-reading)
 
@@ -217,6 +218,39 @@ $ just ceph examples/ceph-3-hosts-bad.json                     (exit 1)
 
 4. Decision: keep four or more hosts, restore min_size 2, and hold EC 4+2 until six failure domains exist.
 
+## Growing a VM disk
+
+One order on every platform: read the current state, snapshot, grow the virtual disk, wait where the platform is asynchronous, then grow the partition and filesystem inside the guest. `just
+disk-grow` ([disk_grow.py](../scripts/disk_grow.py) with [disk_grow_guest.sh](../scripts/disk_grow_guest.sh)) prints that plan for `aws`, `proxmox-vm`, `proxmox-ct`, `libvirt` and `qemu-img`,
+runs only the reads with `--check`, and writes only with `--apply`.
+
+| Platform | Snapshot | Grow the disk | Guest step | Evidence |
+| --- | --- | --- | --- | --- |
+| AWS EBS | `ec2 create-snapshot` (point in time at initiation) | `ec2 modify-volume --size N [--volume-type gp3]`, usable at `optimizing` | growpart + fs grow | VERIFIED_PRIMARY ([ebs-modify]); used 2026-11-27 and 2026-11-28 |
+| Proxmox VM | `qm snapshot <vmid> <name>` (ZFS, LVM-thin, Ceph, qcow2) | `qm disk resize <vmid> <disk> <N>G` (absolute, or `+N`; no shrink) | rescan + growpart + fs grow | VERIFIED_PRIMARY ([qm], 9.3.1) |
+| Proxmox CT | `pct snapshot <vmid> <name>` | `pct resize <vmid> rootfs <N>G` (no shrink) | none: pct grows the filesystem | resize VERIFIED_PRIMARY ([pct], 9.3.1); fs grow UNVERIFIED until a CT run |
+| libvirt/QEMU (running) | `virsh snapshot-create-as <dom> <name> --atomic` (internal, qcow2) | `virsh blockresize <dom> <target> <N>G --extend` (`--extend` refuses a shrink) | rescan + growpart + fs grow | VERIFIED_PRIMARY ([virsh]) |
+| qemu-img (stopped) | `qemu-img snapshot -c <name> <img>` | `qemu-img resize <img> <N>G` (shrink needs `--shrink`) | after the next boot | UNVERIFIED (no run yet) |
+
+> **Learned 2026-11-28** · any VM root disk · VERIFIED_PRIMARY (two production EBS grows, online, no restart) · Source: ansible-wifi Pad TASK-71 · Falsifier: an EBS or virtio grow that needs a guest
+> restart before growpart sees the new size
+> Grow the root disk online, in the order snapshot, grow the virtual disk, growpart, filesystem grow. Do not wait for the EBS snapshot to finish: it is point in time at initiation. The
+> modification is usable once it reaches `optimizing`, which took under 15 s for a 300 to 500 GB gp2 to gp3 change. Find the guest device from the mount's MAJ:MIN, not from `df`: an
+> EC2 Ubuntu root shows as `/dev/root`. `findmnt -o MAJ:MIN` pads its value with spaces, so trim it before using it as a `/sys/dev/block` path; the first real `--check` run failed on that.
+> A bigger disk only buys time when an application keeps data with no retention. In this case it was session recordings and audit logs, 241 of 263 GB. Set retention and a disk alert in
+> the same change.
+
+```bash
+# scripts/disk_grow_guest.sh (skill-systems-architect, 2026-11-28): resolve the device under a mount, then pick the grow path
+MAJMIN=$(findmnt -nvo MAJ:MIN "${MOUNT}" | tr -d ' ')
+NAME=$(basename "$(readlink -f "/sys/dev/block/${MAJMIN}")")
+TYPE=$(lsblk -dno TYPE "/dev/${NAME}")
+case ${TYPE} in
+  part) grow_partition "$(lsblk -dno PKNAME "/dev/${NAME}")" "$(cat "/sys/class/block/${NAME}/partition")"
+        grow_fs "/dev/${NAME}" "${FSTYPE}" ;;
+  lvm)  ...  # single PV only: growpart the PV partition, pvresize, lvextend -r -l +100%FREE
+```
+
 ## Review checklist
 
 - [ ] Workload measured: I/O size, sync share, working set, p99 latency target.
@@ -239,6 +273,7 @@ Primary sources cited above (VERIFIED_PRIMARY, checked 2026-10-29)
 
 - [pve-zfs]: Proxmox VE ZFS chapter source. [pveceph]: Proxmox VE Ceph chapter source.
 - [mon-config]: Ceph monitor config reference (full ratios, quorum). [crush]: Ceph CRUSH maps. [openzfs-tuning]: OpenZFS workload tuning.
+- [ebs-modify]: AWS EBS Elastic Volumes (modify a volume). [qm], [pct]: Proxmox VE 9.3.1 man pages (disk resize, snapshot). [virsh]: libvirt blockresize and snapshot-create-as (checked 2026-11-28).
 
 OpenZFS
 
@@ -270,6 +305,10 @@ Measurement and security
 [pveceph]: https://raw.githubusercontent.com/proxmox/pve-docs/master/pveceph.adoc
 [mon-config]: https://docs.ceph.com/en/latest/rados/configuration/mon-config-ref/
 [crush]: https://docs.ceph.com/en/latest/rados/operations/crush-map/
+[ebs-modify]: https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html
+[qm]: https://pve.proxmox.com/pve-docs/qm.1.html
+[pct]: https://pve.proxmox.com/pve-docs/pct.1.html
+[virsh]: https://www.libvirt.org/manpages/virsh.html
 [openzfs-tuning]: https://openzfs.github.io/openzfs-docs/Performance%20and%20Tuning/Workload%20Tuning.html
 [draid]: https://openzfs.github.io/openzfs-docs/Basic%20Concepts/dRAID%20Howto.html
 [ceph-stretch]: https://docs.ceph.com/en/latest/rados/operations/stretch-mode/

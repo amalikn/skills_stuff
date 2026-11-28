@@ -10,7 +10,7 @@ Summary: Every helper in scripts/, its inputs, outputs, safety class, exit codes
 
 # Offline script catalogue
 
-Standard library only; run through the working-cache venv (`just bootstrap` once, then the recipes). No helper writes to a host; only `as_built.py` reads hosts
+Standard library only; run through the working-cache venv (`just bootstrap` once, then the recipes). No helper writes to a host except `disk_grow.py` with `--apply`; `as_built.py` reads hosts
 (SSH, read-only commands) and writes files, and only its capture folder with `--apply`.
 
 ## Helpers
@@ -27,6 +27,7 @@ Standard library only; run through the working-cache venv (`just bootstrap` once
 | [fetch_sources.py](fetch_sources.py) | `just fetch-sources [--apply]` | Both packs' Markdown -> RFC .txt, PDFs and all-scraper Markdown snapshots in `sources/`, indexed in `sources/index.json` | Plan by default; writes only the store with --apply; resumable; 4 workers, timeouts, process-group kill; symlink to skill-network-architect (canonical) |
 | [sources_ledger.py](sources_ledger.py) | `just ledger [--add f.json] [--apply]` | Pack Markdown + curated lists + store index -> rebuilt `sources.json` (curated evidence kept, every other cited URL as CITED, local copy paths) | Plan by default; writes only sources.json with --apply; symlink to skill-network-architect (canonical) |
 | [as_built.py](as_built.py) + [as_built_probes.py](as_built_probes.py) + [as_built_tenants.py](as_built_tenants.py) | `just as-built <manifest> [--apply\|--twice]` | A project's `as-built.toml` -> stable masked files per area (references/as-built-capture.md) | Reads hosts over SSH or locally (ssh = "local" on the node), HTTPS, and one token value in memory from KeePassXC or a root-only secrets file; writes only its capture folder with `--apply`; 120 s per command; exit 0 ok, 1 a target failed or churn, 2 bad manifest |
+| [disk_grow.py](disk_grow.py) + [disk_grow_guest.sh](disk_grow_guest.sh) | `just disk-grow <platform> ... [--check\|--apply]` | aws (EBS), proxmox-vm, proxmox-ct, libvirt, qemu-img + a size in GiB -> ordered plan: read, snapshot, grow the disk, EBS wait, guest growpart/pvresize/lvextend/resize2fs/xfs_growfs/btrfs | **Writes to hosts and clouds with `--apply` only** (production: operator's explicit go); plan by default, `--check` runs reads only; never shrinks; 120 s per command, guest 600 s, EBS wait 900 s; exit 0 ok, 1 a step failed, 2 bad arguments |
 | [check_package.py](check_package.py) | `just check` | Skill folder -> broken links, headers, JSON and Python syntax | Read-only; symlink to skill-network-architect (canonical) |
 
 Exit status for every helper: 0 = no findings, 1 = findings, 2 = invalid input.

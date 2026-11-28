@@ -12,6 +12,7 @@ Summary: Where the pack stands and what to do next. Overwrite the state section 
 
 ## Current state (2026-10-29, closeout)
 
+- **20261128_1510** v2.3.45: `just disk-grow` (scripts/disk_grow.py + disk_grow_guest.sh): VM disk grow for aws, proxmox-vm, proxmox-ct, libvirt, qemu-img; AWS path proven on cw-teleport01 (apply by hand 2026-11-28, `--check` run by the script). Next: first proxmox-vm and proxmox-ct run on a lab VM to move their rows off plan-only and confirm pct grows the filesystem.
 - **20261127_1745** v2.3.42: `references/macos-and-endpoints.md` Learned entries from me/nas: Time Machine after completion (mtimes not a write signal, Disputed vs 2026-11-25; Spotlight index writes; tmutil latestbackup needs FDA; SnapshotHistory.plist dates) and Nextcloud File Provider vs macOS Local Network privacy.
 - **20261127_1635** v2.3.41: `references/migration-and-hybrid.md` Learned entry (remote-fleet access gateway: out-of-band path on the gateway IP, pinned hosts entries, move first then upgrade); shared licence module Disputed/Learned in skill-network-architect v2.3.29.
 - **20261125_1630** v2.3.30: `references/backup-disaster-recovery.md` Learned entry (workstation pull copy: read-and-list key, never overwrite, hard stop on a shared APFS pool).

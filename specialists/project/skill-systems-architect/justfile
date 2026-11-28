@@ -80,10 +80,17 @@ ledger *ARGS: _require-venv
 as-built MANIFEST *ARGS: _require-venv
     {{py}} -B scripts/as_built.py --manifest {{MANIFEST}} {{ARGS}}
 
+# Grow a VM disk then its partition and filesystem (aws, proxmox-vm, proxmox-ct, libvirt, qemu-img; references/storage-and-data.md#growing-a-vm-disk).
+# Prints the plan by default; --check runs the reads; --apply WRITES to the target (production: operator's explicit go only), e.g. just disk-grow aws --volume-id vol-0abc --size 500 --type gp3
+[positional-arguments]
+disk-grow *ARGS: _require-venv
+    {{py}} -B scripts/disk_grow.py "$@"
+
 # Ruff lint and format check (ruff.toml: two-space indent, 160 columns)
 lint: _require-venv
     {{py}} -m ruff check .
     {{py}} -m ruff format --check .
+    shellcheck scripts/*.sh
 
 # Closing check: run before claiming a change to this pack is complete
 check: test expected-findings lint

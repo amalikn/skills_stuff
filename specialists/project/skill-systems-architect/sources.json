@@ -961,6 +961,14 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-7a720eec",
+   "title": "ebs-modify",
+   "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true
+  },
+  {
    "id": "C-b762b4fa",
    "title": "ebs-snapshots",
    "url": "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html",
@@ -2093,6 +2101,14 @@
    "checked": "2026-10-29"
   },
   {
+   "id": "C-97e65b57",
+   "title": "pct",
+   "url": "https://pve.proxmox.com/pve-docs/pct.1.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true
+  },
+  {
    "id": "C-c06835ca",
    "title": "Proxmox VE admin guide (single page)",
    "url": "https://pve.proxmox.com/pve-docs/pve-admin-guide.html",
@@ -2101,6 +2117,14 @@
    "generated": true,
    "local": "sources/web/pve.proxmox.com/pve-docs-pve-admin-guide.html-c06835ca.md.txt",
    "checked": "2026-10-29"
+  },
+  {
+   "id": "C-c1b89712",
+   "title": "qm",
+   "url": "https://pve.proxmox.com/pve-docs/qm.1.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true
   },
   {
    "id": "C-eff3f1be",
@@ -2847,6 +2871,14 @@
    "generated": true,
    "local": "sources/web/jedec.org/standards-documents-docs-jesd218b01-1b65225f.md.txt",
    "checked": "2026-10-29"
+  },
+  {
+   "id": "C-d58e5bfb",
+   "title": "virsh",
+   "url": "https://www.libvirt.org/manpages/virsh.html",
+   "evidence": "CITED",
+   "note": "cited in references/storage-and-data.md",
+   "generated": true
   },
   {
    "id": "C-4f7aa3d7",
