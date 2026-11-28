@@ -6,6 +6,7 @@ Records rotated out of the live CHANGELOG and SCRATCHPAD to keep them within bud
 
 ## Change log
 
+- [changelog-20261128_1514.md](changelog-20261128_1514.md) 1 entry, 2026-11-18 to 2026-11-18: rct tstik board restarts a stuck SMC (operator); wh flavours have none (v0.14.8 -> v0.14.9)
 - [changelog-20261127_1609.md](changelog-20261127_1609.md) 1 entry, 2026-11-17 to 2026-11-17: smc_change: state-file timing; connect timeout 30 s; offline SMCs fail INCOMPLETE; ssh_handshake_time.sh (v0.14.7 -> v0.14.8)
 - [changelog-20261125_1939.md](changelog-20261125_1939.md) 1 entry, 2026-11-17 to 2026-11-17: smc_change_multiple: never pass -e smc_change; vars guard blocks edits; delta gate on rewritten files (v0.14.6 -> v0.14.7)
 - [changelog-20261120_2140.md](changelog-20261120_2140.md) 1 entry, 2026-11-17 to 2026-11-17: Teleport self-upgrade cron on every flavour (v0.14.5 -> v0.14.6)

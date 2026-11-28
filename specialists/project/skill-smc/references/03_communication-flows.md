@@ -962,6 +962,18 @@ disk 94% (30 GB free):** `/var/lib/teleport/log` 383 GB (`records/` 244 GB, audi
 17:04): 93%, 39 GB free. A HUP reload on 2026-10-19 left the 2026-08-21 parent process holding 52 connections (normal drain, long-lived tunnels). cw-teleport01 is an m5.xlarge in ap-southeast-2b on
 the same kernel.
 
+> **Learned 2026-11-28** · cw-teleport01 and apn-teleport01 root disks · VERIFIED_PRIMARY (`df`, `du`, `aws ec2 describe-volumes` on 2026-11-28) · Source: ansible-wifi Pad TASK-71, local-knowledge
+> CHANGELOG 20261128_1512 · Falsifier: a retention setting found in either `teleport.yaml` or a prune job
+> cw-teleport01 has the same no-retention growth: root EBS `vol-0ffaa5f21ac27bbc1` (`/dev/nvme0n1p1`, ext4) was 91% full at 300 GB gp2, with `/var/lib/teleport/log` holding 241 GB (`records/` 168 GB,
+> audit events 73 GB). It was grown online to 500 GB gp3 on 2026-11-28 and is now 55% full. The snapshot taken first is `snap-02d1b05ecfccee50e`. The procedure is skill-systems-architect `just
+> disk-grow aws ...`. On the same day apn-teleport01 read 409 of 485 GB (85%). On both nodes a bigger disk only buys time: recordings and audit logs need retention or an S3 offload, plus a disk
+> alert. CW nodes need `--proxy=teleport.communitywifi.net.au` before the host. The default APN profile answers "lookup cw-teleport01 ... server misbehaving".
+
+```bash
+# skill-systems-architect scripts/disk_grow_guest.sh (skills_stuff 08ca5994): what the online grow ran on cw-teleport01
+growpart /dev/nvme0n1 1 && resize2fs /dev/nvme0n1p1 && df -h /
+```
+
 ```bash
 # skill-smc scripts/probes/teleport_path_throughput.sh (2026-11-05): loss per flow from the server's own counters, over 4 s
 ss -tin state established dst "$MYIP"   # segs_out and retrans:<cur>/<total> per flow, twice, 4 s apart

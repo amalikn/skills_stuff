@@ -35,6 +35,7 @@ Last rotated: 20261127_1745
 
 ## Unreleased
 
+- 2026-11-28 (ansible-wifi): languages/shell/learned-other.md Learned: `findmnt -n -o` pads its value; trim before a /sys path (disk_grow_guest.sh).
 - 2026-11-27: references/design-patterns.md P-92 audit against an outside truth, fix only the unambiguous, list the rest (from me/nas DL-100); index row added.
 - 2026-11-27: references/design-patterns.md P-91 progress by payload growth, completion from the writer's own record (from me/nas TASK-195); index row added.
 - 2026-11-27: check green again: ROADMAP done item rotated (docs/history/roadmap-20261127_1602.md); languages/python/learned-other.md split (5 entries to learned-imports-and-cli.md) and languages/rust/guide-services.md split (parts 12-14 to guide-tooling.md, the guide is now 4 parts); language_split.py --lang python would have overwritten learned-other.md (17 lines), so the splits were done by entry boundary.

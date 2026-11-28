@@ -58,4 +58,9 @@ Part of [shell.md](../shell.md).
 > **Learned 2026-11-26** · util-linux `findmnt` · VERIFIED_PRIMARY (two mounted targets given, exit 1) · Falsifier: `findmnt A B` exits 0 with both mounted
 > `findmnt <target> <target>` reads the second argument as a source to match, so it exits 1 even when both are mounted; check each mount point with
 > its own call (or `findmnt --target` once per path) before treating the exit code as a failure.
+>
+> **Learned 2026-11-28** · util-linux `findmnt -n -o` (Ubuntu 22.04) · VERIFIED_PRIMARY (`findmnt -nvo MAJ:MIN /` gave `259:1  `; `lsblk` then failed with "/dev/259:1  : not a block
+> device") · Source: skill-systems-architect scripts/disk_grow_guest.sh, skills_stuff 08ca5994 · Falsifier: `findmnt -nvo MAJ:MIN /` with no trailing blanks
+> `findmnt -n -o <column>` pads the value to the column width, so a captured field carries trailing spaces. Trim it before using it as a path: `findmnt -nvo MAJ:MIN / | tr -d ' '`, then
+> `/sys/dev/block/<maj:min>`. Resolve a root device that way, not from `df`: an EC2 Ubuntu root shows as `/dev/root`.
 

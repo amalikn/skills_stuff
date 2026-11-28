@@ -105,6 +105,8 @@ register`; an unregistered session falls back to its agent name.
 > The 2026-11-26 rule above was broken again, and missed because the call was piped into `tail -2`: the "unknown shorthand flag" error repeats the
 > comment text, so the tail showed only the text and looked like success. Never judge a Pad write by its echoed text: read the exit code unpiped, or
 > the count (`pad item comments <ref> --format json`), and pass bullet comments with `--` or on `--stdin`.
+>
+> Seen a third time 2026-11-28 (ansible-wifi, `pad item note TASK-71 "- ..."` piped into `tail -2`): the same applies to `pad item note`; `pad item note <ref> -- "- ..."` succeeded.
 
 ## Dependencies and moves
 
