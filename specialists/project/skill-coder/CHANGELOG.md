@@ -35,6 +35,7 @@ Last rotated: 20261127_1745
 
 ## Unreleased
 
+- 2026-11-28 (me/nas): languages/javascript-typescript.md Learned: live activity rows keyed and updated in place, adaptive polling, runner step notes for a button's long job.
 - 2026-11-28 (me/nas): references/design-patterns.md P-93 last good answer, marked stale; index row added. languages/javascript-typescript.md Learned: no secrets in prompt(), masked dialog and its browser test, strict-mode locators, `hidden` vs display.
 - 2026-11-28 (ansible-wifi): languages/shell/learned-other.md Learned: `findmnt -n -o` pads its value; trim before a /sys path (disk_grow_guest.sh).
 - 2026-11-27: references/design-patterns.md P-92 audit against an outside truth, fix only the unambiguous, list the rest (from me/nas DL-100); index row added.

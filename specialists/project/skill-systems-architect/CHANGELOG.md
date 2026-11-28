@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-28 (v2.3.46 -> v2.3.47, me/nas): references/macos-and-endpoints.md Learned (b): first encrypted Wi-Fi backup needs the passcode on screen, retry a missed prompt, asleep iPad not on mobdev2, grace for a new device.
 - 2026-11-28 (v2.3.45 -> v2.3.46, me/nas): references/backup-disaster-recovery.md Learned: size an upload cap from an uncapped live reading; cap switches restart restic and re-read files; live rate from the sftp ssh child's bytes_acked. references/macos-and-endpoints.md Learned: full iPhone on charger can read ExternalConnected false; manual vs timer power rule; tmutil DateOfStateChange is UTC; SMB Time Machine log noise.
 - 2026-11-28 (v2.3.44 -> v2.3.45, ansible-wifi): scripts/disk_grow.py + disk_grow_guest.sh, `just disk-grow`: grow a VM disk then partition and filesystem on AWS EBS, Proxmox VM/CT, libvirt and qemu-img (plan / --check / --apply); references/storage-and-data.md Growing a VM disk, Learned entry; tests/test_disk_grow.py; shellcheck added to lint.
 - 2026-11-27 (2.3.44, me/nas): references/capacity-and-performance.md Learned: post-import backlog; pause queue groups, check the client, no vCPU on a saturated host.

@@ -446,3 +446,12 @@ if [ "$FORCE" -eq 1 ] && [ "${BATTERY:-0}" -ge "$MIN_BATTERY" ]; then return 0; 
 if [ "${BATTERY:-0}" -ge "$FULL_BATTERY" ]; then return 0; fi
 ```
 
+> **Learned 2026-11-28 (b)** · iPad mini (iPad14) first encrypted backup over Wi-Fi, pymobiledevice3 11.63.1 backup2 · VERIFIED_PRIMARY (job journal and
+> run logs, home NAS VM 120) · Source: me/nas scripts/guests/ios/ios_backup_job.sh (passcode retry) · Falsifier: a first encrypted backup that completes
+> with the device locked and no prompt
+> A device's first encrypted backup asks for its passcode on screen ("Please enter the device passcode to continue the backup"); if the prompt is not
+> answered the log says "Device passcode prompt dismissed" about 2 s later and the run ends with MBErrorDomain/208 "Device locked" after up to two
+> minutes. Ask again rather than fail: three attempts a minute apart, each shown where the operator looks. An iPad that is asleep or locked off its
+> charger is not found over mobdev2 ("not on the LAN") a few minutes after it was reachable; a new device with no backup yet must not be judged by
+> "days since last success" (count from its first run).
+

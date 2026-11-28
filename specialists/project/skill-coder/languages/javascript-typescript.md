@@ -72,6 +72,9 @@ The Google TypeScript Style Guide, the TypeScript `tsconfig` reference (`strict`
 - A Playwright locator like `dialog.locator("input")` breaks under strict mode the day a second input is added: target by
   `aria-label` or name from the start.
 - An author rule such as `.help { display:block }` overrides the `hidden` attribute; write `.help:not([hidden])`.
+- A live activity list (one line per running task, refreshed in place): keep a `Map` key -> row element, update its text, remove rows whose
+  key is gone, and keep a `Set` of opened log panels so a refresh does not fold them; poll fast only while something runs (5 s busy, 15 s idle).
+  For a long job started by a button, have the runner post short step notes the page polls by job id, ending in an explicit done or failed.
 
 > **Learned 2026-11-06** · JavaScript, Playwright browser tests · VERIFIED_PRIMARY (Edge with playwright-core: a synthetic canvas tap crashed the
 > renderer in about half the runs; real mouse clicks passed 8 of 8; a hidden-by-filter checkbox timed out a role locator) · Source: apn unified-network-controller `tests/test_topology_elk.py`,
