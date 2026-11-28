@@ -62,6 +62,17 @@ The Google TypeScript Style Guide, the TypeScript `tsconfig` reference (`strict`
 
 ## Learned
 
+> **Learned 2026-11-28** · browser JavaScript, Playwright · VERIFIED_PRIMARY (home NAS dashboard: the operator saw a typed PIN in clear text; a
+> Playwright strict-mode error after a second input joined the dialog) · Source: me/nas `apps/dashboard/page.html` askPin(), `scripts/mac/nas_ui_check.py`
+> · Falsifier: a browser whose `prompt()` masks input.
+
+- Never read a secret (PIN, password, token) with `window.prompt()`: it shows what is typed. Use a `<dialog>` with `<input type="password"
+  inputmode="numeric" autocomplete="off">`, resolve a Promise on submit and on close (Esc), and clear the field each time it opens.
+- Pin the behaviour with a browser test: the field's `type` is `password` and Cancel sends no request (record `page.on("request")`).
+- A Playwright locator like `dialog.locator("input")` breaks under strict mode the day a second input is added: target by
+  `aria-label` or name from the start.
+- An author rule such as `.help { display:block }` overrides the `hidden` attribute; write `.help:not([hidden])`.
+
 > **Learned 2026-11-06** · JavaScript, Playwright browser tests · VERIFIED_PRIMARY (Edge with playwright-core: a synthetic canvas tap crashed the
 > renderer in about half the runs; real mouse clicks passed 8 of 8; a hidden-by-filter checkbox timed out a role locator) · Source: apn unified-network-controller `tests/test_topology_elk.py`,
 > `tests/test_coverage_comparison.py` (d49d2043) · Falsifier: a synthetic `cy.emit('tap')` stable over many runs.

@@ -403,3 +403,20 @@ PostgreSQL
 # me/nas scripts/node/pve_restic.sh (commit c0d1933): cap chosen at start; nas-restic-window.timer restarts the run at 07:00 and 23:00
 upload_limit() { local h=$((10#$1)); ...; if [ "$h" -ge "$NIGHT_START" ] || [ "$h" -lt "$NIGHT_END" ]; then return 0; fi; echo "--limit-upload $LIMIT_UPLOAD_DAY_KIB"; }
 ```
+
+> **Learned 2026-11-28** · restic 0.18 over SFTP (Hetzner Storage Box), upload cap by time of day · VERIFIED_PRIMARY (live node readings, home NAS) · Source:
+> me/nas scripts/node/pve_restic.sh and scripts/node/pve_dashboard.py (upload_rate), CHANGELOG 20261128_1426/1538 · Falsifier: a restic release that changes
+> `--limit-upload` on a running process, or a backend where restic holds no ssh child
+> Size an upload cap from a reading taken while the backup runs uncapped, not from a one-off speed test: a cap set at "half" of 8.1 Mbit/s turned out to be a
+> quarter of the 15-25 Mbit/s the same link carried later. `--limit-upload` is fixed for a running restic, so switching the cap (a time window or an operator's
+> "away mode") means a restart; until the dataset has a finished snapshot to use as parent, the restarted run re-reads every file (48 MB/s of disk reads,
+> little upload) before sending again, so switches should be rare (once per window edge or per outing) and done by an hourly check that restarts only when
+> the wanted cap differs from the running one. The honest live rate is the TCP `bytes_acked` of the ssh child restic spawns for sftp (`ss -tinp`), sampled
+> a minute apart; interface counters on a hypervisor bridge mix in every guest.
+```python
+# me/nas scripts/node/pve_dashboard.py upload_rate(): restic's sftp ssh child, bytes acknowledged by the Storage Box
+ssh = run(["pgrep", "-P", pid, "-x", "ssh"], 10)[1].split()
+m = re.search(rf"pid={ssh[0]},.*?\n.*?bytes_acked:(\d+)", run(["ss", "-tinp"], 10)[1])
+mbps = round((acked - last["acked"]) * 8 / (now - last["t"]) / 1e6, 1)  # same ssh pid, 20-600 s apart
+```
+

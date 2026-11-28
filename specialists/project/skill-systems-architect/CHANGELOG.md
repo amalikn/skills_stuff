@@ -13,6 +13,7 @@ Kind: log
 
 ## Unreleased
 
+- 2026-11-28 (v2.3.45 -> v2.3.46, me/nas): references/backup-disaster-recovery.md Learned: size an upload cap from an uncapped live reading; cap switches restart restic and re-read files; live rate from the sftp ssh child's bytes_acked. references/macos-and-endpoints.md Learned: full iPhone on charger can read ExternalConnected false; manual vs timer power rule; tmutil DateOfStateChange is UTC; SMB Time Machine log noise.
 - 2026-11-28 (v2.3.44 -> v2.3.45, ansible-wifi): scripts/disk_grow.py + disk_grow_guest.sh, `just disk-grow`: grow a VM disk then partition and filesystem on AWS EBS, Proxmox VM/CT, libvirt and qemu-img (plan / --check / --apply); references/storage-and-data.md Growing a VM disk, Learned entry; tests/test_disk_grow.py; shellcheck added to lint.
 - 2026-11-27 (2.3.44, me/nas): references/capacity-and-performance.md Learned: post-import backlog; pause queue groups, check the client, no vCPU on a saturated host.
 - 2026-11-27 (v2.3.42 -> v2.3.43): references/security-and-service-identity.md Learned: manual-unseal store after a host restart (unseal as the last maintenance step, OnBootSec seal alert, 503 means sealed, alert on early exits, ExecMainExitTimestamp resets at boot -> LastTriggerUSec; continuum BUG-708).

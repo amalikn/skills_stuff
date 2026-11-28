@@ -429,3 +429,20 @@ Baselines:
 > Lock state is not reliable that way: `PasswordProtected` read false on both devices while locked, each with a backup running, so a "locked for N
 > minutes" gate built on it ships off until verified with no session open. Two first backups over Wi-Fi each dropped with "Connection was terminated
 > abruptly" (iPad, once mid-transfer, once while asleep); an iPhone at 29% off power backed up 60 GB without a drop, so power is a policy, not a need.
+
+> **Learned 2026-11-28** · iPhone over mobdev2 (pymobiledevice3 11.63.1); macOS Time Machine to an SMB share · VERIFIED_PRIMARY (job journal and live
+> tmutil/log reads, home NAS) · Source: me/nas scripts/guests/ios/ios_backup_job.sh on_power(), scripts/mac/nas_dash_agent.py · Falsifier: a full phone on
+> its charger reading ExternalConnected true on every sample
+> A full iPhone on its charger was refused by an "ExternalConnected and 50%" rule three times at 100% (05:45, 09:10, 09:13): treat BatteryIsCharging or
+> FullyCharged as on power too, and let a high charge (95%) stand in for the charger. Keep a manual run separate from the timer: on power no battery
+> minimum, off power a lower bar (50%) than the night rule. Log all three fields on a skip so the next refusal explains itself. `tmutil status -X`
+> DateOfStateChange is UTC without a zone: convert before showing it. On an SMB destination the Time Machine subsystem logs `.xpc: connection invalid`
+> and `fs_snapshot_list failed: Operation not supported` every few seconds during a healthy backup; filter them before showing "recent" lines, and take
+> completed runs from the sparsebundle's SnapshotHistory on the server.
+```bash
+# me/nas scripts/guests/ios/ios_backup_job.sh on_power(): DL-102 order
+if [ "$ext" = true ] || [ "$chg" = true ] || [ "$full" = true ]; then return 0; fi
+if [ "$FORCE" -eq 1 ] && [ "${BATTERY:-0}" -ge "$MIN_BATTERY" ]; then return 0; fi
+if [ "${BATTERY:-0}" -ge "$FULL_BATTERY" ]; then return 0; fi
+```
+

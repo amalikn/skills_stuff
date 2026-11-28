@@ -132,6 +132,7 @@ How these fit together in one system, with the seams between them: [engine-compo
 | P-86 | Run log attached to the work item | A result whose evidence cannot be found later |
 | P-91 | Progress by payload growth; completion from the writer's own record | A touch time or a permission-gated client call reported as progress or completion |
 | P-92 | Audit against an outside truth; fix only the unambiguous, list the rest | Bulk-correcting data a tool imported wrong, when two sources disagree |
+| P-93 | Last good answer, marked stale | A status page fed by a remote call that sometimes fails or times out |
 
 ## Patterns
 
@@ -2375,5 +2376,29 @@ targets = [r for r in off if r["orig"] not in inside]      # only the outside tr
 review = [r for r in off if r["orig"] in inside and r["cls"] == "wrong"]  # two sources disagree: a person decides
 if apply and pending:                                       # the platform's own job would overwrite the fix
   return 1
+```
+
+### P-93 Last good answer, marked stale
+
+> **Learned 2026-11-28** · status collector polling a remote host every minute · VERIFIED_PRIMARY (home NAS: the backup-VM status call failed once while
+> a backup ran; the iPhone/iPad and iCloud cards went blank with "0.0 GB free") · Source: me/nas `scripts/node/pve_dashboard.py` collect() · Falsifier: a
+> remote call that never fails, or a page where a blank is the right signal. reusable_candidate until a second project uses it.
+
+- **Problem:** a collector replaces its whole view of a remote system with `{"error": ...}` when one call fails; the page then shows empty cards,
+  which reads as "nothing exists" rather than "could not ask".
+- **Solution:** on success, save the answer with its time; on failure, serve the saved answer merged with the error and `stale_since`, and have the
+  page show one warning row ("not answering (rc 124), showing 3 min ago") above the old data.
+- **Why it works:** the reader keeps the last known facts and learns the source is down; nothing pretends to be fresh.
+- **Reuse:** any dashboard over SSH, an API or a device poll; inventory sync summaries.
+- **Pitfalls:** never merge stale data into decisions that act (a backup trigger): only into display; age it out if the source stays down for days.
+- **Realised in:** Python -> me/nas `scripts/node/pve_dashboard.py`:
+
+```python
+last = CACHE.with_name("ios-last.json")
+if "error" not in ios_status:
+  last.write_text(json.dumps({"t": int(time.time()), "v": ios_status}))
+else:
+  prev = json.loads(last.read_text())
+  ios_status = {**prev["v"], "error": ios_status["error"], "stale_since": prev["t"]}
 ```
 
